@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Xamk Learn — Component Library</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --yellow: #FDB92A; --black: #000;
+      --sb: #111; --sb-hover: #1E1E1E; --sb-active: #252525; --sb-border: #2A2A2A;
+      --editor-bg: #1A1A1A; --editor-text: #D4D4D4;
+      --ctrl-bg: #141414; --ctrl-border: #2A2A2A;
+      --ui: 'Montserrat', Arial, sans-serif;
+      --mono: 'JetBrains Mono', 'Courier New', monospace;
+    }
+    html, body { height: 100%; overflow: hidden; }
+    body { display: flex; font-family: var(--ui); background: #0A0A0A; color: #fff; }
+
+    /* SIDEBAR */
+    #sidebar { width: 240px; flex-shrink: 0; background: var(--sb); border-right: 1px solid var(--sb-border); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    #sb-header { padding: 16px 16px 14px; border-bottom: 1px solid var(--sb-border); flex-shrink: 0; }
+    .logo-row { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+    .logo-x { width: 22px; height: 22px; background: var(--yellow); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; color: #000; flex-shrink: 0; }
+    .logo-name { font-size: 13px; font-weight: 700; }
+    .logo-sub { font-size: 9px; color: #555; letter-spacing: 1.2px; text-transform: uppercase; padding-left: 30px; }
+    #sb-nav { overflow-y: auto; flex: 1; padding: 8px 0 16px; }
+    #sb-nav::-webkit-scrollbar { width: 3px; }
+    #sb-nav::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+    .nav-group { font-size: 9px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #444; padding: 12px 16px 4px; }
+    .nav-item { display: flex; align-items: center; gap: 9px; padding: 7px 16px; cursor: pointer; border-left: 3px solid transparent; font-size: 12px; color: #888; transition: background 0.1s, color 0.1s; }
+    .nav-item:hover { background: var(--sb-hover); color: #bbb; }
+    .nav-item.active { background: var(--sb-active); border-left-color: var(--yellow); color: #fff; }
+    .nav-icon { font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; }
+
+    /* MAIN */
+    #main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; }
+
+    /* TOPBAR */
+    #topbar { background: #0D0D0D; border-bottom: 1px solid #222; padding: 0 16px; height: 44px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+    #comp-title { font-size: 13px; font-weight: 700; }
+    #comp-desc { font-size: 11px; color: #555; margin-left: 10px; }
+    .topbar-r { display: flex; gap: 6px; }
+    .btn { font-family: var(--ui); font-size: 11px; font-weight: 700; padding: 5px 12px; border-radius: 5px; border: none; cursor: pointer; transition: opacity 0.12s; }
+    .btn:hover { opacity: 0.82; }
+    .btn-primary { background: var(--yellow); color: #000; }
+    .btn-ghost { background: #2A2A2A; color: #aaa; border: 1px solid #3A3A3A; }
+
+    /* CONTROLS */
+    #controls-panel { background: var(--ctrl-bg); border-bottom: 1px solid var(--ctrl-border); flex-shrink: 0; display: none; flex-direction: column; max-height: 250px; overflow-y: auto; }
+    #controls-panel::-webkit-scrollbar { width: 4px; }
+    #controls-panel::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+    .ctrl-header { display: flex; align-items: center; justify-content: space-between; padding: 7px 14px; border-bottom: 1px solid #1E1E1E; flex-shrink: 0; background: #0D0D0D; position: sticky; top: 0; z-index: 2; }
+    .ctrl-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #555; }
+    .ctrl-actions { display: flex; align-items: center; gap: 6px; }
+    .ctrl-btn { font-family: var(--ui); font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 4px; border: none; cursor: pointer; }
+    .ctrl-btn-add { background: #1A2A1A; color: #90EE90; border: 1px solid #2A4A2A; }
+    .ctrl-btn-action { background: #1A1A2E; color: #8888FF; border: 1px solid #2A2A4A; }
+    .ctrl-btn-x { background: none; border: none; color: #555; cursor: pointer; font-size: 15px; padding: 0 4px; line-height: 1; font-family: var(--ui); }
+    .ctrl-btn-x:hover { color: #FF6B6B; }
+    .ctrl-total { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 4px; font-family: var(--ui); }
+    .ctrl-rows { padding: 3px 0 6px; }
+    .ctrl-col-hdr { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #444; }
+    .ctrl-row { display: flex; align-items: center; gap: 6px; padding: 4px 14px; }
+    .ctrl-num { width: 16px; font-size: 10px; color: #555; text-align: right; flex-shrink: 0; font-family: var(--mono); }
+    .ci { font-family: var(--ui); font-size: 12px; background: #222; border: 1px solid #333; border-radius: 4px; color: #ccc; padding: 4px 7px; outline: none; }
+    .ci:focus { border-color: #FDB92A66; }
+    .ci-sm { width: 52px; flex-shrink: 0; }
+    .ci-year { width: 64px; flex-shrink: 0; }
+    .ci-grow { flex: 1; min-width: 0; }
+    .ci-med { flex: 2; min-width: 0; }
+    .ci-wide { flex: 3; min-width: 0; }
+
+    /* PREVIEW */
+    #preview-panel { flex: 1; overflow: hidden; background: #EFEFEF; position: relative; min-height: 0; }
+    #preview-label { position: absolute; top: 8px; left: 12px; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #999; background: #E5E5E5; z-index: 1; padding: 2px 6px; border-radius: 3px; }
+    #preview-frame { width: 100%; height: 100%; border: none; display: none; }
+    #welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px; }
+    .w-x { width: 48px; height: 48px; background: #1A1A1A; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--yellow); margin-bottom: 4px; }
+    #welcome h2 { font-size: 14px; color: #666; font-weight: 600; }
+    #welcome p { font-size: 12px; color: #555; text-align: center; max-width: 240px; line-height: 1.6; }
+
+    /* EDITOR */
+    #resize-handle { height: 5px; background: #111; border-top: 1px solid #222; cursor: row-resize; flex-shrink: 0; }
+    #resize-handle:hover { background: #FDB92A22; }
+    #editor-panel { height: 270px; flex-shrink: 0; display: none; flex-direction: column; background: var(--editor-bg); }
+    #editor-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 0 14px; height: 32px; border-bottom: 1px solid #2A2A2A; flex-shrink: 0; }
+    .ed-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #444; }
+    .live-dot { font-size: 10px; color: #3A9A3A; font-weight: 700; }
+    #code-editor { flex: 1; font-family: var(--mono); font-size: 11.5px; line-height: 1.6; color: var(--editor-text); background: var(--editor-bg); border: none; resize: none; padding: 10px 14px; outline: none; tab-size: 2; }
+
+    /* FEEDBACK */
+    .toast { position: fixed; bottom: 280px; right: 16px; background: #1A3A1A; color: #90EE90; font-size: 11px; font-weight: 700; padding: 7px 14px; border-radius: 5px; opacity: 0; transform: translateY(6px); transition: opacity 0.18s, transform 0.18s; pointer-events: none; z-index: 100; }
+    .toast.show { opacity: 1; transform: none; }
+  </style>
+</head>
+<body>
+
+<nav id="sidebar">
+  <div id="sb-header">
+    <div class="logo-row"><div class="logo-x">X</div><span class="logo-name">Xamk Learn</span></div>
+    <div class="logo-sub">Component Library</div>
+  </div>
+  <div id="sb-nav">
+    <div class="nav-group">Layout</div>
+    <div class="nav-item" data-id="hero" onclick="load('hero')"><span class="nav-icon">🖼</span>Hero Banner</div>
+    <div class="nav-item" data-id="section-header" onclick="load('section-header')"><span class="nav-icon">📌</span>Section Header</div>
+    <div class="nav-item" data-id="two-column" onclick="load('two-column')"><span class="nav-icon">⬛</span>Two-Column Text</div>
+    <div class="nav-group">Callouts</div>
+    <div class="nav-item" data-id="callout-info" onclick="load('callout-info')"><span class="nav-icon">ℹ️</span>Info</div>
+    <div class="nav-item" data-id="callout-tip" onclick="load('callout-tip')"><span class="nav-icon">💡</span>Tip</div>
+    <div class="nav-item" data-id="callout-warning" onclick="load('callout-warning')"><span class="nav-icon">⚠️</span>Warning / Note</div>
+    <div class="nav-item" data-id="callout-important" onclick="load('callout-important')"><span class="nav-icon">📌</span>Important</div>
+    <div class="nav-group">Cards</div>
+    <div class="nav-item" data-id="card-single" onclick="load('card-single')"><span class="nav-icon">🃏</span>Info Card</div>
+    <div class="nav-item" data-id="card-grid-3" onclick="load('card-grid-3')"><span class="nav-icon">⊞</span>Card Grid (3-col)</div>
+    <div class="nav-item" data-id="card-grid-2" onclick="load('card-grid-2')"><span class="nav-icon">⊟</span>Card Grid (2-col)</div>
+    <div class="nav-group">Lists</div>
+    <div class="nav-item" data-id="step-list" onclick="load('step-list')"><span class="nav-icon">🔢</span>Step List</div>
+    <div class="nav-item" data-id="resource-list" onclick="load('resource-list')"><span class="nav-icon">📎</span>Resource List</div>
+    <div class="nav-group">Teaching</div>
+    <div class="nav-item" data-id="definition" onclick="load('definition')"><span class="nav-icon">📖</span>Definition Card</div>
+    <div class="nav-item" data-id="key-takeaways" onclick="load('key-takeaways')"><span class="nav-icon">⭐</span>Key Takeaways</div>
+    <div class="nav-item" data-id="quote-block" onclick="load('quote-block')"><span class="nav-icon">💬</span>Quote Block</div>
+    <div class="nav-item" data-id="comparison-table" onclick="load('comparison-table')"><span class="nav-icon">⇌</span>Comparison Table</div>
+    <div class="nav-item" data-id="do-dont" onclick="load('do-dont')"><span class="nav-icon">✓✗</span>Do / Don't</div>
+    <div class="nav-item" data-id="spectrum" onclick="load('spectrum')"><span class="nav-icon">◀▶</span>Spectrum Bar</div>
+    <div class="nav-item" data-id="game-example" onclick="load('game-example')"><span class="nav-icon">🎮</span>Game Example Card</div>
+    <div class="nav-item" data-id="image-caption" onclick="load('image-caption')"><span class="nav-icon">🖼</span>Image + Caption</div>
+    <div class="nav-item" data-id="pros-cons" onclick="load('pros-cons')"><span class="nav-icon">⚖️</span>Pros / Cons</div>
+    <div class="nav-group">Course Info</div>
+    <div class="nav-item" data-id="course-info" onclick="load('course-info')"><span class="nav-icon">🎓</span>Course Info Block</div>
+    <div class="nav-item" data-id="grade-breakdown" onclick="load('grade-breakdown')"><span class="nav-icon">📊</span>Grade Breakdown</div>
+    <div class="nav-group">Timeline</div>
+    <div class="nav-item" data-id="timeline" onclick="load('timeline')"><span class="nav-icon">📅</span>Timeline</div>
+    <div class="nav-group">Media</div>
+    <div class="nav-item" data-id="youtube-single" onclick="load('youtube-single')"><span class="nav-icon">▶️</span>YouTube Single</div>
+    <div class="nav-item" data-id="yt-playlist-iframe" onclick="load('yt-playlist-iframe')"><span class="nav-icon">📋</span>Playlist (iframe)</div>
+    <div class="nav-item" data-id="yt-playlist-grid" onclick="load('yt-playlist-grid')"><span class="nav-icon">🎬</span>Playlist (thumbnails)</div>
+  </div>
+</nav>
+
+<div id="main">
+  <div id="topbar">
+    <div style="display:flex;align-items:center">
+      <span id="comp-title" style="font-size:13px;font-weight:700">Select a component</span>
+      <span id="comp-desc" style="font-size:11px;color:#555;margin-left:10px"></span>
+    </div>
+    <div class="topbar-r">
+      <button class="btn btn-ghost" id="btn-reset" onclick="resetComp()" style="display:none">↺ Reset</button>
+      <button class="btn btn-primary" id="btn-copy" onclick="copyCode()" style="display:none">Copy HTML</button>
+    </div>
+  </div>
+
+  <div id="controls-panel"></div>
+
+  <div id="preview-panel">
+    <div id="preview-label">PREVIEW</div>
+    <iframe id="preview-frame" title="Component preview"></iframe>
+    <div id="welcome">
+      <div class="w-x">X</div>
+      <h2>Xamk Learn Components</h2>
+      <p>Pick a component from the sidebar to preview, edit, and copy it into Learn.</p>
+    </div>
+  </div>
+
+  <div id="resize-handle"></div>
+  <div id="editor-panel">
+    <div id="editor-toolbar">
+      <span class="ed-label">HTML Source</span>
+      <span class="live-dot">● LIVE</span>
+    </div>
+    <textarea id="code-editor" spellcheck="false" autocomplete="off"></textarea>
+  </div>
+</div>
+
+<div class="toast" id="toast">✓ Copied to clipboard</div>
+
+<script>
+// ── Helpers ──
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const escA = s => String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const clone = o => JSON.parse(JSON.stringify(o));
+const OPEN = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"><style>body{margin:0;padding:24px;background:#fff;font-family:'Montserrat',Arial,sans-serif;}*{box-sizing:border-box;}</style></head><body>`;
+const CLOSE = `</body></html>`;
+
+// ── Registry ──
+const C = {};
+function stat(id, name, desc, code) { C[id] = {name, desc, static:true, code}; }
+function dyn(id, name, desc, def, gen, ctrl, preview) { C[id] = {name, desc, static:false, def, gen, ctrl, preview}; }
+
+// ════════════════════════════════════
+// STATIC COMPONENTS
+// ════════════════════════════════════
+
+stat('hero','Hero Banner','Top of a course or section page',
+`<div style="background-color: #000000; padding: 40px 32px; border-radius: 12px; font-family: 'Montserrat', Arial, sans-serif; margin-bottom: 24px;">
+  <div style="border-left: 5px solid #FDB92A; padding-left: 20px;">
+    <p style="color: #FDB92A; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 10px 0; font-family: 'Montserrat', Arial, sans-serif;">COURSE CODE &nbsp;·&nbsp; SEMESTER YEAR</p>
+    <h2 style="color: #FFFFFF; font-size: 30px; font-weight: 700; margin: 0 0 14px 0; line-height: 1.25; font-family: 'Montserrat', Arial, sans-serif;">Course Title Here</h2>
+    <p style="color: #CCCCCC; font-size: 15px; margin: 0; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;">A short welcoming description. 2–3 sentences. Tell students what they will do and why it matters.</p>
+  </div>
+</div>`);
+
+stat('section-header','Section Header','Major content break with yellow accent',
+`<div style="display: flex; align-items: center; gap: 12px; margin: 32px 0 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <div style="width: 5px; height: 28px; background-color: #FDB92A; border-radius: 3px; flex-shrink: 0;"></div>
+  <h2 style="color: #000000; font-size: 20px; font-weight: 700; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Section Title Here</h2>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; margin: 24px 0 12px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <div style="width: 4px; height: 22px; background-color: #FDB92A; border-radius: 2px; flex-shrink: 0;"></div>
+  <h3 style="color: #000000; font-size: 16px; font-weight: 700; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Sub-section Title Here</h3>
+</div>`);
+
+stat('two-column','Two-Column Text','Side-by-side content',
+`<div style="display: flex; gap: 24px; flex-wrap: wrap; margin: 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <div style="flex: 1 1 280px;">
+    <h3 style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 8px 0; font-family: 'Montserrat', Arial, sans-serif;">Left Column Heading</h3>
+    <p style="font-size: 14px; color: #1A1A1A; line-height: 1.7; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Left column content goes here.</p>
+  </div>
+  <div style="flex: 1 1 280px;">
+    <h3 style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 8px 0; font-family: 'Montserrat', Arial, sans-serif;">Right Column Heading</h3>
+    <p style="font-size: 14px; color: #1A1A1A; line-height: 1.7; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Right column content goes here.</p>
+  </div>
+</div>`);
+
+stat('callout-info','Callout — Info','Teal informational note',
+`<div style="background-color: #E8F9FB; border-left: 5px solid #1DBED0; border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <p style="font-weight: 700; font-size: 13px; color: #117A85; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Information">ℹ️</span> &nbsp;Info</p>
+  <p style="font-size: 14px; color: #1A1A1A; margin: 0; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;">Your information text goes here.</p>
+</div>`);
+
+stat('callout-tip','Callout — Tip','Green helpful tip',
+`<div style="background-color: #F2F9E8; border-left: 5px solid #A6CE39; border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <p style="font-weight: 700; font-size: 13px; color: #5A7A1A; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Tip">💡</span> &nbsp;Tip</p>
+  <p style="font-size: 14px; color: #1A1A1A; margin: 0; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;">Your tip text goes here.</p>
+</div>`);
+
+stat('callout-warning','Callout — Warning','Yellow note or warning',
+`<div style="background-color: #FFF8E6; border-left: 5px solid #FDB92A; border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <p style="font-weight: 700; font-size: 13px; color: #8A6200; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Warning">⚠️</span> &nbsp;Note</p>
+  <p style="font-size: 14px; color: #1A1A1A; margin: 0; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;">Your warning or note text goes here.</p>
+</div>`);
+
+stat('callout-important','Callout — Important','Black critical note',
+`<div style="background-color: #F5F5F5; border-left: 5px solid #000000; border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <p style="font-weight: 700; font-size: 13px; color: #000000; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Important">📌</span> &nbsp;Important</p>
+  <p style="font-size: 14px; color: #1A1A1A; margin: 0; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;">Your critical note goes here.</p>
+</div>`);
+
+stat('card-single','Info Card','Single concept with icon',
+`<div style="background-color: #FFFFFF; border: 1px solid #E0E0E0; border-top: 4px solid #FDB92A; border-radius: 0 0 10px 10px; padding: 20px 20px 22px 20px; font-family: 'Montserrat', Arial, sans-serif; margin: 16px 0;">
+  <div style="font-size: 28px; margin-bottom: 10px;" role="img" aria-label="Target">🎯</div>
+  <h3 style="font-size: 16px; font-weight: 700; color: #000000; margin: 0 0 8px 0; font-family: 'Montserrat', Arial, sans-serif;">Card Title</h3>
+  <p style="font-size: 14px; color: #444444; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">Card description text. Keep it concise — 2–3 sentences at most.</p>
+</div>`);
+
+stat('card-grid-3','Card Grid (3-col)','Three parallel concepts',
+`<div style="display: flex; flex-wrap: wrap; gap: 16px; margin: 16px 0;">
+  <div style="flex: 1 1 200px; background-color: #FFFFFF; border: 1px solid #E0E0E0; border-top: 4px solid #FDB92A; border-radius: 0 0 10px 10px; padding: 18px 18px 20px 18px; font-family: 'Montserrat', Arial, sans-serif;">
+    <div style="font-size: 24px; margin-bottom: 8px;" role="img" aria-label="Book">📖</div>
+    <h3 style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">Card Title 1</h3>
+    <p style="font-size: 13px; color: #444444; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">Description text here.</p>
+  </div>
+  <div style="flex: 1 1 200px; background-color: #FFFFFF; border: 1px solid #E0E0E0; border-top: 4px solid #FDB92A; border-radius: 0 0 10px 10px; padding: 18px 18px 20px 18px; font-family: 'Montserrat', Arial, sans-serif;">
+    <div style="font-size: 24px; margin-bottom: 8px;" role="img" aria-label="Tools">🛠️</div>
+    <h3 style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">Card Title 2</h3>
+    <p style="font-size: 13px; color: #444444; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">Description text here.</p>
+  </div>
+  <div style="flex: 1 1 200px; background-color: #FFFFFF; border: 1px solid #E0E0E0; border-top: 4px solid #FDB92A; border-radius: 0 0 10px 10px; padding: 18px 18px 20px 18px; font-family: 'Montserrat', Arial, sans-serif;">
+    <div style="font-size: 24px; margin-bottom: 8px;" role="img" aria-label="Chat">💬</div>
+    <h3 style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">Card Title 3</h3>
+    <p style="font-size: 13px; color: #444444; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">Description text here.</p>
+  </div>
+</div>`);
+
+stat('card-grid-2','Card Grid (2-col)','Two parallel concepts',
+`<div style="display: flex; flex-wrap: wrap; gap: 16px; margin: 16px 0;">
+  <div style="flex: 1 1 280px; background-color: #FFFFFF; border: 1px solid #E0E0E0; border-top: 4px solid #FDB92A; border-radius: 0 0 10px 10px; padding: 18px 18px 20px 18px; font-family: 'Montserrat', Arial, sans-serif;">
+    <div style="font-size: 24px; margin-bottom: 8px;" role="img" aria-label="Star">⭐</div>
+    <h3 style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">Card Title 1</h3>
+    <p style="font-size: 13px; color: #444444; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">Description text here.</p>
+  </div>
+  <div style="flex: 1 1 280px; background-color: #FFFFFF; border: 1px solid #E0E0E0; border-top: 4px solid #FDB92A; border-radius: 0 0 10px 10px; padding: 18px 18px 20px 18px; font-family: 'Montserrat', Arial, sans-serif;">
+    <div style="font-size: 24px; margin-bottom: 8px;" role="img" aria-label="Rocket">🚀</div>
+    <h3 style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">Card Title 2</h3>
+    <p style="font-size: 13px; color: #444444; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">Description text here.</p>
+  </div>
+</div>`);
+
+stat('resource-list','Resource List','Readings, links, downloads',
+`<ul style="list-style: none; padding: 0; margin: 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <li style="padding: 12px 0; border-bottom: 1px solid #E0E0E0;"><span style="margin-right: 8px;" role="img" aria-label="PDF">📄</span><a href="#" style="color: #000; font-weight: 600; font-size: 14px; text-decoration: underline; font-family: 'Montserrat', Arial, sans-serif;">Resource Title Here</a><span style="color: #8D8D8D; font-size: 12px; margin-left: 8px; font-family: 'Montserrat', Arial, sans-serif;">PDF</span></li>
+  <li style="padding: 12px 0; border-bottom: 1px solid #E0E0E0;"><span style="margin-right: 8px;" role="img" aria-label="Link">🔗</span><a href="#" style="color: #000; font-weight: 600; font-size: 14px; text-decoration: underline; font-family: 'Montserrat', Arial, sans-serif;">Resource Title Here</a><span style="color: #8D8D8D; font-size: 12px; margin-left: 8px; font-family: 'Montserrat', Arial, sans-serif;">Article</span></li>
+  <li style="padding: 12px 0;"><span style="margin-right: 8px;" role="img" aria-label="Video">🎥</span><a href="#" style="color: #000; font-weight: 600; font-size: 14px; text-decoration: underline; font-family: 'Montserrat', Arial, sans-serif;">Resource Title Here</a><span style="color: #8D8D8D; font-size: 12px; margin-left: 8px; font-family: 'Montserrat', Arial, sans-serif;">Video · 12 min</span></li>
+</ul>`);
+
+// ── Teaching static ──
+stat('definition','Definition Card','Term + definition + example',
+`<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 16px 0; border: 1px solid #E0E0E0; border-radius: 10px;">
+  <div style="background-color: #000000; padding: 10px 20px; border-radius: 10px 10px 0 0; display: flex; align-items: center; gap: 12px;">
+    <span style="font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #FDB92A; font-family: 'Montserrat', Arial, sans-serif;">Definition</span>
+    <span style="height: 1px; flex: 1; background-color: #333;"></span>
+  </div>
+  <div style="padding: 18px 20px 20px 20px;">
+    <p style="font-size: 20px; font-weight: 700; color: #000000; margin: 0 0 10px 0; font-family: 'Montserrat', Arial, sans-serif;">Term or Concept</p>
+    <p style="font-size: 14px; color: #1A1A1A; line-height: 1.7; margin: 0 0 14px 0; font-family: 'Montserrat', Arial, sans-serif;">The definition goes here. Write it clearly and concisely — one or two sentences a first-year student can understand without prior knowledge.</p>
+    <div style="background-color: #FFF8E6; border-left: 3px solid #FDB92A; border-radius: 0 6px 6px 0; padding: 10px 14px;">
+      <p style="font-size: 11px; font-weight: 700; color: #8A6200; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 4px 0; font-family: 'Montserrat', Arial, sans-serif;">Example</p>
+      <p style="font-size: 13px; color: #1A1A1A; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">A concrete example in practice — ideally a game or mechanic students already know.</p>
+    </div>
+  </div>
+</div>`);
+
+stat('key-takeaways','Key Takeaways','End-of-lesson summary points',
+`<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0; background-color: #000000; border-radius: 12px; padding: 24px 28px;">
+  <p style="font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #FDB92A; margin: 0 0 16px 0; font-family: 'Montserrat', Arial, sans-serif;">⭐ &nbsp;Key Takeaways</p>
+  <ul style="list-style: none; padding: 0; margin: 0;">
+    <li style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px;"><span style="width: 20px; height: 20px; background-color: #FDB92A; border-radius: 50%; font-size: 11px; font-weight: 700; color: #000; flex-shrink: 0; line-height: 20px; text-align: center; font-family: 'Montserrat', Arial, sans-serif;">1</span><p style="font-size: 14px; color: #FFFFFF; margin: 0; line-height: 1.6; padding-top: 1px; font-family: 'Montserrat', Arial, sans-serif;">Key takeaway one goes here. Make it punchy and memorable.</p></li>
+    <li style="display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px;"><span style="width: 20px; height: 20px; background-color: #FDB92A; border-radius: 50%; font-size: 11px; font-weight: 700; color: #000; flex-shrink: 0; line-height: 20px; text-align: center; font-family: 'Montserrat', Arial, sans-serif;">2</span><p style="font-size: 14px; color: #FFFFFF; margin: 0; line-height: 1.6; padding-top: 1px; font-family: 'Montserrat', Arial, sans-serif;">Key takeaway two goes here.</p></li>
+    <li style="display: flex; gap: 12px; align-items: flex-start;"><span style="width: 20px; height: 20px; background-color: #FDB92A; border-radius: 50%; font-size: 11px; font-weight: 700; color: #000; flex-shrink: 0; line-height: 20px; text-align: center; font-family: 'Montserrat', Arial, sans-serif;">3</span><p style="font-size: 14px; color: #FFFFFF; margin: 0; line-height: 1.6; padding-top: 1px; font-family: 'Montserrat', Arial, sans-serif;">Key takeaway three goes here.</p></li>
+  </ul>
+</div>`);
+
+stat('quote-block','Quote Block','Designer or theorist quote',
+`<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0; padding: 28px 32px; border-left: 5px solid #FDB92A; background-color: #FAFAFA; border-radius: 0 10px 10px 0;">
+  <p style="font-size: 20px; font-weight: 700; color: #000000; line-height: 1.4; margin: 0 0 16px 0; font-family: 'Montserrat', Arial, sans-serif;">"A game is a series of interesting decisions."</p>
+  <div style="display: flex; align-items: center; gap: 12px;">
+    <div style="height: 2px; width: 24px; background-color: #FDB92A;"></div>
+    <div>
+      <p style="font-size: 13px; font-weight: 700; color: #000000; margin: 0 0 2px 0; font-family: 'Montserrat', Arial, sans-serif;">Sid Meier</p>
+      <p style="font-size: 12px; color: #8D8D8D; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Creator of the Civilization series</p>
+    </div>
+  </div>
+</div>`);
+
+stat('do-dont',"Do / Don't Panel",'Side-by-side good/bad examples',
+`<div style="display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <div style="flex: 1 1 240px; border: 2px solid #A6CE39; border-radius: 10px;">
+    <div style="background-color: #A6CE39; padding: 10px 16px; border-radius: 8px 8px 0 0;"><p style="font-size: 12px; font-weight: 700; color: #000000; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">✓ &nbsp;Do</p></div>
+    <div style="padding: 16px;"><ul style="margin: 0; padding-left: 18px;">
+      <li style="font-size: 14px; color: #1A1A1A; line-height: 1.7; margin-bottom: 6px; font-family: 'Montserrat', Arial, sans-serif;">Good practice one.</li>
+      <li style="font-size: 14px; color: #1A1A1A; line-height: 1.7; margin-bottom: 6px; font-family: 'Montserrat', Arial, sans-serif;">Good practice two.</li>
+      <li style="font-size: 14px; color: #1A1A1A; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;">Good practice three.</li>
+    </ul></div>
+  </div>
+  <div style="flex: 1 1 240px; border: 2px solid #E0E0E0; border-radius: 10px;">
+    <div style="background-color: #F5F5F5; padding: 10px 16px; border-radius: 8px 8px 0 0; border-bottom: 1px solid #E0E0E0;"><p style="font-size: 12px; font-weight: 700; color: #8D8D8D; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">✗ &nbsp;Don't</p></div>
+    <div style="padding: 16px;"><ul style="margin: 0; padding-left: 18px;">
+      <li style="font-size: 14px; color: #444444; line-height: 1.7; margin-bottom: 6px; font-family: 'Montserrat', Arial, sans-serif;">Common mistake one.</li>
+      <li style="font-size: 14px; color: #444444; line-height: 1.7; margin-bottom: 6px; font-family: 'Montserrat', Arial, sans-serif;">Common mistake two.</li>
+      <li style="font-size: 14px; color: #444444; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;">Common mistake three.</li>
+    </ul></div>
+  </div>
+</div>`);
+
+stat('spectrum','Spectrum Bar','Scale between two extremes',
+`<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0; padding: 24px; background-color: #FAFAFA; border: 1px solid #E0E0E0; border-radius: 10px;">
+  <p style="font-size: 11px; font-weight: 700; color: #8D8D8D; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 16px 0; font-family: 'Montserrat', Arial, sans-serif;">Spectrum · Player Engagement Style</p>
+  <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 10px;">
+    <span style="font-size: 13px; font-weight: 700; color: #000000; flex-shrink: 0; min-width: 70px; font-family: 'Montserrat', Arial, sans-serif;">Casual</span>
+    <div style="flex: 1; height: 10px; background: linear-gradient(to right, #FDB92A, #1DBED0); border-radius: 5px; position: relative;">
+      <div style="width: 16px; height: 16px; background: #000000; border-radius: 50%; border: 3px solid #FFFFFF; margin-top: -3px; margin-left: 65%;"></div>
+    </div>
+    <span style="font-size: 13px; font-weight: 700; color: #000000; flex-shrink: 0; min-width: 70px; text-align: right; font-family: 'Montserrat', Arial, sans-serif;">Hardcore</span>
+  </div>
+  <p style="font-size: 12px; color: #8D8D8D; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Example: Dark Souls sits firmly toward the Hardcore end — high skill ceiling, minimal hand-holding, punishing failure states.</p>
+</div>`);
+
+stat('image-caption','Image + Caption','Figure with accessible caption',
+`<figure style="margin: 24px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <img src="https://placehold.co/800x400/000000/FDB92A/png?text=Image+Placeholder" alt="Describe the image content here" style="width: 100%; display: block; border-radius: 10px; height: auto;">
+  <figcaption style="font-size: 13px; color: #8D8D8D; margin-top: 10px; text-align: center; font-family: 'Montserrat', Arial, sans-serif;">Figure caption — describe what the image shows and why it is relevant.</figcaption>
+</figure>`);
+
+stat('game-example','Game Example Card','Concept illustrated by a real game',
+`<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 16px 0; border: 1px solid #E0E0E0; border-radius: 10px; display: flex; flex-wrap: wrap;">
+  <div style="flex-shrink: 0; width: 200px;">
+    <img src="https://placehold.co/200x200/000000/FDB92A/png?text=Cover" alt="Game cover — replace with real image" style="width: 200px; height: 200px; object-fit: cover; border-radius: 10px 0 0 10px; display: block;">
+  </div>
+  <div style="flex: 1; padding: 20px; min-width: 220px;">
+    <p style="font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #8D8D8D; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">Game Example</p>
+    <h3 style="font-size: 18px; font-weight: 700; color: #000000; margin: 0 0 4px 0; font-family: 'Montserrat', Arial, sans-serif;">Game Title Here</h3>
+    <p style="font-size: 12px; color: #8D8D8D; margin: 0 0 12px 0; font-family: 'Montserrat', Arial, sans-serif;">Developer · Year</p>
+    <div style="display: inline-block; background-color: #FDB92A; padding: 3px 10px; border-radius: 20px; margin-bottom: 12px;">
+      <p style="font-size: 11px; font-weight: 700; color: #000000; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Concept being illustrated</p>
+    </div>
+    <p style="font-size: 13px; color: #1A1A1A; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">Explain what this game demonstrates about the concept. Be specific — which mechanic, which moment, which design decision?</p>
+  </div>
+</div>`);
+
+stat('course-info','Course Info Block','Teacher, objectives, goals, evaluation',
+`<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0; border: 1px solid #E0E0E0; border-radius: 12px;">
+  <div style="background-color: #000000; padding: 20px 24px; border-radius: 12px 12px 0 0;">
+    <p style="color: #FDB92A; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">COURSE CODE &nbsp;·&nbsp; X CREDITS</p>
+    <h2 style="color: #FFFFFF; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; font-family: 'Montserrat', Arial, sans-serif;">Course Name Here</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <span style="background-color: #FDB92A; color: #000000; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">X credits</span>
+      <span style="background-color: #333333; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">X compulsory assignments</span>
+      <span style="background-color: #333333; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">X optional assignments</span>
+    </div>
+  </div>
+  <div style="padding: 20px 24px; border-bottom: 1px solid #E0E0E0; background-color: #FAFAFA;">
+    <p style="font-size: 11px; font-weight: 700; color: #8D8D8D; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 14px 0; font-family: 'Montserrat', Arial, sans-serif;">Teacher</p>
+    <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap;">
+      <img src="https://placehold.co/80/FDB92A/000000/png?text=Photo" alt="Teacher — replace with real photo" style="width: 80px; height: 80px; border-radius: 8px; flex-shrink: 0; display: block;">
+      <div>
+        <p style="font-size: 16px; font-weight: 700; color: #000000; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">TEACHER NAME</p>
+        <p style="font-size: 13px; color: #444444; margin: 0 0 4px 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Email">📧</span> &nbsp;<a href="mailto:firstname.lastname@xamk.fi" style="color: #000000; text-decoration: underline; font-family: 'Montserrat', Arial, sans-serif;">firstname.lastname@xamk.fi</a></p>
+        <p style="font-size: 13px; color: #444444; margin: 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Response time">🕐</span> &nbsp;I reply within 2 working days.</p>
+      </div>
+    </div>
+  </div>
+  <div style="padding: 20px 24px; border-bottom: 1px solid #E0E0E0;">
+    <p style="font-size: 11px; font-weight: 700; color: #8D8D8D; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 12px 0; font-family: 'Montserrat', Arial, sans-serif;">Learning Goals</p>
+    <ul style="list-style: none; margin: 0; padding: 0;">
+      <li style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: #1A1A1A; line-height: 1.7; margin-bottom: 6px; font-family: 'Montserrat', Arial, sans-serif;"><span style="color: #A6CE39; font-weight: 700; flex-shrink: 0;">✓</span> GOAL ONE</li>
+      <li style="display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: #1A1A1A; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;"><span style="color: #A6CE39; font-weight: 700; flex-shrink: 0;">✓</span> GOAL TWO</li>
+    </ul>
+  </div>
+  <div style="padding: 20px 24px; border-bottom: 1px solid #E0E0E0;">
+    <p style="font-size: 11px; font-weight: 700; color: #8D8D8D; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 12px 0; font-family: 'Montserrat', Arial, sans-serif;">Learning Objectives</p>
+    <ul style="margin: 0; padding-left: 20px;">
+      <li style="font-size: 14px; color: #1A1A1A; line-height: 1.7; margin-bottom: 5px; font-family: 'Montserrat', Arial, sans-serif;">OBJECTIVE ONE?</li>
+      <li style="font-size: 14px; color: #1A1A1A; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;">OBJECTIVE TWO?</li>
+    </ul>
+  </div>
+  <div style="padding: 20px 24px; border-radius: 0 0 12px 12px;">
+    <p style="font-size: 11px; font-weight: 700; color: #8D8D8D; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 12px 0; font-family: 'Montserrat', Arial, sans-serif;">Evaluation Criteria</p>
+    <p style="font-size: 13px; color: #444444; margin: 0 0 10px 0; font-family: 'Montserrat', Arial, sans-serif;">You'll be evaluated on your ability to:</p>
+    <ul style="margin: 0; padding-left: 20px;">
+      <li style="font-size: 14px; color: #1A1A1A; line-height: 1.7; margin-bottom: 5px; font-family: 'Montserrat', Arial, sans-serif;">CRITERION ONE</li>
+      <li style="font-size: 14px; color: #1A1A1A; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;">CRITERION TWO</li>
+    </ul>
+  </div>
+</div>`);
+
+// ════════════════════════════════════
+// YOUTUBE URL HELPERS
+// ════════════════════════════════════
+function ytExtractUrl(input) {
+  if (!input) return '';
+  // If it looks like an iframe embed, pull the src attribute out first
+  const srcMatch = input.match(/src=["']([^"']+)["']/);
+  return srcMatch ? srcMatch[1] : input;
+}
+function ytVideoId(input) {
+  const url = ytExtractUrl(input);
+  if (!url) return '';
+  const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|v\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : '';
+}
+function ytPlaylistId(input) {
+  const url = ytExtractUrl(input);
+  if (!url) return '';
+  const m = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+  return m ? m[1] : '';
+}
+function ytThumb(vid) {
+  return vid
+    ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg`
+    : `https://placehold.co/400x225/000000/FDB92A/png?text=Paste+URL`;
+}
+function ytIdBadge(id, label) {
+  if (!id) return `<span style="font-size:10px;color:#555;font-family:var(--ui)">— paste a URL above</span>`;
+  return `<span style="font-size:10px;font-family:var(--mono);background:#1A2A1A;color:#90EE90;padding:2px 7px;border-radius:3px">${label}: ${id}</span>`;
+}
+
+// ── YOUTUBE SINGLE ──
+dyn('youtube-single','YouTube Single','Paste a YouTube URL to embed',
+  {url:'', caption:'Video title or short caption here'},
+  st => {
+    const vid = ytVideoId(st.url);
+    const src = vid ? `https://www.youtube.com/embed/${vid}` : '';
+    return `<figure style="margin: 24px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  ${src
+    ? `<iframe width="100%" height="450" src="${src}" title="${esc(st.caption)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display: block; border-radius: 10px; background-color: #000000;"></iframe>`
+    : `<div style="width:100%;height:200px;background:#111;border-radius:10px;display:flex;align-items:center;justify-content:center;"><p style="color:#555;font-family:'Montserrat',Arial,sans-serif;font-size:13px;">Paste a YouTube URL above</p></div>`}
+  <figcaption style="font-size: 13px; color: #8D8D8D; margin-top: 8px; text-align: center; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.caption)}</figcaption>
+</figure>`;
+  },
+  st => {
+    const vid = ytVideoId(st.url);
+    return `
+    <div class="ctrl-header">
+      <span class="ctrl-label">YouTube Single</span>
+      <div class="ctrl-actions">${ytIdBadge(vid,'Video ID')}</div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:68px;font-family:var(--ui)">Video URL</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.url)}" data-f="url" placeholder="Paste a YouTube URL or the full embed code from YouTube">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:68px;font-family:var(--ui)">Caption</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.caption)}" data-f="caption" placeholder="Video caption or title">
+      </div>
+    </div>`;
+  }
+);
+
+// ── YOUTUBE PLAYLIST IFRAME ──
+dyn('yt-playlist-iframe','Playlist (iframe)','Paste a YouTube playlist URL',
+  {url:'', caption:'Playlist: Title Here'},
+  st => {
+    const pid = ytPlaylistId(st.url);
+    const src = pid ? `https://www.youtube.com/embed/videoseries?list=${pid}` : '';
+    return `<figure style="margin: 24px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  ${src
+    ? `<iframe width="100%" height="450" src="${src}" title="${esc(st.caption)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display: block; border-radius: 10px; background-color: #000000;"></iframe>`
+    : `<div style="width:100%;height:200px;background:#111;border-radius:10px;display:flex;align-items:center;justify-content:center;"><p style="color:#555;font-family:'Montserrat',Arial,sans-serif;font-size:13px;">Paste a playlist URL above</p></div>`}
+  <figcaption style="font-size: 13px; color: #8D8D8D; margin-top: 8px; text-align: center; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.caption)}</figcaption>
+</figure>`;
+  },
+  st => {
+    const pid = ytPlaylistId(st.url);
+    return `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Playlist (iframe)</span>
+      <div class="ctrl-actions">${ytIdBadge(pid,'Playlist ID')}</div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:68px;font-family:var(--ui)">Playlist URL</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.url)}" data-f="url" placeholder="Paste a YouTube playlist URL or embed code">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:68px;font-family:var(--ui)">Caption</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.caption)}" data-f="caption" placeholder="Playlist caption">
+      </div>
+    </div>`;
+  }
+);
+
+// ── YOUTUBE PLAYLIST GRID ──
+dyn('yt-playlist-grid','Playlist (thumbnails)','Paste URLs — thumbnails auto-generate',
+  {heading:'Playlist Title', videos:[
+    {url:'', title:'Video Title 1', duration:'0:00'},
+    {url:'', title:'Video Title 2', duration:'0:00'},
+    {url:'', title:'Video Title 3', duration:'0:00'}
+  ]},
+  st => {
+    const cards = st.videos.map(v => {
+      const vid = ytVideoId(v.url);
+      const href = vid ? `https://www.youtube.com/watch?v=${vid}` : '#';
+      const thumb = ytThumb(vid);
+      return `    <a href="${href}" target="_blank" rel="noopener noreferrer" style="flex: 1 1 200px; text-decoration: none; background-color: #FFFFFF; border: 1px solid #E0E0E0; border-radius: 10px; display: block;">
+      <img src="${thumb}" alt="${esc(v.title)}" style="width: 100%; display: block; border-radius: 10px 10px 0 0; height: auto;">
+      <div style="padding: 10px 12px 12px 12px;">
+        <p style="font-size: 13px; font-weight: 600; color: #000000; margin: 0 0 4px 0; line-height: 1.4; font-family: 'Montserrat', Arial, sans-serif;">${esc(v.title)}</p>
+        <p style="font-size: 12px; color: #8D8D8D; margin: 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Duration">⏱</span> ${esc(v.duration)}</p>
+      </div>
+    </a>`;
+    }).join('\n');
+    return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0;">
+  <h3 style="font-size: 16px; font-weight: 700; color: #000000; margin: 0 0 16px 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.heading)}</h3>
+  <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+${cards}
+  </div>
+</div>`;
+  },
+  st => `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Playlist Grid (${st.videos.length} videos)</span>
+      <div class="ctrl-actions"><button class="ctrl-btn ctrl-btn-add" data-action="add">+ Add Video</button></div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row" style="border-bottom:1px solid #1E1E1E;padding-bottom:6px;margin-bottom:2px">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Section title</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.heading)}" data-f="heading" placeholder="Playlist heading">
+      </div>
+      <div class="ctrl-row" style="padding:3px 14px 2px">
+        <span class="ctrl-num"></span>
+        <span class="ctrl-col-hdr" style="flex:3">YouTube URL</span>
+        <span class="ctrl-col-hdr" style="flex:2;margin-left:6px">Title</span>
+        <span class="ctrl-col-hdr" style="width:52px;margin-left:6px">Duration</span>
+        <span style="width:38px"></span>
+      </div>
+      ${st.videos.map((v,i) => {
+        const vid = ytVideoId(v.url);
+        return `<div class="ctrl-row">
+          <span class="ctrl-num">${i+1}</span>
+          <input class="ci" style="flex:3" type="text" value="${escA(v.url)}" data-f="vurl" data-i="${i}" placeholder="YouTube URL or embed code">
+          <input class="ci" style="flex:2" type="text" value="${escA(v.title)}" data-f="vtitle" data-i="${i}" placeholder="Video title">
+          <input class="ci" style="width:52px;flex-shrink:0" type="text" value="${escA(v.duration)}" data-f="vdur" data-i="${i}" placeholder="0:00">
+          <span style="font-size:11px;flex-shrink:0;width:14px;text-align:center" title="${vid ? 'ID: '+vid : 'No ID found'}">${vid ? '✓' : '–'}</span>
+          <button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button>
+        </div>`;
+      }).join('')}
+    </div>`
+);
+
+// ════════════════════════════════════
+// DYNAMIC COMPONENTS
+// ════════════════════════════════════
+
+// ── STEP LIST ──
+dyn('step-list','Step List','Sequential steps — add or remove',
+  {steps:[
+    {title:'First Step',desc:'Describe what happens in this step. What does the student do?'},
+    {title:'Second Step',desc:'Step description here.'},
+    {title:'Third Step',desc:'Step description here.'}
+  ]},
+  st => {
+    const rows = st.steps.map((s,i) => `  <div style="display: flex; gap: 16px; ${i<st.steps.length-1?'margin-bottom: 16px;':''} align-items: flex-start;">
+    <div style="min-width: 36px; width: 36px; height: 36px; background-color: #FDB92A; border-radius: 50%; font-weight: 700; font-size: 16px; color: #000000; flex-shrink: 0; line-height: 36px; text-align: center; font-family: 'Montserrat', Arial, sans-serif;">${i+1}</div>
+    <div style="padding-top: 6px;">
+      <h3 style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 4px 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(s.title)}</h3>
+      <p style="font-size: 14px; color: #444444; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">${esc(s.desc)}</p>
+    </div>
+  </div>`).join('\n');
+    return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 16px 0;">\n${rows}\n</div>`;
+  },
+  st => `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Steps (${st.steps.length})</span>
+      <div class="ctrl-actions"><button class="ctrl-btn ctrl-btn-add" data-action="add">+ Add Step</button></div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row" style="padding:3px 14px 2px">
+        <span class="ctrl-num"></span>
+        <span class="ctrl-col-hdr" style="flex:2">Title</span>
+        <span class="ctrl-col-hdr" style="flex:3;margin-left:6px">Description</span>
+        <span style="width:24px"></span>
+      </div>
+      ${st.steps.map((s,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci" style="flex:2" type="text" value="${escA(s.title)}" data-f="title" data-i="${i}"><input class="ci" style="flex:3" type="text" value="${escA(s.desc)}" data-f="desc" data-i="${i}"><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
+    </div>`
+);
+
+// ── GRADE BREAKDOWN ──
+dyn('grade-breakdown','Grade Breakdown','5 assignments — add, remove, adjust weights',
+  {rows:[
+    {name:'Assignment 1',weight:20,notes:''},
+    {name:'Assignment 2',weight:20,notes:''},
+    {name:'Assignment 3',weight:20,notes:''},
+    {name:'Assignment 4',weight:20,notes:''},
+    {name:'Assignment 5',weight:20,notes:''}
+  ]},
+  st => {
+    const total = st.rows.reduce((s,r)=>s+Number(r.weight),0);
+    const trs = st.rows.map(r=>{
+      const w=Math.max(0,Math.min(100,Number(r.weight)));
+      return `      <tr style="border-bottom: 1px solid #E0E0E0;">
+        <td style="padding: 14px 18px; font-weight: 600; font-size: 14px; color: #000000; font-family: 'Montserrat', Arial, sans-serif;">${esc(r.name)}</td>
+        <td style="padding: 14px 18px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 140px; background-color: #E0E0E0; height: 8px; border-radius: 4px;"><div style="height: 8px; width: ${w}%; background-color: #FDB92A; border-radius: 4px;"></div></div>
+            <span style="font-weight: 700; font-size: 14px; color: #000000; font-family: 'Montserrat', Arial, sans-serif; white-space: nowrap;">${w}%</span>
+          </div>
+        </td>
+        <td style="padding: 14px 18px; font-size: 13px; color: #444444; font-family: 'Montserrat', Arial, sans-serif;">${esc(r.notes)}</td>
+      </tr>`;
+    }).join('\n');
+    return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0; border-radius: 12px; border: 1px solid #E0E0E0;">
+  <table style="width: 100%; border-collapse: collapse; font-family: 'Montserrat', Arial, sans-serif;">
+    <thead>
+      <tr style="background-color: #000000;">
+        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Montserrat', Arial, sans-serif;">Assignment</th>
+        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Montserrat', Arial, sans-serif; width: 220px;">Weight</th>
+        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Montserrat', Arial, sans-serif;">Notes</th>
+      </tr>
+    </thead>
+    <tbody>\n${trs}\n    </tbody>
+    <tfoot>
+      <tr style="background-color: #F5F5F5; border-top: 2px solid #000000;">
+        <td style="padding: 12px 18px; font-weight: 700; font-size: 14px; color: #000000; font-family: 'Montserrat', Arial, sans-serif;">Total</td>
+        <td style="padding: 12px 18px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 140px; background-color: #000000; height: 8px; border-radius: 4px;"></div>
+            <span style="font-weight: 700; font-size: 14px; color: #000000; font-family: 'Montserrat', Arial, sans-serif;">${total}%</span>
+          </div>
+        </td>
+        <td style="padding: 12px 18px; font-size: 13px; color: #8D8D8D; font-family: 'Montserrat', Arial, sans-serif;">Graded 0–5 / Pass–Fail</td>
+      </tr>
+    </tfoot>
+  </table>
+</div>`;
+  },
+  st => {
+    const total = st.rows.reduce((s,r)=>s+Number(r.weight),0);
+    const ok = total===100;
+    const ts = ok?'background:#1A3A1A;color:#90EE90':'background:#3A1A1A;color:#FF9999';
+    return `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Assignments (${st.rows.length})</span>
+      <div class="ctrl-actions">
+        <button class="ctrl-btn ctrl-btn-action" data-action="auto">⚡ Distribute evenly</button>
+        <button class="ctrl-btn ctrl-btn-add" data-action="add">+ Add</button>
+        <div class="ctrl-total" style="${ts}">Total: ${total}%</div>
+      </div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row" style="padding:3px 14px 2px">
+        <span class="ctrl-num"></span>
+        <span class="ctrl-col-hdr" style="flex:3">Name</span>
+        <span class="ctrl-col-hdr" style="width:52px;margin-left:6px">Weight</span>
+        <span style="width:12px"></span>
+        <span class="ctrl-col-hdr" style="flex:2;margin-left:6px">Notes</span>
+        <span style="width:24px"></span>
+      </div>
+      ${st.rows.map((r,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci" style="flex:3" type="text" value="${escA(r.name)}" data-f="name" data-i="${i}" placeholder="Assignment name"><input class="ci ci-sm" type="number" value="${r.weight}" data-f="weight" data-i="${i}" min="0" max="100"><span style="font-size:10px;color:#555;flex-shrink:0">%</span><input class="ci" style="flex:2" type="text" value="${escA(r.notes)}" data-f="notes" data-i="${i}" placeholder="Notes"><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
+    </div>`;
+  }
+);
+
+// ── COMPARISON TABLE ──
+dyn('comparison-table','Comparison Table','Concepts compared across shared criteria',
+  {col1:'Option A', col2:'Option B', rows:[
+    ['Aspect 1','Value for A','Value for B'],
+    ['Aspect 2','Value for A','Value for B'],
+    ['Aspect 3','Value for A','Value for B']
+  ]},
+  st => {
+    const trs = st.rows.map(r=>`    <tr style="border-bottom: 1px solid #E0E0E0;">
+      <td style="padding: 12px 16px; font-weight: 600; font-size: 13px; color: #000000; background-color: #FAFAFA; font-family: 'Montserrat', Arial, sans-serif; width:30%;">${esc(r[0])}</td>
+      <td style="padding: 12px 16px; font-size: 13px; color: #1A1A1A; line-height: 1.5; font-family: 'Montserrat', Arial, sans-serif;">${esc(r[1])}</td>
+      <td style="padding: 12px 16px; font-size: 13px; color: #1A1A1A; line-height: 1.5; font-family: 'Montserrat', Arial, sans-serif;">${esc(r[2])}</td>
+    </tr>`).join('\n');
+    return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 16px 0; border: 1px solid #E0E0E0; border-radius: 12px;">
+  <table style="width: 100%; border-collapse: collapse; font-family: 'Montserrat', Arial, sans-serif;">
+    <thead>
+      <tr style="background-color: #000000;">
+        <th style="padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #555555; font-family: 'Montserrat', Arial, sans-serif; width:30%;">Aspect</th>
+        <th style="padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #FDB92A; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.col1)}</th>
+        <th style="padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 700; color: #1DBED0; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.col2)}</th>
+      </tr>
+    </thead>
+    <tbody>\n${trs}\n    </tbody>
+  </table>
+</div>`;
+  },
+  st => `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Comparison Table</span>
+      <div class="ctrl-actions"><button class="ctrl-btn ctrl-btn-add" data-action="add">+ Add Row</button></div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row" style="padding:5px 14px;border-bottom:1px solid #1E1E1E;margin-bottom:3px">
+        <span class="ctrl-num"></span>
+        <span style="font-size:10px;color:#FDB92A;font-weight:700;flex:2;font-family:var(--ui)">Col 1 name</span>
+        <input class="ci" style="flex:2" type="text" value="${escA(st.col1)}" data-f="col1-hdr" placeholder="Column 1 name">
+        <input class="ci" style="flex:2" type="text" value="${escA(st.col2)}" data-f="col2-hdr" placeholder="Column 2 name">
+        <span style="width:24px"></span>
+      </div>
+      <div class="ctrl-row" style="padding:3px 14px 2px">
+        <span class="ctrl-num"></span>
+        <span class="ctrl-col-hdr" style="flex:2">Aspect</span>
+        <span class="ctrl-col-hdr" style="flex:2;margin-left:6px">${escA(st.col1)}</span>
+        <span class="ctrl-col-hdr" style="flex:2;margin-left:6px">${escA(st.col2)}</span>
+        <span style="width:24px"></span>
+      </div>
+      ${st.rows.map((r,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci" style="flex:2" type="text" value="${escA(r[0])}" data-f="aspect" data-i="${i}" placeholder="Aspect"><input class="ci" style="flex:2" type="text" value="${escA(r[1])}" data-f="c1" data-i="${i}"><input class="ci" style="flex:2" type="text" value="${escA(r[2])}" data-f="c2" data-i="${i}"><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
+    </div>`
+);
+
+// ── PROS / CONS ──
+dyn('pros-cons','Pros / Cons','Editable pros and cons lists',
+  {pros:['Pro one.','Pro two.','Pro three.'], cons:['Con one.','Con two.','Con three.']},
+  st => {
+    const pi = st.pros.map(p=>`      <li style="display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: #1A1A1A; line-height: 1.6; margin-bottom: 8px; font-family: 'Montserrat', Arial, sans-serif;"><span style="color: #A6CE39; font-weight: 700; flex-shrink: 0; font-size: 16px; line-height: 1.4;">+</span>${esc(p)}</li>`).join('\n');
+    const ci = st.cons.map(c=>`      <li style="display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: #1A1A1A; line-height: 1.6; margin-bottom: 8px; font-family: 'Montserrat', Arial, sans-serif;"><span style="color: #8D8D8D; font-weight: 700; flex-shrink: 0; font-size: 16px; line-height: 1.4;">−</span>${esc(c)}</li>`).join('\n');
+    return `<div style="display: flex; gap: 16px; flex-wrap: wrap; margin: 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
+  <div style="flex: 1 1 240px; border: 1px solid #E0E0E0; border-top: 4px solid #A6CE39; border-radius: 0 0 10px 10px;">
+    <div style="padding: 12px 16px; border-bottom: 1px solid #E0E0E0; background-color: #F2F9E8;"><p style="font-size: 12px; font-weight: 700; color: #5A7A1A; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Pros</p></div>
+    <ul style="list-style: none; padding: 14px 16px; margin: 0;">\n${pi}\n    </ul>
+  </div>
+  <div style="flex: 1 1 240px; border: 1px solid #E0E0E0; border-top: 4px solid #E0E0E0; border-radius: 0 0 10px 10px;">
+    <div style="padding: 12px 16px; border-bottom: 1px solid #E0E0E0; background-color: #F5F5F5;"><p style="font-size: 12px; font-weight: 700; color: #444444; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Cons</p></div>
+    <ul style="list-style: none; padding: 14px 16px; margin: 0;">\n${ci}\n    </ul>
+  </div>
+</div>`;
+  },
+  st => `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Pros &amp; Cons</span>
+      <div class="ctrl-actions">
+        <button class="ctrl-btn ctrl-btn-add" data-action="add-pro">+ Pro</button>
+        <button class="ctrl-btn ctrl-btn-add" data-action="add-con">+ Con</button>
+      </div>
+    </div>
+    <div class="ctrl-rows" style="display:flex">
+      <div style="flex:1;border-right:1px solid #1E1E1E">
+        <div style="padding:3px 14px 2px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#5A7A1A">Pros</div>
+        ${st.pros.map((p,i)=>`<div class="ctrl-row"><input class="ci ci-grow" type="text" value="${escA(p)}" data-f="pro" data-i="${i}"><button class="ctrl-btn-x" data-action="rm-pro" data-i="${i}">×</button></div>`).join('')}
+      </div>
+      <div style="flex:1">
+        <div style="padding:3px 14px 2px;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666">Cons</div>
+        ${st.cons.map((c,i)=>`<div class="ctrl-row"><input class="ci ci-grow" type="text" value="${escA(c)}" data-f="con" data-i="${i}"><button class="ctrl-btn-x" data-action="rm-con" data-i="${i}">×</button></div>`).join('')}
+      </div>
+    </div>`
+);
+
+// ── TIMELINE ──
+dyn('timeline','Timeline','Chronological events — add or remove',
+  {events:[
+    {year:'1972',title:'Pong released',desc:'Atari releases Pong, one of the first commercially successful arcade games.'},
+    {year:'1985',title:'Super Mario Bros.',desc:'Nintendo releases Super Mario Bros., defining the platformer genre and reviving the home console market.'},
+    {year:'1993',title:'DOOM',desc:'id Software releases DOOM, pioneering the first-person shooter genre and popularising online multiplayer.'},
+    {year:'2007',title:'iPhone launched',desc:'Apple launches the iPhone, kickstarting the mobile gaming era and opening gaming to a mass global audience.'}
+  ]},
+  st => {
+    const items = st.events.map((e,i)=>{
+      const last = i===st.events.length-1;
+      return `  <div style="display: flex; gap: 0; font-family: 'Montserrat', Arial, sans-serif;">
+    <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 32px;">
+      <div style="width: 14px; height: 14px; background-color: #FDB92A; border-radius: 50%; flex-shrink: 0; margin-top: 4px;"></div>
+      ${last?'':'<div style="width: 2px; flex: 1; background-color: #E0E0E0; min-height: 20px;"></div>'}
+    </div>
+    <div style="padding: 0 0 ${last?'0':'22px'} 14px;">
+      <p style="font-size: 11px; font-weight: 700; color: #FDB92A; margin: 0 0 2px 0; letter-spacing: 1px; font-family: 'Montserrat', Arial, sans-serif;">${esc(e.year)}</p>
+      <p style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 4px 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(e.title)}</p>
+      <p style="font-size: 13px; color: #444444; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">${esc(e.desc)}</p>
+    </div>
+  </div>`;
+    }).join('\n');
+    return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0;">\n${items}\n</div>`;
+  },
+  st => `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Events (${st.events.length})</span>
+      <div class="ctrl-actions"><button class="ctrl-btn ctrl-btn-add" data-action="add">+ Add Event</button></div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row" style="padding:3px 14px 2px">
+        <span class="ctrl-num"></span>
+        <span class="ctrl-col-hdr ci-year">Year</span>
+        <span class="ctrl-col-hdr" style="flex:2;margin-left:6px">Title</span>
+        <span class="ctrl-col-hdr" style="flex:3;margin-left:6px">Description</span>
+        <span style="width:24px"></span>
+      </div>
+      ${st.events.map((e,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci ci-year" type="text" value="${escA(e.year)}" data-f="year" data-i="${i}" placeholder="Year"><input class="ci" style="flex:2" type="text" value="${escA(e.title)}" data-f="title" data-i="${i}" placeholder="Title"><input class="ci" style="flex:3" type="text" value="${escA(e.desc)}" data-f="desc" data-i="${i}" placeholder="Description"><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
+    </div>`
+);
+
+// ════════════════════════════════════
+// ENGINE
+// ════════════════════════════════════
+const states = {};
+let cur = null;
+
+function getState(id) {
+  if (!states[id]) states[id] = clone(C[id].def);
+  return states[id];
+}
+
+function load(id) {
+  cur = id;
+  const comp = C[id];
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  const nav = document.querySelector(`.nav-item[data-id="${id}"]`);
+  if (nav) { nav.classList.add('active'); nav.scrollIntoView({block:'nearest'}); }
+  document.getElementById('comp-title').textContent = comp.name;
+  document.getElementById('comp-desc').textContent = '— ' + comp.desc;
+  document.getElementById('btn-copy').style.display = '';
+  document.getElementById('btn-reset').style.display = '';
+  document.getElementById('editor-panel').style.display = 'flex';
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('preview-frame').style.display = 'block';
+  const cp = document.getElementById('controls-panel');
+  if (comp.static) {
+    cp.style.display = 'none';
+    setEditor(comp.code);
+  } else {
+    cp.style.display = 'flex'; cp.style.flexDirection = 'column';
+    cp.innerHTML = comp.ctrl(getState(id));
+    const code = comp.gen(getState(id));
+    const preview = comp.preview ? comp.preview(getState(id)) : code;
+    setEditor(code, preview);
+  }
+}
+
+function setEditor(code, previewCode) {
+  document.getElementById('code-editor').value = code;
+  renderPreview(previewCode || code);
+}
+
+let _blobUrl = null;
+function renderPreview(code) {
+  const frame = document.getElementById('preview-frame');
+  if (_blobUrl) { URL.revokeObjectURL(_blobUrl); _blobUrl = null; }
+  const blob = new Blob([OPEN + code + CLOSE], {type: 'text/html'});
+  _blobUrl = URL.createObjectURL(blob);
+  frame.src = _blobUrl;
+}
+
+function regen() {
+  if (!cur || C[cur].static) return;
+  const st = getState(cur);
+  document.getElementById('controls-panel').innerHTML = C[cur].ctrl(st);
+  const code = C[cur].gen(st);
+  const preview = C[cur].preview ? C[cur].preview(st) : code;
+  setEditor(code, preview);
+}
+
+// Controls input
+document.getElementById('controls-panel').addEventListener('input', e => {
+  if (!cur || C[cur].static) return;
+  const el = e.target; const f = el.dataset.f; const i = parseInt(el.dataset.i);
+  const st = getState(cur);
+
+  if (cur === 'grade-breakdown') {
+    if (f==='name') st.rows[i].name=el.value;
+    else if (f==='weight') st.rows[i].weight=Math.max(0,Math.min(100,parseInt(el.value)||0));
+    else if (f==='notes') st.rows[i].notes=el.value;
+  } else if (cur==='step-list') {
+    if (f==='title') st.steps[i].title=el.value;
+    else if (f==='desc') st.steps[i].desc=el.value;
+  } else if (cur==='timeline') {
+    if (f==='year') st.events[i].year=el.value;
+    else if (f==='title') st.events[i].title=el.value;
+    else if (f==='desc') st.events[i].desc=el.value;
+  } else if (cur==='comparison-table') {
+    if (f==='col1-hdr') st.col1=el.value;
+    else if (f==='col2-hdr') st.col2=el.value;
+    else if (f==='aspect') st.rows[i][0]=el.value;
+    else if (f==='c1') st.rows[i][1]=el.value;
+    else if (f==='c2') st.rows[i][2]=el.value;
+  } else if (cur==='pros-cons') {
+    if (f==='pro') st.pros[i]=el.value;
+    else if (f==='con') st.cons[i]=el.value;
+  } else if (cur==='youtube-single') {
+    if (f==='url') st.url=el.value;
+    else if (f==='caption') st.caption=el.value;
+  } else if (cur==='yt-playlist-iframe') {
+    if (f==='url') st.url=el.value;
+    else if (f==='caption') st.caption=el.value;
+  } else if (cur==='yt-playlist-grid') {
+    if (f==='heading') st.heading=el.value;
+    else if (f==='vurl') st.videos[i].url=el.value;
+    else if (f==='vtitle') st.videos[i].title=el.value;
+    else if (f==='vdur') st.videos[i].duration=el.value;
+  }
+
+  // Full regen for YouTube to refresh ID badges
+  if (cur==='youtube-single' || cur==='yt-playlist-iframe' || cur==='yt-playlist-grid') {
+    regen(); return;
+  }
+
+  // Update preview + code without full regen (preserves focus)
+  const code = C[cur].gen(st);
+  document.getElementById('code-editor').value = code;
+  renderPreview(code);
+
+  // Update total pill only for grade
+  if (cur==='grade-breakdown' && f==='weight') {
+    const t = st.rows.reduce((s,r)=>s+Number(r.weight),0);
+    const pill = document.querySelector('.ctrl-total');
+    if (pill) { const ok=t===100; pill.textContent=`Total: ${t}%`; pill.style.background=ok?'#1A3A1A':'#3A1A1A'; pill.style.color=ok?'#90EE90':'#FF9999'; }
+  }
+});
+
+// Controls button clicks
+document.getElementById('controls-panel').addEventListener('click', e => {
+  if (!cur || C[cur].static) return;
+  const btn = e.target.closest('[data-action]'); if (!btn) return;
+  const act = btn.dataset.action; const i = parseInt(btn.dataset.i);
+  const st = getState(cur);
+
+  if (cur==='grade-breakdown') {
+    if (act==='add') st.rows.push({name:`Assignment ${st.rows.length+1}`,weight:0,notes:''});
+    else if (act==='remove' && st.rows.length>1) st.rows.splice(i,1);
+    else if (act==='auto') { const n=st.rows.length,b=Math.floor(100/n),r=100-b*n; st.rows.forEach((row,j)=>row.weight=b+(j<r?1:0)); }
+  } else if (cur==='step-list') {
+    if (act==='add') st.steps.push({title:`Step ${st.steps.length+1}`,desc:'Step description here.'});
+    else if (act==='remove' && st.steps.length>1) st.steps.splice(i,1);
+  } else if (cur==='timeline') {
+    if (act==='add') st.events.push({year:'YEAR',title:'Event Title',desc:'Event description here.'});
+    else if (act==='remove' && st.events.length>1) st.events.splice(i,1);
+  } else if (cur==='comparison-table') {
+    if (act==='add') st.rows.push(['Aspect','Value A','Value B']);
+    else if (act==='remove' && st.rows.length>1) st.rows.splice(i,1);
+  } else if (cur==='pros-cons') {
+    if (act==='add-pro') st.pros.push('New pro here.');
+    else if (act==='add-con') st.cons.push('New con here.');
+    else if (act==='rm-pro' && st.pros.length>1) st.pros.splice(i,1);
+    else if (act==='rm-con' && st.cons.length>1) st.cons.splice(i,1);
+  } else if (cur==='yt-playlist-grid') {
+    if (act==='add') st.videos.push({url:'',title:`Video Title ${st.videos.length+1}`,duration:'0:00'});
+    else if (act==='remove' && st.videos.length>1) st.videos.splice(i,1);
+  }
+  regen();
+});
+
+// Editor manual typing
+document.getElementById('code-editor').addEventListener('input', function() { renderPreview(this.value); });
+
+// Tab key
+document.getElementById('code-editor').addEventListener('keydown', function(e) {
+  if (e.key==='Tab') { e.preventDefault(); const s=this.selectionStart; this.value=this.value.substring(0,s)+'  '+this.value.substring(this.selectionEnd); this.selectionStart=this.selectionEnd=s+2; renderPreview(this.value); }
+});
+
+// Copy
+function copyCode() {
+  navigator.clipboard.writeText(document.getElementById('code-editor').value).then(()=>{
+    const t=document.getElementById('toast'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000);
+  });
+}
+
+// Reset
+function resetComp() {
+  if (!cur) return;
+  if (C[cur].static) { setEditor(C[cur].code); }
+  else { states[cur]=clone(C[cur].def); regen(); }
+}
+
+// Resize
+const rh=document.getElementById('resize-handle'), ep=document.getElementById('editor-panel');
+let rs=false,sy=0,sh=0;
+rh.addEventListener('mousedown',e=>{rs=true;sy=e.clientY;sh=ep.offsetHeight;document.body.style.cursor='row-resize';document.body.style.userSelect='none';});
+document.addEventListener('mousemove',e=>{if(!rs)return;ep.style.height=Math.max(80,Math.min(600,sh+sy-e.clientY))+'px';});
+document.addEventListener('mouseup',()=>{if(rs){rs=false;document.body.style.cursor='';document.body.style.userSelect='';}});
+</script>
+</body>
+</html>
