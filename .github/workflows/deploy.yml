@@ -23,6 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Generate component manifest
+        run: python3 -c "import os,json; ids=sorted(f[:-3] for f in os.listdir('components') if f.endswith('.js')); print(json.dumps(ids))" > components/manifest.json
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .
