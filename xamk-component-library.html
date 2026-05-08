@@ -106,6 +106,7 @@
     <div class="nav-group">Layout</div>
     <div class="nav-item" data-id="hero" onclick="load('hero')"><span class="nav-icon">🖼</span>Hero Banner</div>
     <div class="nav-item" data-id="section-header" onclick="load('section-header')"><span class="nav-icon">📌</span>Section Header</div>
+    <div class="nav-item" data-id="text-block" onclick="load('text-block')"><span class="nav-icon">📄</span>Text Block</div>
     <div class="nav-item" data-id="two-column" onclick="load('two-column')"><span class="nav-icon">⬛</span>Two-Column Text</div>
     <div class="nav-group">Callouts</div>
     <div class="nav-item" data-id="callout-info" onclick="load('callout-info')"><span class="nav-icon">ℹ️</span>Info</div>
@@ -137,12 +138,22 @@
     <div class="nav-group">Course Info</div>
     <div class="nav-item" data-id="course-info" onclick="load('course-info')"><span class="nav-icon">🎓</span>Course Info Block</div>
     <div class="nav-item" data-id="grade-breakdown" onclick="load('grade-breakdown')"><span class="nav-icon">📊</span>Grade Breakdown</div>
+    <div class="nav-item" data-id="grading-rubric" onclick="load('grading-rubric')"><span class="nav-icon">📋</span>Grading Rubric</div>
+    <div class="nav-item" data-id="weekly-overview" onclick="load('weekly-overview')"><span class="nav-icon">📆</span>Weekly Overview</div>
+    <div class="nav-item" data-id="schedule" onclick="load('schedule')"><span class="nav-icon">🗓</span>Schedule</div>
+    <div class="nav-group">Communication</div>
+    <div class="nav-item" data-id="notice-banner" onclick="load('notice-banner')"><span class="nav-icon">📣</span>Notice Banner</div>
+    <div class="nav-item" data-id="cta-button" onclick="load('cta-button')"><span class="nav-icon">🔘</span>CTA Button</div>
+    <div class="nav-item" data-id="faq" onclick="load('faq')"><span class="nav-icon">❓</span>FAQ</div>
+    <div class="nav-group">Reference</div>
+    <div class="nav-item" data-id="glossary" onclick="load('glossary')"><span class="nav-icon">📚</span>Glossary</div>
     <div class="nav-group">Timeline</div>
     <div class="nav-item" data-id="timeline" onclick="load('timeline')"><span class="nav-icon">📅</span>Timeline</div>
     <div class="nav-group">Media</div>
     <div class="nav-item" data-id="youtube-single" onclick="load('youtube-single')"><span class="nav-icon">▶️</span>YouTube Single</div>
     <div class="nav-item" data-id="yt-playlist-iframe" onclick="load('yt-playlist-iframe')"><span class="nav-icon">📋</span>Playlist (iframe)</div>
     <div class="nav-item" data-id="yt-playlist-grid" onclick="load('yt-playlist-grid')"><span class="nav-icon">🎬</span>Playlist (thumbnails)</div>
+    <div class="nav-item" data-id="generic-embed" onclick="load('generic-embed')"><span class="nav-icon">🔗</span>Generic Embed</div>
   </div>
 </nav>
 
@@ -208,15 +219,43 @@ stat('hero','Hero Banner','Top of a course or section page',
   </div>
 </div>`);
 
-stat('section-header','Section Header','Major content break with yellow accent',
-`<div style="display: flex; align-items: center; gap: 12px; margin: 32px 0 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
-  <div style="width: 5px; height: 28px; background-color: #FDB92A; border-radius: 3px; flex-shrink: 0;"></div>
-  <h2 style="color: #000000; font-size: 20px; font-weight: 700; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Section Title Here</h2>
-</div>
-<div style="display: flex; align-items: center; gap: 10px; margin: 24px 0 12px 0; font-family: 'Montserrat', Arial, sans-serif;">
-  <div style="width: 4px; height: 22px; background-color: #FDB92A; border-radius: 2px; flex-shrink: 0;"></div>
-  <h3 style="color: #000000; font-size: 16px; font-weight: 700; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Sub-section Title Here</h3>
-</div>`);
+dyn('section-header','Section Header','Yellow-bar heading — H2 or H3',
+  {level:'h2', text:'Section Title Here'},
+  st => {
+    if (st.level === 'h3') {
+      return '<div style="display: flex; align-items: center; gap: 10px; margin: 24px 0 12px 0; font-family: \'Montserrat\', Arial, sans-serif;">'
+        + '<div style="width: 4px; height: 22px; background-color: #FDB92A; border-radius: 2px; flex-shrink: 0;"></div>'
+        + '<h3 style="color: #000000; font-size: 16px; font-weight: 700; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.text) + '</h3>'
+        + '</div>';
+    }
+    if (st.level === 'h4') {
+      return '<div style="display: flex; align-items: center; gap: 8px; margin: 20px 0 10px 0; font-family: \'Montserrat\', Arial, sans-serif;">'
+        + '<div style="width: 3px; height: 18px; background-color: #FDB92A; border-radius: 2px; flex-shrink: 0;"></div>'
+        + '<h4 style="color: #000000; font-size: 14px; font-weight: 700; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.text) + '</h4>'
+        + '</div>';
+    }
+    return '<div style="display: flex; align-items: center; gap: 12px; margin: 32px 0 16px 0; font-family: \'Montserrat\', Arial, sans-serif;">'
+      + '<div style="width: 5px; height: 28px; background-color: #FDB92A; border-radius: 3px; flex-shrink: 0;"></div>'
+      + '<h2 style="color: #000000; font-size: 20px; font-weight: 700; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.text) + '</h2>'
+      + '</div>';
+  },
+  st => `
+    <div class="ctrl-header"><span class="ctrl-label">Section Header</span></div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:80px;font-family:var(--ui)">Level</span>
+        <select class="ci" data-f="level">
+          <option value="h2" ${st.level==='h2'?'selected':''}>H2 — Section</option>
+          <option value="h3" ${st.level==='h3'?'selected':''}>H3 — Sub-section</option>
+          <option value="h4" ${st.level==='h4'?'selected':''}>H4 — Small</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:80px;font-family:var(--ui)">Text</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.text)}" data-f="shtext" placeholder="Heading text">
+      </div>
+    </div>`
+);
 
 stat('two-column','Two-Column Text','Side-by-side content',
 `<div style="display: flex; gap: 24px; flex-wrap: wrap; margin: 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
@@ -229,6 +268,78 @@ stat('two-column','Two-Column Text','Side-by-side content',
     <p style="font-size: 14px; color: #1A1A1A; line-height: 1.7; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">Right column content goes here.</p>
   </div>
 </div>`);
+
+// ── TEXT BLOCK ──
+dyn('text-block','Text Block','Body text with optional header and background',
+  {
+    heading: 'Section Heading',
+    headingLevel: 'h2',
+    text: 'Your content goes here. Write as much as you need — this component is for general body text, introductions, instructions, or any prose that doesn\'t fit a more specific component.',
+    background: 'none'
+  },
+  st => {
+    const bgStyles = {
+      none:   'margin: 24px 0;',
+      subtle: 'margin: 24px 0; background-color: #F5F5F5; border-radius: 10px; padding: 24px 28px;',
+      yellow: 'margin: 24px 0; background-color: #FFF8E6; border-left: 5px solid #FDB92A; border-radius: 0 10px 10px 0; padding: 24px 28px;',
+      dark:   'margin: 24px 0; background-color: #000000; border-radius: 10px; padding: 24px 28px;'
+    };
+    const wrapStyle = bgStyles[st.background] || bgStyles.none;
+    const bodyColor = st.background === 'dark' ? '#CCCCCC' : '#1A1A1A';
+    const barColor  = st.background === 'dark' ? '#FDB92A' : '#FDB92A';
+    const textColor = st.background === 'dark' ? '#FFFFFF' : '#000000';
+
+    let headingHtml = '';
+    if (st.headingLevel === 'h2' && st.heading) {
+      headingHtml = '<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">'
+        + '<div style="width: 5px; height: 28px; background-color: ' + barColor + '; border-radius: 3px; flex-shrink: 0;"></div>'
+        + '<h2 style="font-size: 20px; font-weight: 700; color: ' + textColor + '; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.heading) + '</h2>'
+        + '</div>';
+    } else if (st.headingLevel === 'h3' && st.heading) {
+      headingHtml = '<div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">'
+        + '<div style="width: 4px; height: 22px; background-color: ' + barColor + '; border-radius: 2px; flex-shrink: 0;"></div>'
+        + '<h3 style="font-size: 16px; font-weight: 700; color: ' + textColor + '; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.heading) + '</h3>'
+        + '</div>';
+    } else if (st.headingLevel === 'h4' && st.heading) {
+      headingHtml = '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">'
+        + '<div style="width: 3px; height: 18px; background-color: ' + barColor + '; border-radius: 2px; flex-shrink: 0;"></div>'
+        + '<h4 style="font-size: 14px; font-weight: 700; color: ' + textColor + '; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.heading) + '</h4>'
+        + '</div>';
+    }
+
+    return '<div style="font-family: \'Montserrat\', Arial, sans-serif; ' + wrapStyle + '">'
+      + headingHtml
+      + '<p style="font-size: 14px; color: ' + bodyColor + '; line-height: 1.7; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.text) + '</p>'
+      + '</div>';
+  },
+  st => `
+    <div class="ctrl-header"><span class="ctrl-label">Text Block</span></div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Heading</span>
+        <select class="ci" style="width:90px;flex-shrink:0" data-f="headingLevel">
+          <option value="h2" ${st.headingLevel==='h2'?'selected':''}>H2 (section)</option>
+          <option value="h3" ${st.headingLevel==='h3'?'selected':''}>H3 (sub)</option>
+          <option value="h4" ${st.headingLevel==='h4'?'selected':''}>H4 (small)</option>
+          <option value="none" ${st.headingLevel==='none'?'selected':''}>No heading</option>
+        </select>
+        <input class="ci ci-grow" type="text" value="${escA(st.heading)}" data-f="heading" placeholder="Heading text" ${st.headingLevel==='none'?'disabled style="opacity:0.3"':''}>
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Background</span>
+        <select class="ci" data-f="background">
+          <option value="none" ${st.background==='none'?'selected':''}>None (transparent)</option>
+          <option value="subtle" ${st.background==='subtle'?'selected':''}>Subtle grey</option>
+          <option value="yellow" ${st.background==='yellow'?'selected':''}>Yellow accent</option>
+          <option value="dark" ${st.background==='dark'?'selected':''}>Dark (black)</option>
+        </select>
+      </div>
+      <div class="ctrl-row" style="align-items:flex-start">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;padding-top:6px;font-family:var(--ui)">Text</span>
+        <textarea class="ci ci-grow" data-f="text" rows="5" style="resize:vertical;line-height:1.5">${escA(st.text)}</textarea>
+      </div>
+    </div>`
+);
 
 stat('callout-info','Callout — Info','Teal informational note',
 `<div style="background-color: #E8F9FB; border-left: 5px solid #1DBED0; border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 16px 0; font-family: 'Montserrat', Arial, sans-serif;">
@@ -445,25 +556,36 @@ stat('game-example','Game Example Card','Concept illustrated by a real game',
   </div>
 </div>`);
 
-stat('course-info','Course Info Block','Teacher, objectives, goals, evaluation',
-`<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0; border: 1px solid #E0E0E0; border-radius: 12px;">
+dyn('course-info','Course Info Block','Teacher, objectives, goals, evaluation',
+  {
+    courseCode: 'COURSE CODE',
+    courseName: 'Course Name Here',
+    credits: '5',
+    compulsory: '5',
+    optional: '2',
+    teacherName: 'TEACHER NAME',
+    teacherEmail: 'firstname.lastname@xamk.fi',
+    replyDays: '2'
+  },
+  st => {
+    return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0; border: 1px solid #E0E0E0; border-radius: 12px;">
   <div style="background-color: #000000; padding: 20px 24px; border-radius: 12px 12px 0 0;">
-    <p style="color: #FDB92A; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">COURSE CODE &nbsp;·&nbsp; X CREDITS</p>
-    <h2 style="color: #FFFFFF; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; font-family: 'Montserrat', Arial, sans-serif;">Course Name Here</h2>
+    <p style="color: #FDB92A; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.courseCode)}</p>
+    <h2 style="color: #FFFFFF; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.courseName)}</h2>
     <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-      <span style="background-color: #FDB92A; color: #000000; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">X credits</span>
-      <span style="background-color: #333333; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">X compulsory assignments</span>
-      <span style="background-color: #333333; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">X optional assignments</span>
+      <span style="background-color: #FDB92A; color: #000000; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.credits)} credits</span>
+      <span style="background-color: #333333; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.compulsory)} compulsory assignments</span>
+      <span style="background-color: #333333; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.optional)} optional assignments</span>
     </div>
   </div>
   <div style="padding: 20px 24px; border-bottom: 1px solid #E0E0E0; background-color: #FAFAFA;">
     <p style="font-size: 11px; font-weight: 700; color: #8D8D8D; letter-spacing: 1.5px; text-transform: uppercase; margin: 0 0 14px 0; font-family: 'Montserrat', Arial, sans-serif;">Teacher</p>
     <div style="display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap;">
-      <img src="https://placehold.co/80/FDB92A/000000/png?text=Photo" alt="Teacher — replace with real photo" style="width: 80px; height: 80px; border-radius: 8px; flex-shrink: 0; display: block;">
+      <img src="https://placehold.co/80/FDB92A/000000/png?text=Photo" alt="${esc(st.teacherName)} — replace with real photo" style="width: 80px; height: 80px; border-radius: 8px; flex-shrink: 0; display: block;">
       <div>
-        <p style="font-size: 16px; font-weight: 700; color: #000000; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">TEACHER NAME</p>
-        <p style="font-size: 13px; color: #444444; margin: 0 0 4px 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Email">📧</span> &nbsp;<a href="mailto:firstname.lastname@xamk.fi" style="color: #000000; text-decoration: underline; font-family: 'Montserrat', Arial, sans-serif;">firstname.lastname@xamk.fi</a></p>
-        <p style="font-size: 13px; color: #444444; margin: 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Response time">🕐</span> &nbsp;I reply within 2 working days.</p>
+        <p style="font-size: 16px; font-weight: 700; color: #000000; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.teacherName)}</p>
+        <p style="font-size: 13px; color: #444444; margin: 0 0 4px 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Email">📧</span> &nbsp;<a href="mailto:${escA(st.teacherEmail)}" style="color: #000000; text-decoration: underline; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.teacherEmail)}</a></p>
+        <p style="font-size: 13px; color: #444444; margin: 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Response time">🕐</span> &nbsp;I reply within ${esc(st.replyDays)} working days.</p>
       </div>
     </div>
   </div>
@@ -489,7 +611,57 @@ stat('course-info','Course Info Block','Teacher, objectives, goals, evaluation',
       <li style="font-size: 14px; color: #1A1A1A; line-height: 1.7; font-family: 'Montserrat', Arial, sans-serif;">CRITERION TWO</li>
     </ul>
   </div>
-</div>`);
+</div>`;
+  },
+  st => `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Course Info</span>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row" style="border-bottom:1px solid #1E1E1E;padding-bottom:8px;margin-bottom:2px">
+        <span style="font-size:9px;color:#FDB92A;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:var(--ui);flex-shrink:0;width:90px">Header</span>
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Course code</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.courseCode)}" data-f="courseCode" placeholder="e.g. GD001 · Autumn 2025">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Course name</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.courseName)}" data-f="courseName" placeholder="Full course name">
+      </div>
+      <div class="ctrl-row" style="border-bottom:1px solid #1E1E1E;padding-bottom:8px;margin-bottom:2px;margin-top:6px">
+        <span style="font-size:9px;color:#FDB92A;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:var(--ui);flex-shrink:0;width:90px">Pills</span>
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Credits</span>
+        <input class="ci" style="width:60px" type="text" value="${escA(st.credits)}" data-f="credits" placeholder="5">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Compulsory</span>
+        <input class="ci" style="width:60px" type="text" value="${escA(st.compulsory)}" data-f="compulsory" placeholder="5">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Optional</span>
+        <input class="ci" style="width:60px" type="text" value="${escA(st.optional)}" data-f="optional" placeholder="2">
+      </div>
+      <div class="ctrl-row" style="border-bottom:1px solid #1E1E1E;padding-bottom:8px;margin-bottom:2px;margin-top:6px">
+        <span style="font-size:9px;color:#FDB92A;font-weight:700;letter-spacing:1px;text-transform:uppercase;font-family:var(--ui);flex-shrink:0;width:90px">Teacher</span>
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Name</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.teacherName)}" data-f="teacherName" placeholder="First Last">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Email</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.teacherEmail)}" data-f="teacherEmail" placeholder="firstname.lastname@xamk.fi">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:90px;font-family:var(--ui)">Reply days</span>
+        <input class="ci" style="width:50px" type="number" value="${escA(st.replyDays)}" data-f="replyDays" min="1" max="14">
+        <span style="font-size:11px;color:#555;font-family:var(--ui)">working days</span>
+      </div>
+    </div>`
+);
 
 // ---
 // YOUTUBE URL HELPERS
@@ -940,17 +1112,21 @@ dyn('assignment', 'Assignment', 'Assignment card with specs, deadline, and AI li
       ? st.deadline.split('-').reverse().join('.')
       : 'No deadline set';
     const typePill = st.type === 'group'
-      ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#1A1A2E;color:#8888FF;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #2A2A4A;font-family:'Montserrat',Arial,sans-serif;">👥 Group</span>`
-      : `<span style="display:inline-flex;align-items:center;gap:5px;background:#1A1A1A;color:#CCCCCC;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #333;font-family:'Montserrat',Arial,sans-serif;">👤 Individual</span>`;
+      ? `<span style="background-color: #333333; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">👥 Group</span>`
+      : `<span style="background-color: #333333; color: #FFFFFF; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">👤 Individual</span>`;
     const mandatoryPill = st.mandatory === 'optional'
-      ? `<span style="background:#F5F5F5;color:#8D8D8D;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid #E0E0E0;font-family:'Montserrat',Arial,sans-serif;">Optional</span>`
-      : `<span style="background:#000000;color:#FDB92A;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;font-family:'Montserrat',Arial,sans-serif;">Mandatory</span>`;
+      ? `<span style="background-color: #333333; color: #888888; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">Optional</span>`
+      : `<span style="background-color: #FDB92A; color: #000000; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; font-family: 'Montserrat', Arial, sans-serif;">Mandatory</span>`;
     return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0; border: 1px solid #E0E0E0; border-radius: 12px;">
 
   <!-- HEADER -->
-  <div style="background-color: #000000; padding: 18px 24px; border-radius: 12px 12px 0 0; display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
-    <div style="background-color: #FDB92A; color: #000000; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; letter-spacing: 1px; text-transform: uppercase; flex-shrink: 0; font-family: 'Montserrat', Arial, sans-serif;">Assignment ${esc(st.number)}</div>
-    <h3 style="color: #FFFFFF; font-size: 18px; font-weight: 700; margin: 0; font-family: 'Montserrat', Arial, sans-serif; flex: 1;">${esc(st.title)}</h3>
+  <div style="background-color: #000000; padding: 20px 24px; border-radius: 12px 12px 0 0;">
+    <p style="color: #FDB92A; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0 0 6px 0; font-family: 'Montserrat', Arial, sans-serif;">Assignment ${esc(st.number)}</p>
+    <h3 style="color: #FFFFFF; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.title)}</h3>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+      ${mandatoryPill}
+      ${typePill}
+    </div>
   </div>
 
   <!-- SPECS -->
@@ -970,12 +1146,6 @@ dyn('assignment', 'Assignment', 'Assignment card with specs, deadline, and AI li
         <p style="font-size: 13px; font-weight: 700; color: #000000; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">${deadlineDisplay}</p>
       </div>
     </div>
-
-    <!-- Type -->
-    ${typePill}
-
-    <!-- Mandatory -->
-    ${mandatoryPill}
 
     <!-- AI Traffic Light -->
     <div style="display: flex; align-items: center; gap: 10px; background-color: ${ai.bg}; border: 1px solid ${ai.border}; border-radius: 8px; padding: 8px 14px;">
@@ -1183,6 +1353,410 @@ dyn('collapsible','Collapsible Drawer','Expandable section using &lt;details&gt;
     </div>`
 );
 
+// ── NOTICE BANNER ──
+dyn('notice-banner','Notice Banner','Full-width announcement bar',
+  {variant:'warning', title:'Important Notice', message:'Add your announcement here. Use this for deadline changes, room updates, or urgent course news.'},
+  st => {
+    const variants = {
+      warning:  {bg:'#FFF8E6', border:'#FDB92A', label:'#8A6200', icon:'⚠️', aria:'Warning'},
+      info:     {bg:'#E8F9FB', border:'#1DBED0', label:'#117A85', icon:'ℹ️', aria:'Info'},
+      urgent:   {bg:'#FFF0F0', border:'#E53935', label:'#B71C1C', icon:'🚨', aria:'Urgent'},
+      success:  {bg:'#F2F9E8', border:'#A6CE39', label:'#5A7A1A', icon:'✅', aria:'Success'}
+    };
+    const v = variants[st.variant] || variants.warning;
+    const titleHtml = st.title ? '<p style="font-size: 14px; font-weight: 700; color: ' + v.label + '; margin: 0 0 4px 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.title) + '</p>' : '';
+    return '<div style="background-color: ' + v.bg + '; border-left: 5px solid ' + v.border + '; border-radius: 0 10px 10px 0; padding: 16px 20px; margin: 16px 0; font-family: \'Montserrat\', Arial, sans-serif;">'
+      + '<p style="font-weight: 700; font-size: 13px; color: ' + v.label + '; margin: 0 0 8px 0; font-family: \'Montserrat\', Arial, sans-serif;"><span role="img" aria-label="' + v.aria + '">' + v.icon + '</span> &nbsp;' + v.aria + '</p>'
+      + titleHtml
+      + '<p style="font-size: 14px; color: #1A1A1A; margin: 0; line-height: 1.7; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.message) + '</p>'
+      + '</div>';
+  },
+  st => `
+    <div class="ctrl-header"><span class="ctrl-label">Notice Banner</span></div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:80px;font-family:var(--ui)">Variant</span>
+        <select class="ci" data-f="variant">
+          <option value="warning" ${st.variant==='warning'?'selected':''}>⚠️ Warning</option>
+          <option value="info" ${st.variant==='info'?'selected':''}>ℹ️ Info</option>
+          <option value="urgent" ${st.variant==='urgent'?'selected':''}>🚨 Urgent</option>
+          <option value="success" ${st.variant==='success'?'selected':''}>✅ Success</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:80px;font-family:var(--ui)">Title</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.title)}" data-f="title" placeholder="Optional bold title">
+      </div>
+      <div class="ctrl-row" style="align-items:flex-start">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:80px;padding-top:6px;font-family:var(--ui)">Message</span>
+        <textarea class="ci ci-grow" data-f="message" rows="3" style="resize:vertical;line-height:1.5">${escA(st.message)}</textarea>
+      </div>
+    </div>`
+);
+
+// ── CTA BUTTON ──
+dyn('cta-button','CTA Button','Prominent link or call to action',
+  {text:'Open Assignment', url:'#', style:'primary', note:''},
+  st => {
+    const styles = {
+      primary:   'display: inline-block; background-color: #FDB92A; color: #000000; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-family: \'Montserrat\', Arial, sans-serif;',
+      secondary: 'display: inline-block; background-color: #000000; color: #FFFFFF; font-size: 14px; font-weight: 700; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-family: \'Montserrat\', Arial, sans-serif;',
+      outline:   'display: inline-block; background-color: transparent; color: #000000; font-size: 14px; font-weight: 700; padding: 11px 27px; border-radius: 8px; text-decoration: none; border: 2px solid #000000; font-family: \'Montserrat\', Arial, sans-serif;'
+    };
+    const noteHtml = st.note ? '<p style="font-size: 12px; color: #8D8D8D; margin: 10px 0 0 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.note) + '</p>' : '';
+    return '<div style="margin: 24px 0; font-family: \'Montserrat\', Arial, sans-serif;">'
+      + '<a href="' + escA(st.url) + '" target="_blank" rel="noopener noreferrer" style="' + (styles[st.style] || styles.primary) + '">' + esc(st.text) + '</a>'
+      + noteHtml
+      + '</div>';
+  },
+  st => `
+    <div class="ctrl-header"><span class="ctrl-label">CTA Button</span></div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:80px;font-family:var(--ui)">Style</span>
+        <select class="ci" data-f="style">
+          <option value="primary" ${st.style==='primary'?'selected':''}>Primary (yellow)</option>
+          <option value="secondary" ${st.style==='secondary'?'selected':''}>Secondary (black)</option>
+          <option value="outline" ${st.style==='outline'?'selected':''}>Outline</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:80px;font-family:var(--ui)">Label</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.text)}" data-f="text" placeholder="Button label">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:80px;font-family:var(--ui)">URL</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.url)}" data-f="url" placeholder="https://…">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:80px;font-family:var(--ui)">Note</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.note)}" data-f="note" placeholder="Optional small text below button">
+      </div>
+    </div>`
+);
+
+// ── FAQ ──
+dyn('faq','FAQ','Stack of collapsible question and answer pairs',
+  {items:[
+    {q:'What is the submission format?', a:'Submit your work as a PDF through the assignment link above. Make sure your name and student number are visible on the first page.'},
+    {q:'Can I work in a group?', a:'This is an individual assignment. You may discuss ideas with peers but all submitted work must be your own.'},
+    {q:'What happens if I miss the deadline?', a:'Contact the teacher as soon as possible. Late submissions may be accepted at the teacher\'s discretion.'}
+  ]},
+  st => {
+    const items = st.items.map(item =>
+      '<details style="border: 1px solid #E0E0E0; border-radius: 10px; margin-bottom: 8px; font-family: \'Montserrat\', Arial, sans-serif;">'
+      + '<summary style="background-color: #000000; color: #FFFFFF; padding: 14px 20px; border-radius: 9px; cursor: pointer; font-weight: 600; font-size: 14px; list-style: none; display: flex; align-items: center; justify-content: space-between; font-family: \'Montserrat\', Arial, sans-serif;">'
+      + esc(item.q)
+      + '<span style="color: #FDB92A; font-size: 16px; flex-shrink: 0; margin-left: 12px;">&#9660;</span>'
+      + '</summary>'
+      + '<div style="padding: 16px 20px; font-family: \'Montserrat\', Arial, sans-serif;">'
+      + '<p style="font-size: 14px; color: #1A1A1A; line-height: 1.7; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(item.a) + '</p>'
+      + '</div>'
+      + '</details>'
+    ).join('\n');
+    return '<div style="font-family: \'Montserrat\', Arial, sans-serif; margin: 24px 0;">\n' + items + '\n</div>';
+  },
+  st => {
+    const rows = st.items.map((item, i) => `
+      <div class="ctrl-row" style="align-items:flex-start;border-bottom:1px solid #1A1A1A;padding-bottom:8px;margin-bottom:4px">
+        <span class="ctrl-num">${i+1}</span>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px">
+          <input class="ci ci-grow" type="text" value="${escA(item.q)}" data-f="q" data-i="${i}" placeholder="Question">
+          <textarea class="ci ci-grow" data-f="a" data-i="${i}" rows="2" style="resize:vertical;line-height:1.4">${escA(item.a)}</textarea>
+        </div>
+        <button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button>
+      </div>`).join('');
+    return `
+    <div class="ctrl-header">
+      <span class="ctrl-label">FAQ (${st.items.length} items)</span>
+      <div class="ctrl-actions"><button class="ctrl-btn ctrl-btn-add" data-action="add">+ Add Question</button></div>
+    </div>
+    <div class="ctrl-rows">${rows}</div>`;
+  }
+);
+
+// ── GLOSSARY ──
+dyn('glossary','Glossary','Alphabetical term and definition list',
+  {title:'Glossary', terms:[
+    {term:'Game Mechanic', def:'A rule or system that defines how a player interacts with the game world.'},
+    {term:'Game Loop', def:'The core repeating cycle of challenges and rewards that keeps players engaged.'},
+    {term:'MDA Framework', def:'Mechanics, Dynamics, Aesthetics — a formal approach to understanding and designing games, introduced by Hunicke, LeBlanc, and Zubek.'}
+  ]},
+  st => {
+    const rows = st.terms.map(t =>
+      '<div style="display: flex; gap: 0; border-bottom: 1px solid #E0E0E0; font-family: \'Montserrat\', Arial, sans-serif;">'
+      + '<div style="min-width: 180px; width: 180px; padding: 14px 16px; background-color: #FAFAFA; flex-shrink: 0;">'
+      + '<p style="font-size: 13px; font-weight: 700; color: #000000; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(t.term) + '</p>'
+      + '</div>'
+      + '<div style="flex: 1; padding: 14px 16px;">'
+      + '<p style="font-size: 13px; color: #1A1A1A; line-height: 1.6; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(t.def) + '</p>'
+      + '</div>'
+      + '</div>'
+    ).join('\n');
+    return '<div style="font-family: \'Montserrat\', Arial, sans-serif; margin: 24px 0;">'
+      + '<div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">'
+      + '<div style="width: 5px; height: 28px; background-color: #FDB92A; border-radius: 3px; flex-shrink: 0;"></div>'
+      + '<h2 style="color: #000000; font-size: 20px; font-weight: 700; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.title) + '</h2>'
+      + '</div>'
+      + '<div style="border: 1px solid #E0E0E0; border-radius: 12px; overflow: hidden;">'
+      + rows
+      + '</div>'
+      + '</div>';
+  },
+  st => {
+    const rows = st.terms.map((t, i) => `
+      <div class="ctrl-row">
+        <span class="ctrl-num">${i+1}</span>
+        <input class="ci" style="width:160px;flex-shrink:0" type="text" value="${escA(t.term)}" data-f="term" data-i="${i}" placeholder="Term">
+        <input class="ci ci-grow" type="text" value="${escA(t.def)}" data-f="def" data-i="${i}" placeholder="Definition">
+        <button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button>
+      </div>`).join('');
+    return `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Glossary (${st.terms.length} terms)</span>
+      <div class="ctrl-actions"><button class="ctrl-btn ctrl-btn-add" data-action="add">+ Add Term</button></div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row" style="padding:5px 14px;border-bottom:1px solid #1E1E1E">
+        <span class="ctrl-num"></span>
+        <input class="ci ci-grow" type="text" value="${escA(st.title)}" data-f="title" placeholder="Section heading">
+      </div>
+      ${rows}
+    </div>`;
+  }
+);
+
+// ── GRADING RUBRIC ──
+dyn('grading-rubric','Grading Rubric','Criteria mapped to grade levels',
+  {
+    cols: ['0–1 (Fail)', '2–3 (Pass)', '4–5 (Excellent)'],
+    rows: [
+      {criterion:'Use of professional vocabulary', cells:['Vocabulary is missing or incorrect.','Uses basic terms correctly most of the time.','Uses professional vocabulary systematically and accurately.']},
+      {criterion:'Analysis and argumentation', cells:['Little or no analysis provided.','Some analysis with partial reasoning.','Thorough analysis with well-structured arguments.']},
+      {criterion:'Application of design frameworks', cells:['Frameworks not applied or misunderstood.','Frameworks applied with some errors.','Frameworks applied correctly and critically evaluated.']}
+    ]
+  },
+  st => {
+    const ths = st.cols.map(c =>
+      '<th style="text-align: left; padding: 12px 14px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(c) + '</th>'
+    ).join('');
+    const trs = st.rows.map(row => {
+      const cells = row.cells.map(c =>
+        '<td style="padding: 12px 14px; font-size: 13px; color: #1A1A1A; line-height: 1.5; vertical-align: top; font-family: \'Montserrat\', Arial, sans-serif; border-left: 1px solid #E0E0E0;">' + esc(c) + '</td>'
+      ).join('');
+      return '<tr style="border-bottom: 1px solid #E0E0E0;">'
+        + '<td style="padding: 12px 14px; font-size: 13px; font-weight: 700; color: #000000; vertical-align: top; min-width: 160px; font-family: \'Montserrat\', Arial, sans-serif; background-color: #FAFAFA;">' + esc(row.criterion) + '</td>'
+        + cells + '</tr>';
+    }).join('');
+    return '<div style="font-family: \'Montserrat\', Arial, sans-serif; margin: 24px 0; border: 1px solid #E0E0E0; border-radius: 12px;">'
+      + '<table style="width: 100%; border-collapse: collapse; font-family: \'Montserrat\', Arial, sans-serif;">'
+      + '<thead><tr style="background-color: #000000;">'
+      + '<th style="text-align: left; padding: 12px 14px; color: #666666; font-weight: 700; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; font-family: \'Montserrat\', Arial, sans-serif;">Criterion</th>'
+      + ths
+      + '</tr></thead>'
+      + '<tbody>' + trs + '</tbody>'
+      + '</table></div>';
+  },
+  st => {
+    const headerInputs = st.cols.map((c, i) =>
+      '<input class="ci" style="flex:1;min-width:80px" type="text" value="' + escA(c) + '" data-f="col" data-i="' + i + '">'
+    ).join('');
+    const dataRows = st.rows.map((row, r) => {
+      const cells = row.cells.map((cell, c) =>
+        '<input class="ci" style="flex:1;min-width:80px" type="text" value="' + escA(cell) + '" data-f="rcell" data-r="' + r + '" data-c="' + c + '">'
+      ).join('');
+      return '<div class="ctrl-row"><span class="ctrl-num">' + (r+1) + '</span>'
+        + '<input class="ci" style="width:140px;flex-shrink:0" type="text" value="' + escA(row.criterion) + '" data-f="crit" data-r="' + r + '" placeholder="Criterion">'
+        + cells
+        + '<button class="ctrl-btn-x" data-action="rm-row" data-i="' + r + '">×</button></div>';
+    }).join('');
+    return `
+    <div class="ctrl-header">
+      <span class="ctrl-label">${st.rows.length} criteria × ${st.cols.length} grade levels</span>
+      <div class="ctrl-actions">
+        <button class="ctrl-btn ctrl-btn-action" data-action="rm-col">− Level</button>
+        <button class="ctrl-btn ctrl-btn-add" data-action="add-col">+ Level</button>
+        <button class="ctrl-btn ctrl-btn-add" data-action="add-row">+ Criterion</button>
+      </div>
+    </div>
+    <div class="ctrl-rows" style="overflow-x:auto">
+      <div class="ctrl-row" style="border-bottom:1px solid #333;padding-bottom:4px">
+        <span class="ctrl-num" style="color:#FDB92A">H</span>
+        <span style="width:140px;flex-shrink:0;font-size:9px;color:#555;font-family:var(--ui);padding-top:6px">Criterion</span>
+        ${headerInputs}
+        <span style="width:28px"></span>
+      </div>
+      ${dataRows}
+    </div>`;
+  }
+);
+
+// ── WEEKLY OVERVIEW ──
+dyn('weekly-overview','Weekly Overview','Single week learning plan',
+  {
+    week: '1',
+    title: 'Introduction to Game Design',
+    items: [
+      {type:'topic',   label:'What is a game? Definitions and components'},
+      {type:'read',    label:'Schell, J. (2008) The Art of Game Design — Chapter 1'},
+      {type:'watch',   label:'MDA Framework overview (YouTube, 12 min)'},
+      {type:'task',    label:'Complete the pre-course survey before next week'},
+      {type:'deadline',label:'No submissions due this week'}
+    ]
+  },
+  st => {
+    const icons = {topic:'📖', read:'🔗', watch:'🎥', task:'✏️', deadline:'📅'};
+    const labels = {topic:'Topic', read:'Read', watch:'Watch', task:'Task', deadline:'Deadline'};
+    const rows = st.items.map(item => {
+      const icon = icons[item.type] || '📌';
+      const label = labels[item.type] || 'Item';
+      return '<div style="display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid #F0F0F0; font-family: \'Montserrat\', Arial, sans-serif;">'
+        + '<span style="font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #8D8D8D; min-width: 58px; padding-top: 3px; flex-shrink: 0; font-family: \'Montserrat\', Arial, sans-serif;">'
+        + '<span role="img" aria-label="' + label + '" style="font-size:13px;margin-right:4px">' + icon + '</span>'
+        + label + '</span>'
+        + '<p style="font-size: 14px; color: #1A1A1A; margin: 0; line-height: 1.5; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(item.label) + '</p>'
+        + '</div>';
+    }).join('');
+    return '<div style="font-family: \'Montserrat\', Arial, sans-serif; margin: 24px 0; border: 1px solid #E0E0E0; border-radius: 12px;">'
+      + '<div style="background-color: #000000; padding: 16px 22px; border-radius: 12px 12px 0 0; display: flex; align-items: baseline; gap: 14px;">'
+      + '<p style="color: #FDB92A; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin: 0; flex-shrink: 0; font-family: \'Montserrat\', Arial, sans-serif;">Week ' + esc(st.week) + '</p>'
+      + '<h3 style="color: #FFFFFF; font-size: 16px; font-weight: 700; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.title) + '</h3>'
+      + '</div>'
+      + '<div style="padding: 6px 22px 12px 22px;">' + rows + '</div>'
+      + '</div>';
+  },
+  st => {
+    const typeOptions = ['topic','read','watch','task','deadline'].map(t =>
+      '<option value="' + t + '">' + t.charAt(0).toUpperCase()+t.slice(1) + '</option>'
+    ).join('');
+    const rows = st.items.map((item, i) => `
+      <div class="ctrl-row">
+        <span class="ctrl-num">${i+1}</span>
+        <select class="ci" style="width:88px;flex-shrink:0" data-f="wtype" data-i="${i}">
+          <option value="topic" ${item.type==='topic'?'selected':''}>Topic</option>
+          <option value="read" ${item.type==='read'?'selected':''}>Read</option>
+          <option value="watch" ${item.type==='watch'?'selected':''}>Watch</option>
+          <option value="task" ${item.type==='task'?'selected':''}>Task</option>
+          <option value="deadline" ${item.type==='deadline'?'selected':''}>Deadline</option>
+        </select>
+        <input class="ci ci-grow" type="text" value="${escA(item.label)}" data-f="wlabel" data-i="${i}" placeholder="Description">
+        <button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button>
+      </div>`).join('');
+    return `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Weekly Overview</span>
+      <div class="ctrl-actions"><button class="ctrl-btn ctrl-btn-add" data-action="add">+ Add Item</button></div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row" style="border-bottom:1px solid #1E1E1E;padding-bottom:6px;margin-bottom:2px">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:50px;font-family:var(--ui)">Week</span>
+        <input class="ci" style="width:50px" type="text" value="${escA(st.week)}" data-f="week" placeholder="1">
+        <span style="font-size:11px;color:#666;flex-shrink:0;margin:0 8px;font-family:var(--ui)">Title</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.title)}" data-f="wtitle" placeholder="Week title">
+      </div>
+      ${rows}
+    </div>`;
+  }
+);
+
+// ── SCHEDULE ──
+dyn('schedule','Schedule','Session timetable with date, time, topic, location',
+  {title:'Course Schedule', rows:[
+    {date:'Mon 6.1.', time:'10:00–12:00', topic:'Introduction & course overview', location:'Room A101'},
+    {date:'Mon 13.1.', time:'10:00–12:00', topic:'Game mechanics and dynamics', location:'Room A101'},
+    {date:'Mon 20.1.', time:'10:00–12:00', topic:'Workshop: Prototyping', location:'Design Lab'},
+    {date:'Mon 27.1.', time:'10:00–12:00', topic:'Presentations', location:'Auditorium'}
+  ]},
+  st => {
+    const trs = st.rows.map((row, ri) => {
+      const bg = ri % 2 === 1 ? 'background-color: #FAFAFA;' : '';
+      return '<tr style="border-bottom: 1px solid #E0E0E0;' + bg + '">'
+        + '<td style="padding: 12px 16px; font-size: 13px; font-weight: 700; color: #000000; white-space: nowrap; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(row.date) + '</td>'
+        + '<td style="padding: 12px 16px; font-size: 13px; color: #444444; white-space: nowrap; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(row.time) + '</td>'
+        + '<td style="padding: 12px 16px; font-size: 13px; color: #1A1A1A; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(row.topic) + '</td>'
+        + '<td style="padding: 12px 16px; font-size: 13px; color: #8D8D8D; white-space: nowrap; font-family: \'Montserrat\', Arial, sans-serif;"><span role="img" aria-label="Location">📍</span> ' + esc(row.location) + '</td>'
+        + '</tr>';
+    }).join('');
+    return '<div style="font-family: \'Montserrat\', Arial, sans-serif; margin: 24px 0; border: 1px solid #E0E0E0; border-radius: 12px;">'
+      + '<table style="width: 100%; border-collapse: collapse; font-family: \'Montserrat\', Arial, sans-serif;">'
+      + '<thead><tr style="background-color: #000000;">'
+      + '<th style="text-align:left;padding:12px 16px;color:#FDB92A;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-family:\'Montserrat\',Arial,sans-serif;">Date</th>'
+      + '<th style="text-align:left;padding:12px 16px;color:#FDB92A;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-family:\'Montserrat\',Arial,sans-serif;">Time</th>'
+      + '<th style="text-align:left;padding:12px 16px;color:#FDB92A;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-family:\'Montserrat\',Arial,sans-serif;">Topic</th>'
+      + '<th style="text-align:left;padding:12px 16px;color:#FDB92A;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-family:\'Montserrat\',Arial,sans-serif;">Location</th>'
+      + '</tr></thead>'
+      + '<tbody>' + trs + '</tbody>'
+      + '</table></div>';
+  },
+  st => {
+    const rows = st.rows.map((row, i) => `
+      <div class="ctrl-row">
+        <span class="ctrl-num">${i+1}</span>
+        <input class="ci" style="width:82px;flex-shrink:0" type="text" value="${escA(row.date)}" data-f="sdate" data-i="${i}" placeholder="Mon 6.1.">
+        <input class="ci" style="width:90px;flex-shrink:0" type="text" value="${escA(row.time)}" data-f="stime" data-i="${i}" placeholder="10:00–12:00">
+        <input class="ci ci-grow" type="text" value="${escA(row.topic)}" data-f="stopic" data-i="${i}" placeholder="Topic">
+        <input class="ci" style="width:100px;flex-shrink:0" type="text" value="${escA(row.location)}" data-f="sloc" data-i="${i}" placeholder="Room">
+        <button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button>
+      </div>`).join('');
+    return `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Schedule (${st.rows.length} sessions)</span>
+      <div class="ctrl-actions"><button class="ctrl-btn ctrl-btn-add" data-action="add">+ Add Session</button></div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row" style="border-bottom:1px solid #1E1E1E;padding-bottom:6px;margin-bottom:2px">
+        <span class="ctrl-num"></span>
+        <input class="ci ci-grow" type="text" value="${escA(st.title)}" data-f="stitle" placeholder="Table title (optional)">
+      </div>
+      <div class="ctrl-row" style="padding:3px 14px 2px">
+        <span class="ctrl-num"></span>
+        <span class="ctrl-col-hdr" style="width:82px">Date</span>
+        <span class="ctrl-col-hdr" style="width:90px;margin-left:6px">Time</span>
+        <span class="ctrl-col-hdr" style="flex:1;margin-left:6px">Topic</span>
+        <span class="ctrl-col-hdr" style="width:100px;margin-left:6px">Location</span>
+        <span style="width:24px"></span>
+      </div>
+      ${rows}
+    </div>`;
+  }
+);
+
+// ── GENERIC EMBED ──
+dyn('generic-embed','Generic Embed','iframe for Padlet, Miro, Figma, H5P, etc.',
+  {url:'', title:'Embedded content', height:'500'},
+  st => {
+    const src = st.url || '';
+    if (!src) {
+      return '<div style="width:100%;height:200px;background:#111;border-radius:10px;display:flex;align-items:center;justify-content:center;margin:24px 0;font-family:\'Montserrat\',Arial,sans-serif;">'
+        + '<p style="color:#555;font-size:13px;font-family:\'Montserrat\',Arial,sans-serif;">Paste a URL in the controls above</p>'
+        + '</div>';
+    }
+    return '<figure style="margin: 24px 0; font-family: \'Montserrat\', Arial, sans-serif;">'
+      + '<iframe src="' + escA(src) + '" title="' + esc(st.title) + '" width="100%" height="' + esc(st.height) + '" frameborder="0" allowfullscreen style="display: block; border-radius: 10px; border: 1px solid #E0E0E0;"></iframe>'
+      + '<figcaption style="font-size: 13px; color: #8D8D8D; margin-top: 8px; text-align: center; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.title) + '</figcaption>'
+      + '</figure>';
+  },
+  st => `
+    <div class="ctrl-header">
+      <span class="ctrl-label">Generic Embed</span>
+      <div class="ctrl-actions"><span style="font-size:10px;color:#555;font-family:var(--ui)">Works with Padlet, Miro, Figma, H5P, Genially…</span></div>
+    </div>
+    <div class="ctrl-rows">
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:68px;font-family:var(--ui)">URL</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.url)}" data-f="eurl" placeholder="https://padlet.com/… or embed URL">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:68px;font-family:var(--ui)">Title</span>
+        <input class="ci ci-grow" type="text" value="${escA(st.title)}" data-f="etitle" placeholder="Describe the embedded content">
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:68px;font-family:var(--ui)">Height (px)</span>
+        <input class="ci" style="width:80px" type="number" value="${escA(st.height)}" data-f="eheight" min="200" max="1200" step="50">
+      </div>
+    </div>`
+);
+
 // ---
 // ENGINE
 // ---
@@ -1288,6 +1862,58 @@ document.getElementById('controls-panel').addEventListener('input', e => {
   } else if (cur==='collapsible') {
     if (f==='title') st.title=el.value;
     else if (f==='content') st.content=el.value;
+  } else if (cur==='course-info') {
+    if (f==='courseCode') st.courseCode=el.value;
+    else if (f==='courseName') st.courseName=el.value;
+    else if (f==='credits') st.credits=el.value;
+    else if (f==='compulsory') st.compulsory=el.value;
+    else if (f==='optional') st.optional=el.value;
+    else if (f==='teacherName') st.teacherName=el.value;
+    else if (f==='teacherEmail') st.teacherEmail=el.value;
+    else if (f==='replyDays') st.replyDays=el.value;
+  } else if (cur==='section-header') {
+    if (f==='level') st.level=el.value;
+    else if (f==='shtext') st.text=el.value;
+  } else if (cur==='text-block') {
+    if (f==='heading') st.heading=el.value;
+    else if (f==='headingLevel') st.headingLevel=el.value;
+    else if (f==='text') st.text=el.value;
+    else if (f==='background') st.background=el.value;
+  } else if (cur==='notice-banner') {
+    if (f==='variant') st.variant=el.value;
+    else if (f==='title') st.title=el.value;
+    else if (f==='message') st.message=el.value;
+  } else if (cur==='cta-button') {
+    if (f==='style') st.style=el.value;
+    else if (f==='text') st.text=el.value;
+    else if (f==='url') st.url=el.value;
+    else if (f==='note') st.note=el.value;
+  } else if (cur==='faq') {
+    if (f==='q') st.items[i].q=el.value;
+    else if (f==='a') st.items[i].a=el.value;
+  } else if (cur==='glossary') {
+    if (f==='title') st.title=el.value;
+    else if (f==='term') st.terms[i].term=el.value;
+    else if (f==='def') st.terms[i].def=el.value;
+  } else if (cur==='grading-rubric') {
+    if (f==='col') st.cols[i]=el.value;
+    else if (f==='crit') st.rows[parseInt(el.dataset.r)].criterion=el.value;
+    else if (f==='rcell') st.rows[parseInt(el.dataset.r)].cells[parseInt(el.dataset.c)]=el.value;
+  } else if (cur==='weekly-overview') {
+    if (f==='week') st.week=el.value;
+    else if (f==='wtitle') st.title=el.value;
+    else if (f==='wtype') st.items[i].type=el.value;
+    else if (f==='wlabel') st.items[i].label=el.value;
+  } else if (cur==='schedule') {
+    if (f==='stitle') st.title=el.value;
+    else if (f==='sdate') st.rows[i].date=el.value;
+    else if (f==='stime') st.rows[i].time=el.value;
+    else if (f==='stopic') st.rows[i].topic=el.value;
+    else if (f==='sloc') st.rows[i].location=el.value;
+  } else if (cur==='generic-embed') {
+    if (f==='eurl') st.url=el.value;
+    else if (f==='etitle') st.title=el.value;
+    else if (f==='eheight') st.height=el.value;
   } else if (cur==='assignment') {
     if (f==='number') st.number=el.value;
     else if (f==='title') st.title=el.value;
@@ -1352,6 +1978,23 @@ document.getElementById('controls-panel').addEventListener('click', e => {
     else if (act==='rm-row' && st.rows.length>1) st.rows.splice(i,1);
     else if (act==='add-col') { st.headers.push(`Header ${st.headers.length+1}`); st.rows.forEach(r=>r.push('Cell')); }
     else if (act==='rm-col' && st.headers.length>1) { st.headers.pop(); st.rows.forEach(r=>r.pop()); }
+  } else if (cur==='faq') {
+    if (act==='add') st.items.push({q:'New question?', a:'Answer here.'});
+    else if (act==='remove' && st.items.length>1) st.items.splice(i,1);
+  } else if (cur==='glossary') {
+    if (act==='add') st.terms.push({term:'New Term', def:'Definition here.'});
+    else if (act==='remove' && st.terms.length>1) st.terms.splice(i,1);
+  } else if (cur==='grading-rubric') {
+    if (act==='add-row') st.rows.push({criterion:'New criterion', cells:st.cols.map(()=>'Description here.')});
+    else if (act==='rm-row' && st.rows.length>1) st.rows.splice(i,1);
+    else if (act==='add-col') { st.cols.push('New Level'); st.rows.forEach(r=>r.cells.push('Description here.')); }
+    else if (act==='rm-col' && st.cols.length>1) { st.cols.pop(); st.rows.forEach(r=>r.cells.pop()); }
+  } else if (cur==='weekly-overview') {
+    if (act==='add') st.items.push({type:'topic', label:'New item'});
+    else if (act==='remove' && st.items.length>1) st.items.splice(i,1);
+  } else if (cur==='schedule') {
+    if (act==='add') st.rows.push({date:'', time:'', topic:'', location:''});
+    else if (act==='remove' && st.rows.length>1) st.rows.splice(i,1);
   } else if (cur==='yt-playlist-grid') {
     if (act==='add') st.videos.push({url:'',title:`Video Title ${st.videos.length+1}`,duration:'0:00'});
     else if (act==='remove' && st.videos.length>1) st.videos.splice(i,1);
