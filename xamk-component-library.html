@@ -195,9 +195,9 @@ const C = {};
 function stat(id, name, desc, code) { C[id] = {name, desc, static:true, code}; }
 function dyn(id, name, desc, def, gen, ctrl, preview) { C[id] = {name, desc, static:false, def, gen, ctrl, preview}; }
 
-// ════════════════════════════════════
+// ---
 // STATIC COMPONENTS
-// ════════════════════════════════════
+// ---
 
 stat('hero','Hero Banner','Top of a course or section page',
 `<div style="background-color: #000000; padding: 40px 32px; border-radius: 12px; font-family: 'Montserrat', Arial, sans-serif; margin-bottom: 24px;">
@@ -491,9 +491,9 @@ stat('course-info','Course Info Block','Teacher, objectives, goals, evaluation',
   </div>
 </div>`);
 
-// ════════════════════════════════════
+// ---
 // YOUTUBE URL HELPERS
-// ════════════════════════════════════
+// ---
 function ytExtractUrl(input) {
   if (!input) return '';
   // If it looks like an iframe embed, pull the src attribute out first
@@ -674,9 +674,9 @@ ${cards}
     </div>`
 );
 
-// ════════════════════════════════════
+// ---
 // DYNAMIC COMPONENTS
-// ════════════════════════════════════
+// ---
 
 // ── STEP LIST ──
 dyn('step-list','Step List','Sequential steps — add or remove',
@@ -1047,10 +1047,11 @@ dyn('image-gallery','Image Gallery','Grid of images with captions',
   st => {
     const minW = st.columns == 3 ? '180px' : '260px';
     const cards = st.images.map(img => {
-      const src = img.src || `https://placehold.co/600x400/000000/FDB92A/png?text=${encodeURIComponent(img.alt||'Image')}`;
+      const src = img.src || 'https://placehold.co/600x400/000000/FDB92A/png?text=' + encodeURIComponent(img.alt || 'Image');
+      const figcap = img.caption ? '<figcaption style="font-size: 13px; color: #8D8D8D; margin-top: 8px; text-align: center; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(img.caption) + '</figcaption>' : '';
       return `  <figure style="flex: 1 1 ${minW}; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">
     <img src="${escA(src)}" alt="${esc(img.alt)}" style="width: 100%; height: auto; display: block; border-radius: 8px;">
-    ${img.caption ? `<figcaption style="font-size: 13px; color: #8D8D8D; margin-top: 8px; text-align: center; font-family: 'Montserrat', Arial, sans-serif;">${esc(img.caption)}</figcaption>` : ''}
+    ${figcap}
   </figure>`;
     }).join('\n');
     return `<div style="display: flex; flex-wrap: wrap; gap: 16px; margin: 24px 0; font-family: 'Montserrat', Arial, sans-serif;">\n${cards}\n</div>`;
@@ -1110,8 +1111,9 @@ dyn('data-table','Table','Data table with styled header',
       const bg = ri % 2 === 1 ? 'background-color: #FAFAFA;' : '';
       return `      <tr style="border-bottom: 1px solid #E0E0E0; ${bg}">\n${cells}\n      </tr>`;
     }).join('\n');
+    const cap = st.caption ? '<p style="font-size: 13px; font-weight: 700; color: #8D8D8D; padding: 10px 16px 0; margin: 0; font-family: \'Montserrat\', Arial, sans-serif;">' + esc(st.caption) + '</p>' : '';
     return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0; border: 1px solid #E0E0E0; border-radius: 12px;">
-  ${st.caption ? `<p style="font-size: 13px; font-weight: 700; color: #8D8D8D; padding: 10px 16px 0; margin: 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.caption)}</p>` : ''}
+  ${cap}
   <table style="width: 100%; border-collapse: collapse; font-family: 'Montserrat', Arial, sans-serif;">
     <thead>
       <tr style="background-color: #000000;">\n${ths}\n      </tr>
@@ -1181,7 +1183,10 @@ dyn('collapsible','Collapsible Drawer','Expandable section using &lt;details&gt;
     </div>`
 );
 
-// ════════════════════════════════════
+// ---
+// ENGINE
+// ---
+const states = {};
 let cur = null;
 
 function getState(id) {
@@ -1347,7 +1352,7 @@ document.getElementById('controls-panel').addEventListener('click', e => {
     else if (act==='rm-row' && st.rows.length>1) st.rows.splice(i,1);
     else if (act==='add-col') { st.headers.push(`Header ${st.headers.length+1}`); st.rows.forEach(r=>r.push('Cell')); }
     else if (act==='rm-col' && st.headers.length>1) { st.headers.pop(); st.rows.forEach(r=>r.pop()); }
-  }
+  } else if (cur==='yt-playlist-grid') {
     if (act==='add') st.videos.push({url:'',title:`Video Title ${st.videos.length+1}`,duration:'0:00'});
     else if (act==='remove' && st.videos.length>1) st.videos.splice(i,1);
   }
