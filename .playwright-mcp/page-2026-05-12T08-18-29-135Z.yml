@@ -1,0 +1,133 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: M
+        - generic [ref=e10]: Mickey's Library
+      - generic [ref=e11]: Moodle Component Library
+    - generic [ref=e12]:
+      - generic [ref=e24]: Layout
+      - generic [ref=e25] [cursor=pointer]:
+        - generic [ref=e26]: 🖼
+        - text: Hero Banner
+      - generic [ref=e27] [cursor=pointer]:
+        - generic [ref=e28]: 📌
+        - text: Section Header
+      - generic [ref=e29] [cursor=pointer]:
+        - generic [ref=e30]: ¶
+        - text: Text Section
+      - generic [ref=e31] [cursor=pointer]:
+        - generic [ref=e32]: ⬛
+        - text: Two-Column Text
+      - generic [ref=e33]: Callouts
+      - generic [ref=e34] [cursor=pointer]:
+        - generic [ref=e35]: 📌
+        - text: Callout — Important
+      - generic [ref=e36] [cursor=pointer]:
+        - generic [ref=e37]: ℹ️
+        - text: Callout — Info
+      - generic [ref=e38] [cursor=pointer]:
+        - generic [ref=e39]: 💡
+        - text: Callout — Tip
+      - generic [ref=e40] [cursor=pointer]:
+        - generic [ref=e41]: ⚠️
+        - text: Callout — Warning
+      - generic [ref=e42]: Cards
+      - generic [ref=e43] [cursor=pointer]:
+        - generic [ref=e44]: ⊟
+        - text: Card Grid (2-col)
+      - generic [ref=e45] [cursor=pointer]:
+        - generic [ref=e46]: ⊞
+        - text: Card Grid (3-col)
+      - generic [ref=e47] [cursor=pointer]:
+        - generic [ref=e48]: 🃏
+        - text: Info Card
+      - generic [ref=e49]: Lists
+      - generic [ref=e50] [cursor=pointer]:
+        - generic [ref=e51]: 📎
+        - text: Resource List
+      - generic [ref=e52] [cursor=pointer]:
+        - generic [ref=e53]: 🔢
+        - text: Step List
+      - generic [ref=e54]: Teaching
+      - generic [ref=e55] [cursor=pointer]:
+        - generic [ref=e56]: ⇌
+        - text: Comparison Table
+      - generic [ref=e57] [cursor=pointer]:
+        - generic [ref=e58]: 📖
+        - text: Definition Card
+      - generic [ref=e59] [cursor=pointer]:
+        - generic [ref=e60]: ✓✗
+        - text: Do / Don't
+      - generic [ref=e61] [cursor=pointer]:
+        - generic [ref=e62]: 🎮
+        - text: Game Example Card
+      - generic [ref=e63] [cursor=pointer]:
+        - generic [ref=e64]: 🖼
+        - text: Image + Caption
+      - generic [ref=e65] [cursor=pointer]:
+        - generic [ref=e66]: ⭐
+        - text: Key Takeaways
+      - generic [ref=e67] [cursor=pointer]:
+        - generic [ref=e68]: ⚖️
+        - text: Pros / Cons
+      - generic [ref=e69] [cursor=pointer]:
+        - generic [ref=e70]: 💬
+        - text: Quote Block
+      - generic [ref=e71] [cursor=pointer]:
+        - generic [ref=e72]: ◀▶
+        - text: Spectrum Bar
+      - generic [ref=e73]: Course Info
+      - generic [ref=e74] [cursor=pointer]:
+        - generic [ref=e75]: 📝
+        - text: Assignment Block
+      - generic [ref=e76] [cursor=pointer]:
+        - generic [ref=e77]: 🎓
+        - text: Course Info Block
+      - generic [ref=e78] [cursor=pointer]:
+        - generic [ref=e79]: 📊
+        - text: Grade Breakdown
+      - generic [ref=e80]: Timeline
+      - generic [ref=e81] [cursor=pointer]:
+        - generic [ref=e82]: 📅
+        - text: Timeline
+      - generic [ref=e83]: Media
+      - generic [ref=e84] [cursor=pointer]:
+        - generic [ref=e85]: 🎬
+        - text: Playlist (thumbnails)
+      - generic [ref=e86] [cursor=pointer]:
+        - generic [ref=e87]: 📋
+        - text: Playlist (iframe)
+      - generic [ref=e88] [cursor=pointer]:
+        - generic [ref=e89]: ▶️
+        - text: YouTube Single
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e15]:
+        - generic [ref=e16]: Text Section
+        - generic [ref=e90]: — Heading with body paragraph
+      - generic [ref=e91]:
+        - button "↺ Reset" [ref=e92] [cursor=pointer]
+        - button "Copy HTML" [ref=e93] [cursor=pointer]
+    - generic [ref=e94]:
+      - generic [ref=e96]: Text Section
+      - generic [ref=e98]:
+        - generic [ref=e99]: Level
+        - combobox [ref=e100]:
+          - option "H1"
+          - option "H2" [selected]
+          - option "H3"
+        - generic [ref=e101]: Title
+        - textbox "Section title" [ref=e102]: Section Title
+    - generic [ref=e17]:
+      - generic [ref=e18]: PREVIEW
+      - iframe [ref=e103]:
+        - generic [ref=f3e2]:
+          - heading "Section Title" [level=2] [ref=f3e3]
+          - paragraph [ref=f3e4]: Write your content here. This paragraph appears below the heading and supports any body copy for the section.
+    - generic [ref=e104]:
+      - generic [ref=e105]:
+        - generic [ref=e106]: HTML Source
+        - generic [ref=e107]: ● LIVE
+      - textbox [ref=e108]: "<div style=\"font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0 16px;\"> <h2 style=\"color: #111111; font-size: calc(0.9975rem + 1.17vw); font-weight: 700; margin: 0 0 10px 0; font-family: 'Montserrat', Arial, sans-serif;\">Section Title</h2> <p style=\"color: #333333; font-size: 1rem; line-height: 1.7; margin: 0; font-family: 'Montserrat', Arial, sans-serif;\">Write your content here. This paragraph appears below the heading and supports any body copy for the section.</p> </div>"
+  - generic: ✓ Copied to clipboard

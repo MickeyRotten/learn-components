@@ -1,0 +1,19 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e3]: M
+    - generic [ref=e5]: Loading…
+  - navigation [ref=e6]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]: M
+        - generic [ref=e10]: Mickey's Library
+      - generic [ref=e11]: Moodle Component Library
+  - generic [ref=e13]:
+    - generic [ref=e16]: Select a component
+    - generic [ref=e17]:
+      - generic [ref=e18]: PREVIEW
+      - generic [ref=e19]:
+        - generic [ref=e20]: M
+        - heading "Mickey's Moodle Components" [level=2] [ref=e21]
+        - paragraph [ref=e22]: Pick a component from the sidebar to preview, edit, and copy it into Moodle.
+  - generic: ✓ Copied to clipboard
