@@ -609,8 +609,9 @@ async function loadComponents() {
   const loaderText = document.getElementById('loader-text');
   const loader = document.getElementById('loader');
 
+  const cb = `?v=${Date.now()}`;
   try {
-    const cssRes = await fetch('moodle-base.css');
+    const cssRes = await fetch(`moodle-base.css${cb}`);
     const cssText = await cssRes.text();
     OPEN = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"><style>${cssText}<\/style></head><body>`;
   } catch(e) {
@@ -619,7 +620,7 @@ async function loadComponents() {
 
   let ids;
   try {
-    const res = await fetch('components/manifest.json');
+    const res = await fetch(`components/manifest.json${cb}`);
     ids = await res.json();
   } catch(e) {
     loaderText.textContent = 'Failed to load manifest';
@@ -632,7 +633,7 @@ async function loadComponents() {
   for (let idx = 0; idx < ids.length; idx++) {
     const id = ids[idx];
     try {
-      const res = await fetch(`components/${id}.js`);
+      const res = await fetch(`components/${id}.js${cb}`);
       const text = await res.text();
       new Function('register','esc','escA','ytVideoId','ytPlaylistId','ytThumb','ytIdBadge', text)(
         register, esc, escA, ytVideoId, ytPlaylistId, ytThumb, ytIdBadge
