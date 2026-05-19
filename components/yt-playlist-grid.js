@@ -1,6 +1,6 @@
 register({
   id: 'yt-playlist-grid',
-  name: 'Playlist (thumbnails)',
+  name: 'YouTube Playlist (thumbnails)',
   desc: 'Paste URLs — thumbnails auto-generate',
   group: 'Media',
   icon: '🎬',
@@ -17,13 +17,13 @@ register({
       return `    <a href="${href}" target="_blank" rel="noopener noreferrer" style="flex: 1 1 200px; text-decoration: none; background-color: #FFFFFF; border: 1px solid #E0E0E0; border-radius: 10px; display: block;">
       <img src="${thumb}" alt="${esc(v.title)}" style="width: 100%; display: block; border-radius: 10px 10px 0 0; height: auto;">
       <div style="padding: 10px 12px 12px 12px;">
-        <p style="font-size: 13px; font-weight: 600; color: #000000; margin: 0 0 4px 0; line-height: 1.4; font-family: 'Montserrat', Arial, sans-serif;">${esc(v.title)}</p>
-        <p style="font-size: 12px; color: #8D8D8D; margin: 0; font-family: 'Montserrat', Arial, sans-serif;"><span role="img" aria-label="Duration">⏱</span> ${esc(v.duration)}</p>
+        <p style="margin: 0 0 4px 0; line-height: 1.4">${esc(v.title)}</p>
+        <p style="margin: 0"><span role="img" aria-label="Duration">⏱</span> ${esc(v.duration)}</p>
       </div>
     </a>`;
     }).join('\n');
-    return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0;">
-  <h3 style="font-size: 16px; font-weight: 700; color: #000000; margin: 0 0 16px 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.heading)}</h3>
+    return `<div style="margin: 24px 0;">
+  <h3 style="margin: 0 0 16px 0">${esc(st.heading)}</h3>
   <div style="display: flex; flex-wrap: wrap; gap: 16px;">
 ${cards}
   </div>

@@ -1,6 +1,6 @@
 register({
   id: 'youtube-single',
-  name: 'YouTube Single',
+  name: 'YouTube',
   desc: 'Paste a YouTube URL to embed',
   group: 'Media',
   icon: '▶️',
@@ -8,11 +8,11 @@ register({
   gen: function(st) {
     const vid = ytVideoId(st.url);
     const src = vid ? `https://www.youtube.com/embed/${vid}` : '';
-    return `<figure style="margin: 24px 0; font-family: 'Montserrat', Arial, sans-serif;">
+    return `<figure style="margin: 24px 0;">
   ${src
     ? `<iframe width="100%" height="450" src="${src}" title="${esc(st.caption)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display: block; border-radius: 10px; background-color: #000000;"></iframe>`
-    : `<div style="width:100%;height:200px;background:#111;border-radius:10px;display:flex;align-items:center;justify-content:center;"><p style="color:#555;font-family:'Montserrat',Arial,sans-serif;font-size:13px;">Paste a YouTube URL above</p></div>`}
-  <figcaption style="font-size: 13px; color: #8D8D8D; margin-top: 8px; text-align: center; font-family: 'Montserrat', Arial, sans-serif;">${esc(st.caption)}</figcaption>
+    : `<div style="width:100%;height:200px;background:#111;border-radius:10px;display:flex;align-items:center;justify-content:center;"><p>Paste a YouTube URL above</p></div>`}
+  <figcaption style="font-size: 13px; color: #8D8D8D; margin-top: 8px; text-align: center;">${esc(st.caption)}</figcaption>
 </figure>`;
   },
   ctrl: function(st) {

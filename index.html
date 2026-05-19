@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mickey's Moodle Component Library</title>
+  <title>Learn Component Library</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -61,6 +61,9 @@
     .nav-item:hover { background: var(--sb-hover); color: #bbb; }
     .nav-item.active { background: var(--sb-active); border-left-color: var(--yellow); color: #fff; }
     .nav-icon { font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; }
+    .nav-star { font-size: 11px; flex-shrink: 0; cursor: pointer; color: #333; transition: color 0.1s; line-height: 1; padding: 2px; margin: -2px; }
+    .nav-star:hover { color: var(--yellow); }
+    .nav-star.fav { color: var(--yellow); }
 
     /* MAIN */
     #main { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden; min-width: 0; }
@@ -87,6 +90,9 @@
     .ctrl-btn-action { background: #1A1A2E; color: #8888FF; border: 1px solid #2A2A4A; }
     .ctrl-btn-x { background: none; border: none; color: #555; cursor: pointer; font-size: 15px; padding: 0 4px; line-height: 1; font-family: var(--ui); }
     .ctrl-btn-x:hover { color: #FF6B6B; }
+    .ctrl-drag { color: #444; cursor: grab; font-size: 14px; flex-shrink: 0; padding: 0 2px; -webkit-user-select: none; user-select: none; }
+    .ctrl-drag:active { cursor: grabbing; }
+    .ctrl-row.drag-over { outline: 1px dashed #FDB92A; }
     .ctrl-total { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 4px; font-family: var(--ui); }
     .ctrl-rows { padding: 3px 0 6px; }
     .ctrl-col-hdr { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #444; }
@@ -104,15 +110,27 @@
     #preview-panel { flex: 1; overflow: hidden; background: #EFEFEF; position: relative; min-height: 0; }
     #preview-label { position: absolute; top: 8px; left: 12px; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #999; background: #E5E5E5; z-index: 1; padding: 2px 6px; border-radius: 3px; }
     #preview-frame { width: 100%; height: 100%; border: none; display: none; }
-    #welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px; }
-    .w-x { width: 48px; height: 48px; background: #1A1A1A; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--yellow); margin-bottom: 4px; }
-    #welcome h2 { font-size: 14px; color: #666; font-weight: 600; }
-    #welcome p { font-size: 12px; color: #555; text-align: center; max-width: 240px; line-height: 1.6; }
+    #welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; overflow-y: auto; padding: 40px 24px; box-sizing: border-box; }
+    .w-inner { max-width: 480px; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 0; }
+    .w-x { width: 48px; height: 48px; background: #1A1A1A; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: var(--yellow); margin-bottom: 16px; }
+    #welcome h2 { font-size: 18px; color: #222; font-weight: 700; margin: 0 0 8px 0; text-align: center; }
+    .w-intro { font-size: 13px; color: #666; text-align: center; line-height: 1.7; margin: 0 0 32px 0; }
+    .w-steps { width: 100%; display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+    .w-step { display: flex; align-items: flex-start; gap: 14px; background: #fff; border: 1px solid #E8E8E8; border-radius: 10px; padding: 14px 16px; }
+    .w-step-num { width: 26px; height: 26px; background: #000; border-radius: 50%; color: var(--yellow); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .w-step-body { flex: 1; }
+    .w-step-title { font-size: 13px; font-weight: 700; color: #111; margin: 0 0 3px 0; }
+    .w-step-desc { font-size: 12px; color: #666; margin: 0; line-height: 1.6; }
+    .w-tip { font-size: 11px; color: #888; text-align: center; line-height: 1.6; border-top: 1px solid #E8E8E8; padding-top: 20px; width: 100%; }
 
     /* EDITOR */
     #resize-handle { height: 5px; background: #111; border-top: 1px solid #222; cursor: row-resize; flex-shrink: 0; }
     #resize-handle:hover { background: #FDB92A22; }
     #editor-panel { height: 270px; flex-shrink: 0; display: none; flex-direction: column; background: var(--editor-bg); }
+    #editor-panel.collapsed { height: 32px !important; overflow: hidden; }
+    #editor-toggle { background: none; border: none; color: #555; cursor: pointer; font-size: 11px; padding: 2px 5px; line-height: 1; font-family: var(--ui); border-radius: 3px; }
+    #editor-toggle:hover { color: #ccc; background: #1A1A1A; }
+    .ed-right { display: flex; align-items: center; gap: 8px; }
     #editor-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 0 14px; height: 32px; border-bottom: 1px solid #2A2A2A; flex-shrink: 0; }
     .ed-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #444; }
     .live-dot { font-size: 10px; color: #3A9A3A; font-weight: 700; }
@@ -121,6 +139,18 @@
     /* FEEDBACK */
     .toast { position: fixed; bottom: 280px; right: 16px; background: #1A3A1A; color: #90EE90; font-size: 11px; font-weight: 700; padding: 7px 14px; border-radius: 5px; opacity: 0; transform: translateY(6px); transition: opacity 0.18s, transform 0.18s; pointer-events: none; z-index: 100; }
     .toast.show { opacity: 1; transform: none; }
+
+    /* EMOJI PICKER */
+    #emoji-picker { display: none; position: fixed; background: #1A1A1A; border: 1px solid #333; border-radius: 8px; padding: 10px; z-index: 9999; width: 258px; box-shadow: 0 8px 24px rgba(0,0,0,0.55); }
+    .ep-cats { display: flex; gap: 3px; flex-wrap: wrap; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid #2A2A2A; }
+    .ep-cat { background: none; border: none; cursor: pointer; font-size: 15px; padding: 3px 5px; border-radius: 4px; opacity: 0.4; transition: opacity 0.1s; }
+    .ep-cat:hover { opacity: 0.75; background: #252525; }
+    .ep-cat.ep-active { opacity: 1; background: #252525; }
+    .ep-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 1px; }
+    .ep-em { background: none; border: none; cursor: pointer; font-size: 17px; padding: 4px 2px; border-radius: 4px; text-align: center; line-height: 1; }
+    .ep-em:hover { background: #2A2A2A; }
+    .emoji-btn { background: #222; border: 1px solid #2A2A2A; border-radius: 4px; cursor: pointer; font-size: 13px; padding: 2px 7px; margin-left: 4px; color: #555; transition: color 0.1s, border-color 0.1s; flex-shrink: 0; font-family: var(--ui); }
+    .emoji-btn:hover { color: #ccc; border-color: #444; }
   </style>
 </head>
 <body>
@@ -134,8 +164,8 @@
 
 <nav id="sidebar">
   <div id="sb-header">
-    <div class="logo-row"><div class="logo-x">M</div><span class="logo-name">Mickey's Library</span></div>
-    <div class="logo-sub">Moodle Component Library</div>
+    <div class="logo-row"><div class="logo-x">M</div><span class="logo-name">Component Library</span></div>
+    <div class="logo-sub">For XAMK Learn</div>
   </div>
   <div id="sb-nav"></div>
 </nav>
@@ -144,6 +174,7 @@
   <div id="topbar">
     <div style="display:flex;align-items:center">
       <span id="comp-title" style="font-size:13px;font-weight:700">Select a component</span>
+      <span id="topbar-star" onclick="if(cur)toggleFavorite(cur,event)" style="display:none;font-size:14px;margin-left:8px;cursor:pointer;color:#333;transition:color 0.1s" title="Favourite"></span>
       <span id="comp-desc" style="font-size:11px;color:#555;margin-left:10px"></span>
     </div>
     <div class="topbar-r">
@@ -158,9 +189,35 @@
     <div id="preview-label">PREVIEW</div>
     <iframe id="preview-frame" title="Component preview"></iframe>
     <div id="welcome">
-      <div class="w-x">M</div>
-      <h2>Mickey's Moodle Components</h2>
-      <p>Pick a component from the sidebar to preview, edit, and copy it into Moodle.</p>
+      <div class="w-inner">
+        <div class="w-x">M</div>
+        <h2>Learn Component Library</h2>
+        <p class="w-intro">Ready-made HTML components designed for XAMK Learn pages. Pick any component, fill in the content, and paste the generated HTML directly into Moodle's HTML source editor.</p>
+        <div class="w-steps">
+          <div class="w-step">
+            <div class="w-step-num">1</div>
+            <div class="w-step-body">
+              <p class="w-step-title">Pick a component</p>
+              <p class="w-step-desc">Browse the sidebar on the left. Click any component to load a live preview. Star your favourites to pin them to the top.</p>
+            </div>
+          </div>
+          <div class="w-step">
+            <div class="w-step-num">2</div>
+            <div class="w-step-body">
+              <p class="w-step-title">Edit the content</p>
+              <p class="w-step-desc">Use the config panel on the left to fill in your text, dates, and options. The preview updates instantly as you type.</p>
+            </div>
+          </div>
+          <div class="w-step">
+            <div class="w-step-num">3</div>
+            <div class="w-step-body">
+              <p class="w-step-title">Copy and paste into Moodle</p>
+              <p class="w-step-desc">Click <strong>Copy HTML</strong> in the top bar. In Moodle, open the page editor, switch to <strong>HTML source view</strong>, and paste.</p>
+            </div>
+          </div>
+        </div>
+        <p class="w-tip">All components use inline styles only — no external CSS needed.<br>They render correctly inside Moodle without any extra setup.</p>
+      </div>
     </div>
   </div>
 
@@ -168,21 +225,25 @@
   <div id="editor-panel">
     <div id="editor-toolbar">
       <span class="ed-label">HTML Source</span>
-      <span class="live-dot">● LIVE</span>
+      <span class="ed-right">
+        <span class="live-dot">● LIVE</span>
+        <button id="editor-toggle" type="button" title="Collapse HTML panel">▼</button>
+      </span>
     </div>
     <textarea id="code-editor" spellcheck="false" autocomplete="off"></textarea>
   </div>
 </div>
 
 <div class="toast" id="toast">✓ Copied to clipboard</div>
+<div id="emoji-picker"><div class="ep-cats"></div><div class="ep-grid"></div></div>
 
 <script>
 // ── Helpers ──
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const escA = s => String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 const clone = o => JSON.parse(JSON.stringify(o));
-const OPEN = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"><style>body{margin:0;padding:24px;background:#fff;font-family:'Montserrat',Arial,sans-serif;}*{box-sizing:border-box;}</style></head><body>`;
-const CLOSE = `</body></html>`;
+let OPEN = '';
+const CLOSE = `<\/body><\/html>`;
 
 // ── YouTube Helpers ──
 function ytExtractUrl(input) {
@@ -218,36 +279,139 @@ function register(def) {
   C[def.id] = def;
 }
 
-// ── Group order ──
-const GROUP_ORDER = ['Layout','Callouts','Cards','Lists','Teaching','Course Info','Timeline','Media'];
+// ── Favorites ──
+let favorites = new Set(JSON.parse(localStorage.getItem('mc-favorites') || '[]'));
+
+function saveFavorites() {
+  localStorage.setItem('mc-favorites', JSON.stringify([...favorites]));
+}
+
+function syncTopbarStar() {
+  const star = document.getElementById('topbar-star');
+  const isFav = favorites.has(cur);
+  star.textContent = isFav ? '★' : '☆';
+  star.style.color = isFav ? 'var(--yellow)' : '#333';
+  star.title = isFav ? 'Unfavourite' : 'Favourite';
+  star.style.display = '';
+}
+
+function toggleFavorite(id, e) {
+  e.stopPropagation();
+  if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+  saveFavorites();
+  buildSidebar();
+  if (cur) {
+    const el = document.querySelector(`.nav-item[data-id="${cur}"]`);
+    if (el) el.classList.add('active');
+    syncTopbarStar();
+  }
+}
 
 function buildSidebar() {
   const nav = document.getElementById('sb-nav');
   nav.innerHTML = '';
-  const groups = {};
-  for (const id in C) {
-    const def = C[id];
-    const g = def.group || 'Other';
-    if (!groups[g]) groups[g] = [];
-    groups[g].push(def);
+  const sorted = Object.values(C).sort((a, b) => a.name.localeCompare(b.name));
+
+  function makeItem(def) {
+    const isFav = favorites.has(def.id);
+    const item = document.createElement('div');
+    item.className = 'nav-item';
+    item.dataset.id = def.id;
+    item.innerHTML = `<span class="nav-icon">${def.icon || ''}</span><span class="nav-star${isFav ? ' fav' : ''}" title="${isFav ? 'Unfavourite' : 'Favourite'}">${isFav ? '★' : '☆'}</span>${def.name}`;
+    item.addEventListener('click', () => load(def.id));
+    item.querySelector('.nav-star').addEventListener('click', e => toggleFavorite(def.id, e));
+    return item;
   }
-  const order = [...GROUP_ORDER];
-  for (const g in groups) { if (!order.includes(g)) order.push(g); }
-  for (const g of order) {
-    if (!groups[g]) continue;
+
+  const favs = sorted.filter(d => favorites.has(d.id));
+  const rest = sorted.filter(d => !favorites.has(d.id));
+
+  if (favs.length) {
     const hdr = document.createElement('div');
     hdr.className = 'nav-group';
-    hdr.textContent = g;
+    hdr.textContent = 'Favorites';
     nav.appendChild(hdr);
-    for (const def of groups[g]) {
-      const item = document.createElement('div');
-      item.className = 'nav-item';
-      item.dataset.id = def.id;
-      item.innerHTML = `<span class="nav-icon">${def.icon || ''}</span>${def.name}`;
-      item.addEventListener('click', () => load(def.id));
-      nav.appendChild(item);
-    }
+    favs.forEach(d => nav.appendChild(makeItem(d)));
+    const hdr2 = document.createElement('div');
+    hdr2.className = 'nav-group';
+    hdr2.textContent = 'All';
+    nav.appendChild(hdr2);
   }
+
+  rest.forEach(d => nav.appendChild(makeItem(d)));
+}
+
+// ── Emoji Picker ──
+const EMOJI_CATS = {
+  '📚': ['📚','📖','📝','✏️','🖊️','📓','📒','📊','📈','🔬','🧪','🧬','🎓','🏫','📐','📏','🗒️','📃','📑','🗂️'],
+  '🎮': ['🎮','🕹️','🎲','♟️','🎯','⚔️','🛡️','🚀','👾','🤖','🧩','🃏','🏆','🥇','👑','🏹','💣','🗡️','🔫','🐉'],
+  '💡': ['💡','🧠','💭','🤔','🔍','🔧','⚙️','🔑','💾','💻','🖥️','🛠️','🔗','📌','🗺️','🔭','🧲','⚗️','🧰','🖱️'],
+  '✅': ['✅','❌','⚠️','ℹ️','❓','❗','🔴','🟡','🟢','🔵','⭕','🚫','🔔','📢','🚩','🏁','🎌','⛔','🔕','📣'],
+  '⭐': ['⭐','🌟','💫','✨','🔥','💥','🎉','🎊','🎁','💎','🌈','❤️','💛','💚','💙','🖤','🤍','🏅','🎖️','🥈'],
+  '👤': ['👤','👥','🧑','🧑‍💻','👨‍🏫','👩‍🏫','🧑‍🎓','🤝','👋','👍','👎','🙌','💪','🫶','✊','🤜','🤛','🧑‍🤝‍🧑','🗣️','👁️'],
+  '🌍': ['🌍','🌎','🌏','🌐','🏔️','🌊','🌿','🌱','🌲','☀️','🌙','⚡','🌀','❄️','💧','🌺','🌸','🍀','🦋','🕊️'],
+};
+const EP_ORDER = Object.keys(EMOJI_CATS);
+let _epTarget = null;
+let _epCat = EP_ORDER[0];
+
+function _epBuild() {
+  const picker = document.getElementById('emoji-picker');
+  picker.querySelector('.ep-cats').innerHTML = EP_ORDER.map(c =>
+    `<button class="ep-cat${c === _epCat ? ' ep-active' : ''}" data-cat="${c}">${c}</button>`
+  ).join('');
+  picker.querySelector('.ep-grid').innerHTML = EMOJI_CATS[_epCat].map(e =>
+    `<button class="ep-em" data-e="${e}">${e}</button>`
+  ).join('');
+}
+
+function openEmojiPicker(inputEl, triggerEl) {
+  _epTarget = inputEl;
+  _epCat = EP_ORDER[0];
+  _epBuild();
+  const picker = document.getElementById('emoji-picker');
+  picker.style.display = 'block';
+  const r = triggerEl.getBoundingClientRect();
+  let top = r.bottom + 6, left = r.left;
+  if (left + 262 > window.innerWidth) left = window.innerWidth - 266;
+  if (top + 280 > window.innerHeight) top = r.top - 284;
+  picker.style.top = top + 'px';
+  picker.style.left = left + 'px';
+}
+
+function closeEmojiPicker() {
+  document.getElementById('emoji-picker').style.display = 'none';
+  _epTarget = null;
+}
+
+document.getElementById('emoji-picker').addEventListener('click', e => {
+  e.stopPropagation();
+  const cat = e.target.closest('[data-cat]');
+  if (cat) { _epCat = cat.dataset.cat; _epBuild(); return; }
+  const em = e.target.closest('[data-e]');
+  if (em && _epTarget) {
+    _epTarget.value = em.dataset.e;
+    _epTarget.dispatchEvent(new Event('input', { bubbles: true }));
+    closeEmojiPicker();
+  }
+});
+
+document.addEventListener('click', e => {
+  const picker = document.getElementById('emoji-picker');
+  if (picker.style.display === 'none') return;
+  if (!picker.contains(e.target) && !e.target.classList.contains('emoji-btn')) closeEmojiPicker();
+});
+
+function attachEmojiTriggers() {
+  document.querySelectorAll('#controls-panel input[data-f="emoji"]').forEach(input => {
+    if (input.nextElementSibling && input.nextElementSibling.classList.contains('emoji-btn')) return;
+    const btn = document.createElement('button');
+    btn.className = 'emoji-btn';
+    btn.textContent = '☺';
+    btn.title = 'Pick emoji';
+    btn.addEventListener('click', e => { e.stopPropagation(); openEmojiPicker(input, btn); });
+    input.after(btn);
+  });
 }
 
 // ── Engine ──
@@ -267,9 +431,16 @@ function load(id) {
   if (nav) { nav.classList.add('active'); nav.scrollIntoView({block:'nearest'}); }
   document.getElementById('comp-title').textContent = comp.name;
   document.getElementById('comp-desc').textContent = '— ' + comp.desc;
+  syncTopbarStar();
   document.getElementById('btn-copy').style.display = '';
   document.getElementById('btn-reset').style.display = '';
-  document.getElementById('editor-panel').style.display = 'flex';
+  const edPanel = document.getElementById('editor-panel');
+  edPanel.style.display = 'flex';
+  if (!edPanel.classList.contains('_shown')) {
+    edPanel.classList.add('collapsed', '_shown');
+    rh.style.display = 'none';
+    document.getElementById('editor-toggle').textContent = '▲';
+  }
   document.getElementById('welcome').style.display = 'none';
   document.getElementById('preview-frame').style.display = 'block';
   const cp = document.getElementById('controls-panel');
@@ -279,6 +450,7 @@ function load(id) {
   } else {
     cp.style.display = 'flex'; cp.style.flexDirection = 'column';
     cp.innerHTML = comp.ctrl(getState(id));
+    attachEmojiTriggers();
     const code = comp.gen(getState(id));
     const preview = comp.preview ? comp.preview(getState(id)) : code;
     setEditor(code, preview);
@@ -303,6 +475,7 @@ function regen() {
   if (!cur || C[cur].code !== undefined) return;
   const st = getState(cur);
   document.getElementById('controls-panel').innerHTML = C[cur].ctrl(st);
+  attachEmojiTriggers();
   const code = C[cur].gen(st);
   const preview = C[cur].preview ? C[cur].preview(st) : code;
   setEditor(code, preview);
@@ -353,6 +526,41 @@ document.getElementById('controls-panel').addEventListener('click', e => {
   regen();
 });
 
+// Controls drag-to-reorder
+let _dragFrom = null;
+const _cp = document.getElementById('controls-panel');
+_cp.addEventListener('dragstart', e => {
+  const h = e.target.closest('[data-drag-i]');
+  if (!h) return;
+  _dragFrom = parseInt(h.dataset.dragI);
+  e.dataTransfer.effectAllowed = 'move';
+});
+_cp.addEventListener('dragover', e => {
+  const row = e.target.closest('[data-drop-i]');
+  if (!row || _dragFrom === null) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  _cp.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  row.classList.add('drag-over');
+});
+_cp.addEventListener('dragleave', e => {
+  if (!e.target.closest('[data-drop-i]')) _cp.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+});
+_cp.addEventListener('drop', e => {
+  _cp.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  const row = e.target.closest('[data-drop-i]');
+  if (!row || _dragFrom === null || !cur || C[cur].code !== undefined) { _dragFrom = null; return; }
+  e.preventDefault();
+  const toI = parseInt(row.dataset.dropI);
+  if (toI !== _dragFrom && C[cur].onDrop) C[cur].onDrop(getState(cur), _dragFrom, toI);
+  _dragFrom = null;
+  regen();
+});
+_cp.addEventListener('dragend', () => {
+  _cp.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  _dragFrom = null;
+});
+
 // Editor manual typing
 document.getElementById('code-editor').addEventListener('input', function() { renderPreview(this.value); });
 
@@ -386,15 +594,28 @@ function resetComp() {
 // Resize
 const rh = document.getElementById('resize-handle'), ep = document.getElementById('editor-panel');
 let rs = false, sy = 0, sh = 0;
-rh.addEventListener('mousedown', e => { rs = true; sy = e.clientY; sh = ep.offsetHeight; document.body.style.cursor = 'row-resize'; document.body.style.userSelect = 'none'; });
+rh.addEventListener('mousedown', e => { if (ep.classList.contains('collapsed')) return; rs = true; sy = e.clientY; sh = ep.offsetHeight; document.body.style.cursor = 'row-resize'; document.body.style.userSelect = 'none'; });
 document.addEventListener('mousemove', e => { if (!rs) return; ep.style.height = Math.max(80, Math.min(600, sh + sy - e.clientY)) + 'px'; });
 document.addEventListener('mouseup', () => { if (rs) { rs = false; document.body.style.cursor = ''; document.body.style.userSelect = ''; } });
+document.getElementById('editor-toggle').addEventListener('click', () => {
+  const collapsed = ep.classList.toggle('collapsed');
+  rh.style.display = collapsed ? 'none' : '';
+  document.getElementById('editor-toggle').textContent = collapsed ? '▲' : '▼';
+});
 
 // ── Component loader ──
 async function loadComponents() {
   const loaderBar = document.getElementById('loader-bar');
   const loaderText = document.getElementById('loader-text');
   const loader = document.getElementById('loader');
+
+  try {
+    const cssRes = await fetch('moodle-base.css');
+    const cssText = await cssRes.text();
+    OPEN = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"><style>${cssText}<\/style></head><body>`;
+  } catch(e) {
+    OPEN = `<!DOCTYPE html><html><head><meta charset="UTF-8"><link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"><style>body{margin:0;padding:24px;background:#fff;}*{box-sizing:border-box;}<\/style></head><body>`;
+  }
 
   let ids;
   try {

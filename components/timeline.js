@@ -13,19 +13,19 @@ register({
   gen: function(st) {
     const items = st.events.map((e,i)=>{
       const last = i===st.events.length-1;
-      return `  <div style="display: flex; gap: 0; font-family: 'Montserrat', Arial, sans-serif;">
+      return `  <div style="display: flex; gap: 0;">
     <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 32px;">
       <div style="width: 14px; height: 14px; background-color: #FDB92A; border-radius: 50%; flex-shrink: 0; margin-top: 4px;"></div>
       ${last?'':'<div style="width: 2px; flex: 1; background-color: #E0E0E0; min-height: 20px;"></div>'}
     </div>
     <div style="padding: 0 0 ${last?'0':'22px'} 14px;">
-      <p style="font-size: 11px; font-weight: 700; color: #FDB92A; margin: 0 0 2px 0; letter-spacing: 1px; font-family: 'Montserrat', Arial, sans-serif;">${esc(e.year)}</p>
-      <p style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 4px 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(e.title)}</p>
-      <p style="font-size: 13px; color: #444444; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">${esc(e.desc)}</p>
+      <p style="margin: 0 0 2px 0; letter-spacing: 1px">${esc(e.year)}</p>
+      <p style="margin: 0 0 4px 0">${esc(e.title)}</p>
+      <p style="margin: 0; line-height: 1.6">${esc(e.desc)}</p>
     </div>
   </div>`;
     }).join('\n');
-    return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0;">\n${items}\n</div>`;
+    return `<div style="margin: 24px 0;">\n${items}\n</div>`;
   },
   ctrl: function(st) {
     return `

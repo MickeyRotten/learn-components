@@ -16,36 +16,36 @@ register({
     const trs = st.rows.map(r=>{
       const w=Math.max(0,Math.min(100,Number(r.weight)));
       return `      <tr style="border-bottom: 1px solid #E0E0E0;">
-        <td style="padding: 14px 18px; font-weight: 600; font-size: 14px; color: #000000; font-family: 'Montserrat', Arial, sans-serif;">${esc(r.name)}</td>
+        <td style="padding: 14px 18px; font-weight: 600; font-size: 14px; color: #000000;">${esc(r.name)}</td>
         <td style="padding: 14px 18px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div style="width: 140px; background-color: #E0E0E0; height: 8px; border-radius: 4px;"><div style="height: 8px; width: ${w}%; background-color: #FDB92A; border-radius: 4px;"></div></div>
-            <span style="font-weight: 700; font-size: 14px; color: #000000; font-family: 'Montserrat', Arial, sans-serif; white-space: nowrap;">${w}%</span>
+            <span style="font-weight: 700; font-size: 14px; color: #000000; white-space: nowrap;">${w}%</span>
           </div>
         </td>
-        <td style="padding: 14px 18px; font-size: 13px; color: #444444; font-family: 'Montserrat', Arial, sans-serif;">${esc(r.notes)}</td>
+        <td style="padding: 14px 18px; font-size: 13px; color: #444444;">${esc(r.notes)}</td>
       </tr>`;
     }).join('\n');
-    return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 24px 0; border-radius: 12px; border: 1px solid #E0E0E0;">
-  <table style="width: 100%; border-collapse: collapse; font-family: 'Montserrat', Arial, sans-serif;">
+    return `<div style="margin: 24px 0; border-radius: 12px; border: 1px solid #E0E0E0;">
+  <table style="width: 100%; border-collapse: collapse;">
     <thead>
       <tr style="background-color: #000000;">
-        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Montserrat', Arial, sans-serif;">Assignment</th>
-        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Montserrat', Arial, sans-serif; width: 220px;">Weight</th>
-        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'Montserrat', Arial, sans-serif;">Notes</th>
+        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;">Assignment</th>
+        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; width: 220px;">Weight</th>
+        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;">Notes</th>
       </tr>
     </thead>
     <tbody>\n${trs}\n    </tbody>
     <tfoot>
       <tr style="background-color: #F5F5F5; border-top: 2px solid #000000;">
-        <td style="padding: 12px 18px; font-weight: 700; font-size: 14px; color: #000000; font-family: 'Montserrat', Arial, sans-serif;">Total</td>
+        <td style="padding: 12px 18px; font-weight: 700; font-size: 14px; color: #000000;">Total</td>
         <td style="padding: 12px 18px;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div style="width: 140px; background-color: #000000; height: 8px; border-radius: 4px;"></div>
-            <span style="font-weight: 700; font-size: 14px; color: #000000; font-family: 'Montserrat', Arial, sans-serif;">${total}%</span>
+            <span style="font-weight: 700; font-size: 14px; color: #000000;">${total}%</span>
           </div>
         </td>
-        <td style="padding: 12px 18px; font-size: 13px; color: #8D8D8D; font-family: 'Montserrat', Arial, sans-serif;">Graded 0–5 / Pass–Fail</td>
+        <td style="padding: 12px 18px; font-size: 13px; color: #8D8D8D;">Graded 0–5 / Pass–Fail</td>
       </tr>
     </tfoot>
   </table>

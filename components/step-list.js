@@ -11,13 +11,13 @@ register({
   ]},
   gen: function(st) {
     const rows = st.steps.map((s,i) => `  <div style="display: flex; gap: 16px; ${i<st.steps.length-1?'margin-bottom: 16px;':''} align-items: flex-start;">
-    <div style="min-width: 36px; width: 36px; height: 36px; background-color: #FDB92A; border-radius: 50%; font-weight: 700; font-size: 16px; color: #000000; flex-shrink: 0; line-height: 36px; text-align: center; font-family: 'Montserrat', Arial, sans-serif;">${i+1}</div>
+    <div style="min-width: 36px; width: 36px; height: 36px; background-color: #FDB92A; border-radius: 50%; font-weight: 700; font-size: 16px; color: #000000; flex-shrink: 0; line-height: 36px; text-align: center;">${i+1}</div>
     <div style="padding-top: 6px;">
-      <h3 style="font-size: 15px; font-weight: 700; color: #000000; margin: 0 0 4px 0; font-family: 'Montserrat', Arial, sans-serif;">${esc(s.title)}</h3>
-      <p style="font-size: 14px; color: #444444; margin: 0; line-height: 1.6; font-family: 'Montserrat', Arial, sans-serif;">${esc(s.desc)}</p>
+      <h5 style="margin: 0 0 4px 0">${esc(s.title)}</h5>
+      <p style="margin: 0; line-height: 1.6">${esc(s.desc)}</p>
     </div>
   </div>`).join('\n');
-    return `<div style="font-family: 'Montserrat', Arial, sans-serif; margin: 16px 0;">\n${rows}\n</div>`;
+    return `<div style="margin: 16px 0;">\n${rows}\n</div>`;
   },
   ctrl: function(st) {
     return `
