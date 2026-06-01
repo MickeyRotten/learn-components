@@ -67,5 +67,8 @@ register({
       </tr>
     </tbody>
   </table>
+  <div style="padding:12px 20px;border-top:1px solid #E0E0E0;background:#FAFAFA;">
+    <p style="margin:0;font-size:12px;color:#666;line-height:1.6;">If the student does not complete the required assignments, the course will be marked failed. All assignments are to be handed in before the course ends. In case the student fails the course, the course should be retaken within a year from the start of the course. The evaluation criteria remain the same.</p>
+  </div>
 </div>`
 });
