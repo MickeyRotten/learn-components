@@ -29,10 +29,18 @@ register({
 
     const tdBase = 'padding:10px 14px;';
     const br = 'border-right:1px solid #E0E0E0;';
+    const sectionColors = [
+      { bg: '#1DBED0', color: '#FFFFFF' },
+      { bg: '#595CA9', color: '#FFFFFF' },
+      { bg: '#A6CE39', color: '#000000' },
+      { bg: '#F16280', color: '#FFFFFF' },
+    ];
+    let sectionIdx = 0;
     const rows = st.items.map((item, i) => {
       if (item.type === 'section') {
+        const sc = sectionColors[sectionIdx++ % 4];
         const border = i > 0 ? 'border-top:2px solid #333;' : '';
-        return `<tr><td colspan="7" style="${tdBase}background:#111;color:#FDB92A;font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;${border}">${esc(item.title)}</td></tr>`;
+        return `<tr><td colspan="7" style="${tdBase}background:${sc.bg};color:${sc.color};font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;${border}">${esc(item.title)}</td></tr>`;
       }
       const last = i === st.items.length - 1 || st.items[i + 1]?.type === 'section';
       const bb = last ? '' : 'border-bottom:1px solid #E0E0E0;';
