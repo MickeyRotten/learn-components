@@ -151,6 +151,9 @@
     .ep-em:hover { background: #2A2A2A; }
     .emoji-btn { background: #222; border: 1px solid #2A2A2A; border-radius: 4px; cursor: pointer; font-size: 13px; padding: 2px 7px; margin-left: 4px; color: #555; transition: color 0.1s, border-color 0.1s; flex-shrink: 0; font-family: var(--ui); }
     .emoji-btn:hover { color: #ccc; border-color: #444; }
+    .mode-tab { flex:1; background:#0D0D0D; border:none; color:#555; font-family:var(--ui); font-size:10px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; padding:6px 0; cursor:pointer; transition:background 0.1s,color 0.1s; }
+    .mode-tab:hover { background:var(--sb-hover); color:#aaa; }
+    .mode-tab.mode-tab-active { background:var(--yellow); color:#000; }
   </style>
 </head>
 <body>
@@ -166,6 +169,10 @@
   <div id="sb-header">
     <div class="logo-row"><div class="logo-x">M</div><span class="logo-name">Component Library</span></div>
     <div class="logo-sub">For XAMK Learn</div>
+    <div id="mode-tabs" style="display:flex;margin-top:10px;border-radius:5px;overflow:hidden;border:1px solid #2A2A2A;">
+      <button id="tab-component" class="mode-tab mode-tab-active" onclick="setMode('component')">Component</button>
+      <button id="tab-page" class="mode-tab" onclick="setMode('page')">Page</button>
+    </div>
   </div>
   <div id="sb-nav"></div>
 </nav>
@@ -279,6 +286,16 @@ function register(def) {
   C[def.id] = def;
 }
 
+function savePage() {
+  localStorage.setItem('mc-page', JSON.stringify(pageItems));
+}
+function loadPage() {
+  try {
+    const raw = localStorage.getItem('mc-page');
+    if (raw) pageItems = JSON.parse(raw);
+  } catch(e) { pageItems = []; }
+}
+
 // ── Favorites ──
 let favorites = new Set(JSON.parse(localStorage.getItem('mc-favorites') || '[]'));
 
@@ -318,7 +335,7 @@ function buildSidebar() {
     item.className = 'nav-item';
     item.dataset.id = def.id;
     item.innerHTML = `<span class="nav-icon">${def.icon || ''}</span><span class="nav-star${isFav ? ' fav' : ''}" title="${isFav ? 'Unfavourite' : 'Favourite'}">${isFav ? '★' : '☆'}</span>${def.name}`;
-    item.addEventListener('click', () => load(def.id));
+    item.addEventListener('click', () => { if (mode === 'page') addToPage(def.id); else load(def.id); });
     item.querySelector('.nav-star').addEventListener('click', e => toggleFavorite(def.id, e));
     return item;
   }
@@ -339,6 +356,156 @@ function buildSidebar() {
   }
 
   rest.forEach(d => nav.appendChild(makeItem(d)));
+}
+
+// ── Page Builder ──
+function setMode(m) {
+  mode = m;
+  document.getElementById('tab-component').classList.toggle('mode-tab-active', m === 'component');
+  document.getElementById('tab-page').classList.toggle('mode-tab-active', m === 'page');
+  if (m === 'component') {
+    document.getElementById('btn-copy').textContent = 'Copy HTML';
+    if (cur) load(cur);
+    else showWelcome();
+  } else {
+    cur = null;
+    editingItemUid = null;
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    showPageMode();
+  }
+}
+
+function showWelcome() {
+  document.getElementById('comp-title').textContent = 'Select a component';
+  document.getElementById('comp-desc').textContent = '';
+  document.getElementById('topbar-star').style.display = 'none';
+  document.getElementById('btn-copy').style.display = 'none';
+  document.getElementById('btn-reset').style.display = 'none';
+  document.getElementById('controls-panel').style.display = 'none';
+  document.getElementById('preview-frame').style.display = 'none';
+  document.getElementById('welcome').style.display = '';
+  document.getElementById('editor-panel').style.display = 'none';
+}
+
+function showPageMode() {
+  editingItemUid = null;
+  document.getElementById('comp-title').textContent = 'Page Builder';
+  document.getElementById('comp-desc').textContent = '— click sidebar to add';
+  document.getElementById('topbar-star').style.display = 'none';
+  document.getElementById('btn-reset').style.display = 'none';
+  document.getElementById('btn-copy').style.display = '';
+  document.getElementById('btn-copy').textContent = 'Copy Page HTML';
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('preview-frame').style.display = 'block';
+  const edPanel = document.getElementById('editor-panel');
+  edPanel.style.display = 'flex';
+  if (!edPanel.classList.contains('_shown')) {
+    edPanel.classList.add('collapsed', '_shown');
+    rh.style.display = 'none';
+    document.getElementById('editor-toggle').textContent = '▲';
+  }
+  renderPageList();
+  renderPagePreview();
+}
+
+function renderPageList() {
+  const cp = document.getElementById('controls-panel');
+  cp.style.display = 'flex';
+  cp.style.flexDirection = 'column';
+  if (pageItems.length === 0) {
+    cp.innerHTML = `<div class="ctrl-header"><span class="ctrl-label">Page — 0 items</span><div class="ctrl-actions"><button class="btn btn-ghost" style="font-size:10px;padding:3px 8px;" onclick="clearPage()">Clear</button></div></div><div style="padding:16px 14px;font-size:12px;color:#444;text-align:center;line-height:1.7;">Click any component in the sidebar<br>to add it to the page.</div>`;
+    return;
+  }
+  const rows = pageItems.map((item, idx) => {
+    const comp = C[item.compId];
+    const label = comp ? comp.name : item.compId;
+    const icon  = comp ? (comp.icon || '') : '';
+    const isStatic = comp && comp.code !== undefined;
+    return `<div class="ctrl-row" draggable="true" data-drag-i="${idx}" data-drop-i="${idx}" style="padding:5px 14px;gap:8px;border-bottom:1px solid #1E1E1E;">` +
+      `<span class="ctrl-drag">⠿</span>` +
+      `<span style="font-size:14px;flex-shrink:0">${icon}</span>` +
+      `<span style="font-size:12px;color:#ccc;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${esc(label)}</span>` +
+      (isStatic ? '' : `<button class="ctrl-btn ctrl-btn-action" style="font-size:10px;padding:2px 7px;" data-page-action="edit" data-uid="${item.uid}">Edit</button>`) +
+      `<button class="ctrl-btn-x" data-page-action="remove" data-uid="${item.uid}" title="Remove">✕</button>` +
+      `</div>`;
+  }).join('');
+  cp.innerHTML = `<div class="ctrl-header"><span class="ctrl-label">Page — ${pageItems.length} item${pageItems.length !== 1 ? 's' : ''}</span><div class="ctrl-actions"><button class="btn btn-ghost" style="font-size:10px;padding:3px 8px;" onclick="clearPage()">Clear</button></div></div><div class="ctrl-rows" style="padding:0;">${rows}</div>`;
+}
+
+function renderPagePreview() {
+  const html = pageItems.map(item => {
+    const comp = C[item.compId];
+    if (!comp) return '';
+    return comp.code !== undefined ? comp.code : comp.gen(item.state);
+  }).join('\n');
+  document.getElementById('code-editor').value = html;
+  renderPreview(html);
+}
+
+function addToPage(compId) {
+  const comp = C[compId];
+  if (!comp) return;
+  const uid = 'pi_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+  const state = (comp.code !== undefined) ? null : clone(comp.def);
+  pageItems.push({ uid, compId, state });
+  savePage();
+  showPageMode();
+}
+
+function removePageItem(uid) {
+  pageItems = pageItems.filter(p => p.uid !== uid);
+  savePage();
+  showPageMode();
+}
+
+function clearPage() {
+  if (pageItems.length && !confirm('Remove all items from the page?')) return;
+  pageItems = [];
+  savePage();
+  showPageMode();
+}
+
+function startEditingItem(uid) {
+  editingItemUid = uid;
+  const item = pageItems.find(p => p.uid === uid);
+  if (!item) return;
+  const comp = C[item.compId];
+  document.getElementById('comp-title').textContent = comp.name;
+  document.getElementById('comp-desc').textContent = '— editing page item';
+  document.getElementById('topbar-star').style.display = 'none';
+  document.getElementById('btn-reset').style.display = '';
+  document.getElementById('btn-copy').style.display = 'none';
+  const cp = document.getElementById('controls-panel');
+  cp.style.display = 'flex';
+  cp.style.flexDirection = 'column';
+  cp.innerHTML = `<div class="ctrl-header" style="background:#0D0D0D;"><button class="ctrl-btn ctrl-btn-action" onclick="stopEditingItem()" style="font-size:10px;padding:2px 8px;">← Back</button><span class="ctrl-label" style="margin-left:6px;">${esc(comp.name)}</span></div>` + comp.ctrl(item.state);
+  attachEmojiTriggers();
+  const code = comp.gen(item.state);
+  const preview = comp.preview ? comp.preview(item.state) : code;
+  document.getElementById('code-editor').value = code;
+  renderPreview(preview);
+  document.getElementById('preview-frame').style.display = 'block';
+  document.getElementById('welcome').style.display = 'none';
+  document.getElementById('editor-panel').style.display = 'flex';
+}
+
+function stopEditingItem() {
+  editingItemUid = null;
+  showPageMode();
+}
+
+function regenPageItem() {
+  const item = pageItems.find(p => p.uid === editingItemUid);
+  if (!item) return;
+  const comp = C[item.compId];
+  const cp = document.getElementById('controls-panel');
+  cp.innerHTML = `<div class="ctrl-header" style="background:#0D0D0D;"><button class="ctrl-btn ctrl-btn-action" onclick="stopEditingItem()" style="font-size:10px;padding:2px 8px;">← Back</button><span class="ctrl-label" style="margin-left:6px;">${esc(comp.name)}</span></div>` + comp.ctrl(item.state);
+  attachEmojiTriggers();
+  const code = comp.gen(item.state);
+  const preview = comp.preview ? comp.preview(item.state) : code;
+  document.getElementById('code-editor').value = code;
+  renderPreview(preview);
+  savePage();
 }
 
 // ── Emoji Picker ──
@@ -417,6 +584,9 @@ function attachEmojiTriggers() {
 // ── Engine ──
 const states = {};
 let cur = null;
+let mode = 'component';
+let pageItems = [];
+let editingItemUid = null;
 
 function getState(id) {
   if (!states[id]) states[id] = clone(C[id].def);
@@ -424,6 +594,7 @@ function getState(id) {
 }
 
 function load(id) {
+  if (mode === 'page') { addToPage(id); return; }
   cur = id;
   const comp = C[id];
   document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -483,26 +654,34 @@ function regen() {
 
 // Controls input
 document.getElementById('controls-panel').addEventListener('input', e => {
-  if (!cur || C[cur].code !== undefined) return;
+  let _comp, _st, _isPageItem = false;
+  if (mode === 'page' && editingItemUid) {
+    const item = pageItems.find(p => p.uid === editingItemUid);
+    if (!item || !C[item.compId]) return;
+    _comp = C[item.compId]; _st = item.state; _isPageItem = true;
+  } else {
+    if (!cur || C[cur].code !== undefined) return;
+    _comp = C[cur]; _st = getState(cur);
+  }
   const el = e.target;
   const f = el.dataset.f;
   const i = parseInt(el.dataset.i);
-  const st = getState(cur);
-  const comp = C[cur];
 
-  if (comp.onInput) {
-    const needsRegen = comp.onInput(st, f, i, el);
-    if (needsRegen === true) { regen(); return; }
+  if (_comp.onInput) {
+    const needsRegen = _comp.onInput(_st, f, i, el);
+    if (needsRegen === true) {
+      if (_isPageItem) { savePage(); regenPageItem(); } else regen();
+      return;
+    }
   }
 
-  // Update preview + code without full regen (preserves focus)
-  const code = comp.gen(st);
+  const code = _comp.gen(_st);
   document.getElementById('code-editor').value = code;
-  renderPreview(code);
+  renderPreview(_comp.preview ? _comp.preview(_st) : code);
+  if (_isPageItem) savePage();
 
-  // Special post-input hook for grade-breakdown weight pill
-  if (cur === 'grade-breakdown' && f === 'weight') {
-    const t = st.rows.reduce((s,r) => s + Number(r.weight), 0);
+  if (_comp.id === 'grade-breakdown' && f === 'weight') {
+    const t = _st.rows.reduce((s,r) => s + Number(r.weight), 0);
     const pill = document.querySelector('.ctrl-total');
     if (pill) {
       const ok = t === 100;
@@ -515,15 +694,28 @@ document.getElementById('controls-panel').addEventListener('input', e => {
 
 // Controls button clicks
 document.getElementById('controls-panel').addEventListener('click', e => {
-  if (!cur || C[cur].code !== undefined) return;
+  const pageBtn = e.target.closest('[data-page-action]');
+  if (pageBtn) {
+    const act = pageBtn.dataset.pageAction, uid = pageBtn.dataset.uid;
+    if (act === 'edit') startEditingItem(uid);
+    if (act === 'remove') removePageItem(uid);
+    return;
+  }
+  let _comp, _st, _isPageItem = false;
+  if (mode === 'page' && editingItemUid) {
+    const item = pageItems.find(p => p.uid === editingItemUid);
+    if (!item || !C[item.compId]) return;
+    _comp = C[item.compId]; _st = item.state; _isPageItem = true;
+  } else {
+    if (!cur || C[cur].code !== undefined) return;
+    _comp = C[cur]; _st = getState(cur);
+  }
   const btn = e.target.closest('[data-action]');
   if (!btn) return;
   const act = btn.dataset.action;
   const i = parseInt(btn.dataset.i);
-  const st = getState(cur);
-  const comp = C[cur];
-  if (comp.onClick) comp.onClick(st, act, i);
-  regen();
+  if (_comp.onClick) _comp.onClick(_st, act, i);
+  if (_isPageItem) { savePage(); regenPageItem(); } else regen();
 });
 
 // Controls drag-to-reorder
@@ -549,12 +741,21 @@ _cp.addEventListener('dragleave', e => {
 _cp.addEventListener('drop', e => {
   _cp.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
   const row = e.target.closest('[data-drop-i]');
-  if (!row || _dragFrom === null || !cur || C[cur].code !== undefined) { _dragFrom = null; return; }
+  if (!row || _dragFrom === null) { _dragFrom = null; return; }
   e.preventDefault();
   const toI = parseInt(row.dataset.dropI);
-  if (toI !== _dragFrom && C[cur].onDrop) C[cur].onDrop(getState(cur), _dragFrom, toI);
+  if (mode === 'page' && editingItemUid === null) {
+    if (toI !== _dragFrom) {
+      pageItems.splice(toI, 0, pageItems.splice(_dragFrom, 1)[0]);
+      savePage();
+      showPageMode();
+    }
+  } else {
+    if (!cur || C[cur].code !== undefined) { _dragFrom = null; return; }
+    if (toI !== _dragFrom && C[cur].onDrop) C[cur].onDrop(getState(cur), _dragFrom, toI);
+    regen();
+  }
   _dragFrom = null;
-  regen();
 });
 _cp.addEventListener('dragend', () => {
   _cp.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
@@ -579,6 +780,7 @@ document.getElementById('code-editor').addEventListener('keydown', function(e) {
 function copyCode() {
   navigator.clipboard.writeText(document.getElementById('code-editor').value).then(() => {
     const t = document.getElementById('toast');
+    t.textContent = (mode === 'page' && !editingItemUid) ? '✓ Page HTML copied' : '✓ Copied to clipboard';
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 2000);
   });
@@ -586,6 +788,14 @@ function copyCode() {
 
 // Reset
 function resetComp() {
+  if (mode === 'page' && editingItemUid) {
+    const item = pageItems.find(p => p.uid === editingItemUid);
+    if (!item) return;
+    item.state = clone(C[item.compId].def);
+    savePage();
+    regenPageItem();
+    return;
+  }
   if (!cur) return;
   if (C[cur].code !== undefined) { setEditor(C[cur].code); }
   else { states[cur] = clone(C[cur].def); regen(); }
@@ -647,6 +857,7 @@ async function loadComponents() {
   }
 
   buildSidebar();
+  loadPage();
 
   loader.classList.add('fade-out');
   setTimeout(() => { loader.style.display = 'none'; }, 420);
