@@ -38,7 +38,8 @@ Contains all CSS, the sidebar/topbar/preview/editor UI, and the runtime JavaScri
 1. Fetches `moodle-base.css` and builds the `OPEN` HTML wrapper (DOCTYPE + Google Fonts link + Moodle styles + `<body>`).
 2. Fetches `components/manifest.json` for the list of IDs.
 3. Fetches each `components/<id>.js` and executes it via `new Function(...)` with helpers injected.
-4. Calls `buildSidebar()` and fades out the loading screen.
+4. Calls `buildSidebar()`, then `loadPage()` (restores persisted Page Builder state from localStorage).
+5. Fades out the loading screen.
 
 Each component file runs in this injected scope:
 ```js
@@ -53,6 +54,20 @@ All fetch calls append `?v=Date.now()` for cache-busting.
 
 Each file calls `register(def)` once. The definition is stored in a plain object `C` keyed by `def.id`.
 
+## Global state variables
+
+```js
+const C = {};            // component registry: { [id]: def }
+const states = {};       // single-component editor state: { [id]: object }
+let cur = null;          // component ID loaded in Component mode
+let mode = 'component';  // 'component' | 'page'
+let pageItems = [];      // Page Builder items: [{ uid, compId, state }]
+let editingItemUid = null; // uid of page item currently being edited, or null
+let OPEN = '';           // HTML wrapper prefix built from moodle-base.css
+const CLOSE = '</body></html>';
+let _blobUrl = null;     // current iframe blob URL (revoked on each update)
+```
+
 ## Component API
 
 ### Static component (read-only, no controls)
@@ -62,7 +77,7 @@ register({
   id: 'my-component',        // matches filename and manifest entry
   name: 'Display Name',      // shown in sidebar and topbar
   desc: 'Short description', // shown in topbar
-  group: 'Layout',           // informational only (see sidebar note below)
+  group: 'Layout',           // informational only (not used for sidebar grouping)
   icon: '🖼',                // shown in sidebar
   code: `<div>...inline-styled HTML...</div>`
 });
@@ -136,9 +151,9 @@ register({
 
 ### State management
 
-State is stored in memory only (per-session, lost on reload). Each component gets a lazy-initialized clone of its `def` object via `clone(def)` (JSON round-trip deep copy). State is keyed by component ID in `const states = {}`.
+In Component mode, state is stored in memory in `states[id]` (per-session, lost on reload), lazy-initialized from `clone(def)` on first access. In Page Builder mode, each page item carries its own embedded `state` object, persisted to `localStorage` under the key `mc-page`.
 
-The `clone` utility is **not** available inside component files — it exists only in `index.html` scope.
+The `clone` utility (`JSON.parse(JSON.stringify(o))`) is **not** available inside component files — it exists only in `index.html` scope.
 
 ## Controls panel CSS classes
 
@@ -170,7 +185,7 @@ These classes are defined in `index.html` and used inside `ctrl()` return values
 
 - Input/select/textarea: `data-f="fieldName"` and `data-i="rowIndex"` (both required; use `"0"` for non-list fields)
 - Buttons: `data-action="actionName"` and `data-i="rowIndex"`
-- Draggable rows: `draggable="true"` on the row element
+- Draggable rows: `draggable="true"` and `data-drag-i="index"` on the row element; `data-drop-i="index"` also on the row
 
 ### Emoji picker
 
@@ -189,27 +204,102 @@ ytIdBadge(id, label)     // Renders green monospace badge with extracted ID
 
 `ytVideoId` handles: `youtube.com/watch?v=`, `youtube.com/embed/`, `youtube.com/shorts/`, `youtu.be/`, and full `<iframe src="...">` embed code strings.
 
-## Sidebar behavior
+## Sidebar
 
-The sidebar lists all loaded components **alphabetically by name**. If the user has starred any components (saved to `localStorage` as `mc-favorites`), those appear in a "Favorites" section at the top, followed by an "All" section with the full list.
+The sidebar has two sections in its header:
+- **Logo/branding** — "M" badge, "Component Library" title, "For XAMK Learn" subtitle
+- **Mode tabs** (`#mode-tabs`) — "Component" and "Page" tab buttons that call `setMode('component')` or `setMode('page')`
 
-The `group` field in `register()` is stored on the definition but is **not currently used for sidebar grouping or ordering**. It is available for future use or filtering.
+The nav list (`#sb-nav`) shows all loaded components **alphabetically by name**. If the user has starred components (saved to `localStorage` as `mc-favorites`), those appear in a "Favorites" section at the top, followed by an "All" section.
+
+**In Component mode**, clicking a nav item calls `load(id)`.
+**In Page mode**, clicking a nav item calls `addToPage(id)` — adding a new instance to the page.
+
+Sidebar item styling: default `#ccc`, hover `#fff`, active/selected has teal (`#00A89D`) background with bold white text.
+
+The `group` field in `register()` is stored on the definition but **not currently used** for sidebar grouping or ordering.
+
+## Page Builder mode
+
+The app has two modes toggled by the tab strip in the sidebar header.
+
+### Data model
+
+```js
+pageItems = [
+  { uid: 'pi_1234_5678', compId: 'callout-important', state: { ... } },
+  { uid: 'pi_1235_9012', compId: 'section-header',    state: null },  // null for static
+  ...
+]
+```
+
+- `uid` — unique per instance (`'pi_' + Date.now() + '_' + Math.random()`), allows multiple instances of the same component
+- `compId` — key into `C[]`
+- `state` — deep clone of `C[compId].def` at time of adding; `null` for static components
+
+**Persistence:** `localStorage` key `'mc-page'`, saved on every mutation via `savePage()`. Restored via `loadPage()` called after `buildSidebar()` in `loadComponents()`.
+
+### Page Builder functions
+
+| Function | Description |
+|---|---|
+| `setMode(m)` | Switches between `'component'` and `'page'` modes; updates tab active states |
+| `showWelcome()` | Resets UI to initial welcome screen (used when switching to Component mode with nothing loaded) |
+| `showPageMode()` | Enters/refreshes Page mode: updates topbar, calls `renderPageList()` + `renderPagePreview()` |
+| `renderPageList()` | Renders the ordered page item list into `#controls-panel` with drag handles, Edit and Remove buttons |
+| `renderPagePreview()` | Concatenates all items' `gen(state)` HTML, puts it in `#code-editor` and calls `renderPreview()` |
+| `addToPage(compId)` | Creates a new page item with cloned state, appends to `pageItems`, saves, refreshes |
+| `removePageItem(uid)` | Removes item by uid, saves, refreshes |
+| `clearPage()` | Confirms then empties `pageItems`, saves, refreshes |
+| `startEditingItem(uid)` | Sets `editingItemUid`, shows that item's `ctrl()` with a "← Back" header in the controls panel |
+| `stopEditingItem()` | Clears `editingItemUid`, calls `showPageMode()` |
+| `regenPageItem()` | Page-mode equivalent of `regen()`: rebuilds Back+ctrl HTML, updates preview for the active item |
+
+### Controls panel sub-views in Page mode
+
+The existing `#controls-panel` is reused for both:
+- `editingItemUid === null` → page list view (`renderPageList()`)
+- `editingItemUid !== null` → item editor view (`startEditingItem()`) — "← Back" button + `comp.ctrl(item.state)`
+
+Page list rows use `data-page-action="edit"` and `data-page-action="remove"` attributes (handled before `data-action` in the click listener). Drag-to-reorder uses the same `data-drag-i`/`data-drop-i` infrastructure as component rows.
+
+### Dispatch in Page mode
+
+The three controls event listeners (input, click, drop) resolve context at the top of each handler:
+
+```js
+let _comp, _st, _isPageItem = false;
+if (mode === 'page' && editingItemUid) {
+  const item = pageItems.find(p => p.uid === editingItemUid);
+  _comp = C[item.compId]; _st = item.state; _isPageItem = true;
+} else {
+  _comp = C[cur]; _st = getState(cur);
+}
+// Then call _comp.onInput/_comp.onClick/_comp.onDrop with _st
+// If _isPageItem: call savePage() + regenPageItem() instead of regen()
+```
+
+### Copy and Reset in Page mode
+
+- **Copy Page HTML** — topbar button label changes to "Copy Page HTML"; copies the full concatenated HTML from `#code-editor`; toast shows "✓ Page HTML copied"
+- **Reset** — while editing a page item, resets that item's state to `clone(C[compId].def)` and calls `regenPageItem()`
 
 ## Preview iframe
 
-The iframe renders `OPEN + htmlCode + CLOSE` as a `blob:` URL. `OPEN` is built at startup from `moodle-base.css` + a Google Fonts link for Open Sans and Montserrat. `CLOSE` is `</body></html>`.
+The iframe renders `OPEN + htmlCode + CLOSE` as a `blob:` URL. `OPEN` is built at startup from `moodle-base.css` + a Google Fonts link for Open Sans and Montserrat. `CLOSE` is `</body></html>`. The previous blob URL is revoked before each new one is created.
 
-This means component output is rendered inside a real Moodle-like stylesheet. The output HTML itself must use inline styles only (see Design constraints below).
+In Page mode, the preview shows all page items' HTML concatenated. While editing a single page item, the preview shows only that item.
 
 ## Design constraints
 
 All HTML generated by components (`gen()`, `code`, `preview()`) must use **inline styles only** — no class names, no `<style>` tags — because Moodle strips both.
 
-Design tokens used consistently across components:
+Design tokens used consistently:
 
 | Token | Value |
 |---|---|
 | Yellow accent | `#FDB92A` |
+| Teal (active/selected) | `#00A89D` |
 | Dark background | `#000000` / `#111111` |
 | Subtle dark | `#1A1A1A` / `#1E1E1E` |
 | Body font | `'Montserrat', Arial, sans-serif` |
@@ -251,7 +341,7 @@ The manifest is a plain JSON array of ID strings. Order in the manifest is the l
 | yt-playlist-iframe | YouTube Playlist Iframe | Media | Dynamic |
 | youtube-single | YouTube | Media | Dynamic |
 
-Note: `hero` appears in `manifest.json` but has no corresponding `.js` file. It will fail silently at load time (logged as `console.warn`).
+Note: `hero` appears in `manifest.json` but has no corresponding `.js` file. It fails silently at load time (logged as `console.warn`).
 
 ## Deployment
 
