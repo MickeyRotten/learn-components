@@ -20,7 +20,9 @@
       "Bash(git pull *)",
       "Bash(Start-Process -FilePath \"python\" -ArgumentList \"-m\", \"http.server\", \"8081\" -WorkingDirectory \"c:\\\\Users\\\\Mickey\\\\Code Projects\\\\Git Projects\\\\learn-components\" -WindowStyle Hidden)",
       "PowerShell(Start-Process -FilePath \"python\" -ArgumentList \"-m http.server 8081\" -WorkingDirectory \"c:\\\\Users\\\\Mickey\\\\Code Projects\\\\Git Projects\\\\learn-components\" -WindowStyle Hidden)",
-      "mcp__plugin_playwright_playwright__browser_take_screenshot"
+      "mcp__plugin_playwright_playwright__browser_take_screenshot",
+      "Skill(claude-md-management:revise-claude-md)",
+      "Skill(claude-md-management:revise-claude-md:*)"
     ]
   }
 }

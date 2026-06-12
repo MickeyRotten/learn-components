@@ -61,7 +61,9 @@ const C = {};            // component registry: { [id]: def }
 const states = {};       // single-component editor state: { [id]: object }
 let cur = null;          // component ID loaded in Component mode
 let mode = 'component';  // 'component' | 'page'
-let pageItems = [];      // Page Builder items: [{ uid, compId, state }]
+let pages = [{ name: 'Page 1', items: [] }]; // Page Builder pages array
+let currentPageIdx = 0;  // active page index
+let pickerOpen = false;  // whether component picker panel is open
 let editingItemUid = null; // uid of page item currently being edited, or null
 let OPEN = '';           // HTML wrapper prefix built from moodle-base.css
 const CLOSE = '</body></html>';
@@ -151,7 +153,7 @@ register({
 
 ### State management
 
-In Component mode, state is stored in memory in `states[id]` (per-session, lost on reload), lazy-initialized from `clone(def)` on first access. In Page Builder mode, each page item carries its own embedded `state` object, persisted to `localStorage` under the key `mc-page`.
+In Component mode, state is stored in memory in `states[id]` (per-session, lost on reload), lazy-initialized from `clone(def)` on first access. In Page Builder mode, each page item carries its own embedded `state` object. All pages are persisted to `localStorage` under the key `mc-pages-v2` as `{ pages, currentPageIdx }`.
 
 The `clone` utility (`JSON.parse(JSON.stringify(o))`) is **not** available inside component files — it exists only in `index.html` scope.
 
@@ -213,7 +215,7 @@ The sidebar has two sections in its header:
 The nav list (`#sb-nav`) shows all loaded components **alphabetically by name**. If the user has starred components (saved to `localStorage` as `mc-favorites`), those appear in a "Favorites" section at the top, followed by an "All" section.
 
 **In Component mode**, clicking a nav item calls `load(id)`.
-**In Page mode**, clicking a nav item calls `addToPage(id)` — adding a new instance to the page.
+**In Page mode**, the sidebar shows the pages list via `buildPageSidebar()` — click to switch pages, double-click name to rename, ✕ to delete, "+ New Page" button at bottom. Components are added via the inline picker in the controls panel (not via sidebar).
 
 Sidebar item styling: default `#ccc`, hover `#fff`, active/selected has teal (`#00A89D`) background with bold white text.
 
@@ -226,18 +228,22 @@ The app has two modes toggled by the tab strip in the sidebar header.
 ### Data model
 
 ```js
-pageItems = [
-  { uid: 'pi_1234_5678', compId: 'callout-important', state: { ... } },
-  { uid: 'pi_1235_9012', compId: 'section-header',    state: null },  // null for static
-  ...
+pages = [
+  { name: 'Page 1', items: [
+    { uid: 'pi_1234_5678', compId: 'callout-important', state: { ... } },
+    { uid: 'pi_1235_9012', compId: 'section-header',    state: null },  // null for static
+  ]},
+  { name: 'Page 2', items: [] },
 ]
+currentPageIdx = 0;
 ```
 
 - `uid` — unique per instance (`'pi_' + Date.now() + '_' + Math.random()`), allows multiple instances of the same component
 - `compId` — key into `C[]`
 - `state` — deep clone of `C[compId].def` at time of adding; `null` for static components
+- Use `curPage()` to access `pages[currentPageIdx]` throughout the engine
 
-**Persistence:** `localStorage` key `'mc-page'`, saved on every mutation via `savePage()`. Restored via `loadPage()` called after `buildSidebar()` in `loadComponents()`.
+**Persistence:** `localStorage` key `'mc-pages-v2'` (format: `{ pages, currentPageIdx }`), saved on every mutation via `savePage()`. On load, migrates from old `'mc-page'` key (single-page array) if present.
 
 ### Page Builder functions
 
@@ -246,19 +252,27 @@ pageItems = [
 | `setMode(m)` | Switches between `'component'` and `'page'` modes; updates tab active states |
 | `showWelcome()` | Resets UI to initial welcome screen (used when switching to Component mode with nothing loaded) |
 | `showPageMode()` | Enters/refreshes Page mode: updates topbar, calls `renderPageList()` + `renderPagePreview()` |
-| `renderPageList()` | Renders the ordered page item list into `#controls-panel` with drag handles, Edit and Remove buttons |
-| `renderPagePreview()` | Concatenates all items' `gen(state)` HTML, puts it in `#code-editor` and calls `renderPreview()` |
-| `addToPage(compId)` | Creates a new page item with cloned state, appends to `pageItems`, saves, refreshes |
-| `removePageItem(uid)` | Removes item by uid, saves, refreshes |
-| `clearPage()` | Confirms then empties `pageItems`, saves, refreshes |
+| `curPage()` | Returns `pages[currentPageIdx]` |
+| `renderPageList()` | Renders the ordered page item list into `#controls-panel`; appends add slot or component picker depending on `pickerOpen` |
+| `buildPickerHTML()` | Returns HTML for the inline component picker (pill buttons grouped by `GROUP_ORDER`); shown when `pickerOpen === true` |
+| `renderPagePreview()` | Concatenates all items' `gen(state)` HTML separated by `<hr>`, puts it in `#code-editor` and calls `renderPreview()` |
+| `addToPage(compId)` | Creates a new page item with cloned state, appends to `curPage().items`, saves, refreshes |
+| `removePageItem(uid)` | Removes item by uid from `curPage().items`, saves, refreshes |
+| `clearPage()` | Confirms then empties `curPage().items`, saves, refreshes |
+| `addPage()` | Appends a new empty page, switches to it, rebuilds sidebar |
+| `switchPage(idx)` | Sets `currentPageIdx`, saves, rebuilds sidebar and page view |
+| `deletePage(idx)` | Removes page at idx (min 1 page enforced), adjusts index, saves |
+| `renamePage(idx, name)` | Updates page name, saves, rebuilds sidebar |
+| `buildPageSidebar()` | Replaces `#sb-nav` contents with page list items + "+ New Page" button |
 | `startEditingItem(uid)` | Sets `editingItemUid`, shows that item's `ctrl()` with a "← Back" header in the controls panel |
-| `stopEditingItem()` | Clears `editingItemUid`, calls `showPageMode()` |
+| `stopEditingItem()` | Clears `editingItemUid` and `pickerOpen`, calls `showPageMode()` |
 | `regenPageItem()` | Page-mode equivalent of `regen()`: rebuilds Back+ctrl HTML, updates preview for the active item |
 
 ### Controls panel sub-views in Page mode
 
-The existing `#controls-panel` is reused for both:
-- `editingItemUid === null` → page list view (`renderPageList()`)
+The existing `#controls-panel` is reused for three sub-views:
+- `editingItemUid === null && pickerOpen === false` → page list view with "+ Add component" slot at bottom
+- `editingItemUid === null && pickerOpen === true` → component picker shown inline (pill buttons by group, Cancel link)
 - `editingItemUid !== null` → item editor view (`startEditingItem()`) — "← Back" button + `comp.ctrl(item.state)`
 
 Page list rows use `data-page-action="edit"` and `data-page-action="remove"` attributes (handled before `data-action` in the click listener). Drag-to-reorder uses the same `data-drag-i`/`data-drop-i` infrastructure as component rows.
@@ -270,7 +284,7 @@ The three controls event listeners (input, click, drop) resolve context at the t
 ```js
 let _comp, _st, _isPageItem = false;
 if (mode === 'page' && editingItemUid) {
-  const item = pageItems.find(p => p.uid === editingItemUid);
+  const item = curPage().items.find(p => p.uid === editingItemUid);
   _comp = C[item.compId]; _st = item.state; _isPageItem = true;
 } else {
   _comp = C[cur]; _st = getState(cur);
@@ -319,11 +333,11 @@ The manifest is a plain JSON array of ID strings. Order in the manifest is the l
 | ID | Name | Group | Type |
 |---|---|---|---|
 | assessment-guidelines | Assessment Guidelines | Teaching | Dynamic |
-| assignment | Assignment Block | Teaching | Dynamic |
+| assignment | Assignment Block | Teaching | Dynamic — fields: title, code, deadline, type, mandatory, ai, body, specs[], evaluation[] |
 | callout-important | Callout | Callouts | Dynamic |
 | card-single | Card | Cards | Dynamic |
 | comparison-table | Comparison Table | Teaching | Dynamic |
-| course-info | Course Info Block | Course Info | Dynamic |
+| course-info | Course Info Block | Course Info | Dynamic — fields include groupId (student group ID, e.g. "GDKV26SP") |
 | definition | Definition | Teaching | Dynamic |
 | game-example | Game Example | Teaching | Dynamic |
 | grade-breakdown | Grade Breakdown | Course Info | Dynamic |

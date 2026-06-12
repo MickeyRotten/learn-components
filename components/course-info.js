@@ -16,7 +16,13 @@ register({
     ],
     goals: ['Understand core game design principles', 'Apply player-centred design thinking'],
     objectives: ['What makes a game fun and replayable?', 'How are mechanics, dynamics and aesthetics connected?'],
-    evaluation: ['Ability to design and justify core game mechanics', 'Quality of documentation and design rationale']
+    evaluation: [
+      'use professional vocabulary systematically.',
+      'look for information in the key information sources of the field.',
+      'identify interrelated tasks.',
+      'use the key models, methods, software and techniques of the professional field.',
+      'justify their actions according to the ethical principles of the professional field.'
+    ]
   },
   gen(st) {
     const pill = (bg, color, border, text) =>
@@ -39,7 +45,7 @@ register({
     <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
       ${pill('#FDB92A', '#000000', '', `${esc(String(st.credits))} credits`)}
       ${pill('#1A1A1A', '#CCCCCC', '#333333', `${esc(String(st.mandatory))} mandatory assignments`)}
-      ${pill('#1A1A1A', '#CCCCCC', '#333333', `${esc(String(st.optional))} optional assignments`)}
+      ${st.optional > 0 ? pill('#1A1A1A', '#CCCCCC', '#333333', `${esc(String(st.optional))} optional assignments`) : ''}
     </div>
   </div>
   <div style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;">
@@ -65,6 +71,7 @@ register({
   </div>
   <div style="padding:20px 24px;">
     <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px 0;">Evaluation Criteria</p>
+    <p style="margin:0 0 8px 0;font-size:14px;color:#1A1A1A;">Students can...</p>
     <ul style="margin:0;padding-left:20px;">${evalItems}</ul>
   </div>
 </div>`;
