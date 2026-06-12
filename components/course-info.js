@@ -6,6 +6,7 @@ register({
   icon: '🎓',
   def: {
     code: 'CT10001',
+    groupId: 'GDKV26SP',
     name: 'Game Design',
     credits: 5,
     mandatory: 3,
@@ -32,10 +33,8 @@ register({
     ).join('');
 
     return `<div style="margin:24px 0;border:1px solid #E0E0E0;border-radius:12px;overflow:hidden;">
-  <div style="background-color:#000000;padding:8px 24px;">
-    <p style="color:#FDB92A;letter-spacing:2px;text-transform:uppercase;margin:0;font-size:11px;">🎓 &nbsp;COURSE &nbsp;·&nbsp; ${esc(st.code)}</p>
-  </div>
   <div style="background-color:#FAFAFA;padding:16px 24px 18px;border-bottom:1px solid #E0E0E0;">
+    <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FDB92A;margin:0 0 4px 0;">${esc(st.code)}${st.groupId ? ` &nbsp;·&nbsp; ${esc(st.groupId)}` : ''}</p>
     <h3 style="color:#000000;margin:0 0 14px 0;line-height:1.2;">${esc(st.name)}</h3>
     <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
       ${pill('#FDB92A', '#000000', '', `${esc(String(st.credits))} credits`)}
@@ -80,7 +79,9 @@ register({
     <div class="ctrl-rows">
       <div class="ctrl-row">
         <span style="font-size:11px;color:#666;flex-shrink:0;width:44px;font-family:var(--ui)">Code</span>
-        <input class="ci" style="width:90px;flex-shrink:0;" type="text" value="${escA(st.code)}" data-f="code" data-i="0" placeholder="CT10001">
+        <input class="ci" style="width:80px;flex-shrink:0;" type="text" value="${escA(st.code)}" data-f="code" data-i="0" placeholder="CT10001">
+        <span style="font-size:11px;color:#666;flex-shrink:0;margin-left:6px;font-family:var(--ui)">Group</span>
+        <input class="ci" style="width:90px;flex-shrink:0;" type="text" value="${escA(st.groupId||'')}" data-f="groupId" data-i="0" placeholder="TK21S">
         <span style="font-size:11px;color:#666;flex-shrink:0;margin-left:6px;font-family:var(--ui)">Name</span>
         <input class="ci ci-grow" type="text" value="${escA(st.name)}" data-f="name" data-i="0" placeholder="Course name">
       </div>

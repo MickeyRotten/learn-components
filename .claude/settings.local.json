@@ -6,7 +6,21 @@
       "mcp__plugin_playwright_playwright__browser_navigate",
       "mcp__plugin_playwright_playwright__browser_console_messages",
       "mcp__plugin_playwright_playwright__browser_snapshot",
-      "mcp__plugin_playwright_playwright__browser_click"
+      "mcp__plugin_playwright_playwright__browser_click",
+      "Bash(Remove-Item \"c:\\\\Users\\\\Mickey\\\\Code Projects\\\\Git Projects\\\\learn-components\\\\xamk-component-library.html\")",
+      "Bash(python3 -)",
+      "Bash(python -)",
+      "Bash(git add *)",
+      "Bash(git rm *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(gh run *)",
+      "PowerShell($env:PATH = $env:PATH + \";C:\\\\Program Files\\\\GitHub CLI\"; gh run list --limit 5)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\Mickey\\\\Code Projects\\\\Git Projects\\\\learn-components\\\\components\\\\do-dont.js\")",
+      "Bash(git pull *)",
+      "Bash(Start-Process -FilePath \"python\" -ArgumentList \"-m\", \"http.server\", \"8081\" -WorkingDirectory \"c:\\\\Users\\\\Mickey\\\\Code Projects\\\\Git Projects\\\\learn-components\" -WindowStyle Hidden)",
+      "PowerShell(Start-Process -FilePath \"python\" -ArgumentList \"-m http.server 8081\" -WorkingDirectory \"c:\\\\Users\\\\Mickey\\\\Code Projects\\\\Git Projects\\\\learn-components\" -WindowStyle Hidden)",
+      "mcp__plugin_playwright_playwright__browser_take_screenshot"
     ]
   }
 }

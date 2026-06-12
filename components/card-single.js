@@ -26,7 +26,7 @@ ${items}
   },
   ctrl(st) {
     const rows = st.cards.map((c, i) => `
-    <div class="ctrl-header" style="margin-top:${i > 0 ? '4px' : '0'};">
+    <div class="ctrl-header" style="margin-top:4px;">
       <span class="ctrl-label">Card ${i + 1}</span>
       <div class="ctrl-actions">
         ${st.cards.length > 1 ? `<button class="ctrl-btn-x" data-action="remove" data-i="${i}" title="Remove">✕</button>` : ''}
@@ -46,13 +46,13 @@ ${items}
     </div>`).join('');
 
     return `
-    ${rows}
-    <div class="ctrl-header" style="margin-top:4px;">
-      <span class="ctrl-label"></span>
+    <div class="ctrl-header">
+      <span class="ctrl-label">Cards (${st.cards.length})</span>
       <div class="ctrl-actions">
-        <button class="ctrl-btn ctrl-btn-add" data-action="add" data-i="0">+ Add Card</button>
+        <button class="ctrl-btn ctrl-btn-add" data-action="add">+ Add Card</button>
       </div>
-    </div>`;
+    </div>
+    ${rows}`;
   },
   onInput(st, f, i, el) {
     st.cards[i][f] = el.value;
