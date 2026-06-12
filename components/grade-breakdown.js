@@ -17,10 +17,10 @@ register({
       const w=Math.max(0,Math.min(100,Number(r.weight)));
       return `      <tr style="border-bottom: 1px solid #E0E0E0;">
         <td style="padding: 14px 18px; font-weight: 600; font-size: 14px; color: #000000;">${esc(r.name)}</td>
-        <td style="padding: 14px 18px;">
+        <td style="padding: 14px 18px; white-space: nowrap;">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 140px; background-color: #E0E0E0; height: 8px; border-radius: 4px;"><div style="height: 8px; width: ${w}%; background-color: #FDB92A; border-radius: 4px;"></div></div>
-            <span style="font-weight: 700; font-size: 14px; color: #000000; white-space: nowrap;">${w}%</span>
+            <div style="width: 100px; background-color: #E0E0E0; height: 8px; border-radius: 4px;"><div style="height: 8px; width: ${w}%; background-color: #FDB92A; border-radius: 4px;"></div></div>
+            <span style="font-weight: 700; font-size: 14px; color: #000000;">${w}%</span>
           </div>
         </td>
         <td style="padding: 14px 18px; font-size: 13px; color: #444444;">${esc(r.notes)}</td>
@@ -31,21 +31,21 @@ register({
     <thead>
       <tr style="background-color: #000000;">
         <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;">Assignment</th>
-        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; width: 220px;">Weight</th>
-        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;">Notes</th>
+        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; width: 180px;">Weight</th>
+        <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;">Deliverable</th>
       </tr>
     </thead>
     <tbody>\n${trs}\n    </tbody>
     <tfoot>
       <tr style="background-color: #F5F5F5; border-top: 2px solid #000000;">
         <td style="padding: 12px 18px; font-weight: 700; font-size: 14px; color: #000000;">Total</td>
-        <td style="padding: 12px 18px;">
+        <td style="padding: 12px 18px; white-space: nowrap;">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 140px; background-color: #000000; height: 8px; border-radius: 4px;"></div>
+            <div style="width: 100px; background-color: #000000; height: 8px; border-radius: 4px;"></div>
             <span style="font-weight: 700; font-size: 14px; color: #000000;">${total}%</span>
           </div>
         </td>
-        <td style="padding: 12px 18px; font-size: 13px; color: #8D8D8D;">Graded 0–5 / Pass–Fail</td>
+        <td style="padding: 12px 18px;"></td>
       </tr>
     </tfoot>
   </table>
@@ -67,13 +67,13 @@ register({
     <div class="ctrl-rows">
       <div class="ctrl-row" style="padding:3px 14px 2px">
         <span class="ctrl-num"></span>
-        <span class="ctrl-col-hdr" style="flex:3">Name</span>
-        <span class="ctrl-col-hdr" style="width:52px;margin-left:6px">Weight</span>
+        <span class="ctrl-col-hdr" style="flex:2">Name</span>
+        <span class="ctrl-col-hdr" style="width:44px;margin-left:6px">Weight</span>
         <span style="width:12px"></span>
-        <span class="ctrl-col-hdr" style="flex:2;margin-left:6px">Notes</span>
+        <span class="ctrl-col-hdr" style="flex:3;margin-left:6px">Deliverable</span>
         <span style="width:24px"></span>
       </div>
-      ${st.rows.map((r,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci" style="flex:3" type="text" value="${escA(r.name)}" data-f="name" data-i="${i}" placeholder="Assignment name"><input class="ci ci-sm" type="number" value="${r.weight}" data-f="weight" data-i="${i}" min="0" max="100"><span style="font-size:10px;color:#555;flex-shrink:0">%</span><input class="ci" style="flex:2" type="text" value="${escA(r.notes)}" data-f="notes" data-i="${i}" placeholder="Notes"><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
+      ${st.rows.map((r,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci" style="flex:2" type="text" value="${escA(r.name)}" data-f="name" data-i="${i}" placeholder="Assignment name"><input class="ci" style="width:44px;flex-shrink:0;" type="number" value="${r.weight}" data-f="weight" data-i="${i}" min="0" max="100"><span style="font-size:10px;color:#555;flex-shrink:0">%</span><input class="ci" style="flex:3" type="text" value="${escA(r.notes)}" data-f="notes" data-i="${i}" placeholder="Deliverable"><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
     </div>`;
   },
   onInput: function(st, f, i, el) {

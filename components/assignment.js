@@ -10,7 +10,10 @@ register({
     deadline: '',
     type: 'individual',
     mandatory: 'mandatory',
+    grading: 'grade',
+    feedback: 'written',
     ai: 'yellow',
+    submitReminder: true,
     body: 'Complete the following specifications and submit by the deadline.',
     specs: [
       'Write a 2–3 page game design document for an original game concept.',
@@ -44,14 +47,18 @@ register({
       ? pill('#1A1A1A', '#AAAAAA', '#333333', '⭐ Bonus')
       : pill('#FDB92A', '#000000', '', '✔ Mandatory');
 
-    const bullet = `<span style="width:6px;height:6px;background-color:#FDB92A;border-radius:50%;flex-shrink:0;margin-top:9px;"></span>`;
+    const gradingLabel = { grade: 'Grade 0–5', passfail: 'Pass / Fail', points: 'Points 0–100' }[st.grading] || 'Grade 0–5';
+    const feedbackLabel = { none: 'No Feedback', written: 'Written Feedback', rubric: 'Evaluation Rubric', spoken: 'Spoken Feedback' }[st.feedback] || 'Written Feedback';
 
-    const items = st.specs.map(s =>
-      `      <li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:8px;">${bullet}${esc(s)}</li>`
+    const specRows = st.specs.map((s, idx) =>
+      `<tr${idx < st.specs.length - 1 ? ' style="border-bottom:1px solid #E0E0E0;"' : ''}>
+        <td style="padding:15px;text-align:center;width:10%;"><strong style="font-size:20px;">${idx + 1}</strong></td>
+        <td style="padding:15px;font-size:14px;color:#1A1A1A;line-height:1.7;">${esc(s)}</td>
+      </tr>`
     ).join('\n');
 
     const evalItems = (st.evaluation || []).map(s =>
-      `      <li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:8px;">${bullet}${esc(s)}</li>`
+      `<li style="font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:6px;">${esc(s)}</li>`
     ).join('\n');
 
     return `<div style="margin:24px 0;border:1px solid #E0E0E0;border-radius:12px;overflow:hidden;">
@@ -61,15 +68,23 @@ register({
       ${pill('#FDB92A', '#000000', '', `&#128197; ${esc(fmtDate(st.deadline))}`)}
       <span style="background-color:#1A1A1A;color:#CCCCCC;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid #333333;white-space:nowrap;">${typeLabel}</span>
       ${mandatoryPill}
+      ${pill('#1A1A1A', '#CCCCCC', '#333333', gradingLabel)}
+      ${pill('#1A1A1A', '#CCCCCC', '#333333', feedbackLabel)}
     </div>
   </div>
   <div style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;">
     ${st.body ? `<p style="margin:0 0 16px 0;line-height:1.7;">${esc(st.body)}</p>` : ''}
     <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px 0;">Specifications</p>
-    <ul style="margin:0;padding:0;list-style:none;">\n${items}\n    </ul>
+    <table style="border-collapse:collapse;width:100%;" border="0">
+      <colgroup><col style="width:10%;"><col style="width:90%;"></colgroup>
+      <tbody>${specRows}</tbody>
+    </table>
     <p style="letter-spacing:1.5px;text-transform:uppercase;margin:20px 0 12px 0;">Evaluation</p>
-    <ul style="margin:0;padding:0;list-style:none;">\n${evalItems}\n    </ul>
+    <ul style="margin:0;padding-left:20px;">\n${evalItems}\n    </ul>
   </div>
+  ${st.submitReminder ? `<div style="padding:10px 24px;background-color:#F5F5F5;border-top:1px solid #E0E0E0;text-align:center;">
+    <p style="margin:0;font-size:13px;color:#555555;">⬆️ Submit your work using the link above</p>
+  </div>` : ''}
   <div style="padding:14px 24px;background-color:${ai.bg};border-top:3px solid ${ai.dot};display:flex;align-items:center;gap:14px;">
     <div style="width:18px;height:18px;background-color:${ai.dot};border-radius:50%;flex-shrink:0;"></div>
     <div>
@@ -95,6 +110,17 @@ register({
       ['mandatory','✔ Mandatory'],
       ['bonus',    '⭐ Bonus']
     ].map(([v,l]) => `<option value="${v}"${st.mandatory===v?' selected':''}>${l}</option>`).join('');
+    const gradingOpts = [
+      ['grade',   'Grade 0–5'],
+      ['passfail','Pass / Fail'],
+      ['points',  'Points 0–100']
+    ].map(([v,l]) => `<option value="${v}"${st.grading===v?' selected':''}>${l}</option>`).join('');
+    const feedbackOpts = [
+      ['none',    'No Feedback'],
+      ['written', 'Written Feedback'],
+      ['rubric',  'Evaluation Rubric'],
+      ['spoken',  'Spoken Feedback']
+    ].map(([v,l]) => `<option value="${v}"${st.feedback===v?' selected':''}>${l}</option>`).join('');
 
     return `
     <div class="ctrl-header">
@@ -127,6 +153,19 @@ register({
         <span style="font-size:11px;color:#666;flex-shrink:0;margin-left:6px;font-family:var(--ui)">AI</span>
         <select class="ci ci-grow" data-f="ai" data-i="0">${aiOpts}</select>
       </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:52px;font-family:var(--ui)">Grading</span>
+        <select class="ci" style="width:140px;flex-shrink:0;" data-f="grading" data-i="0">${gradingOpts}</select>
+        <span style="font-size:11px;color:#666;flex-shrink:0;margin-left:6px;font-family:var(--ui)">Feedback</span>
+        <select class="ci ci-grow" data-f="feedback" data-i="0">${feedbackOpts}</select>
+      </div>
+      <div class="ctrl-row">
+        <span style="font-size:11px;color:#666;flex-shrink:0;width:52px;font-family:var(--ui)">Submit</span>
+        <select class="ci ci-grow" data-f="submitReminder" data-i="0">
+          <option value="true"${st.submitReminder?' selected':''}>⬆ Show submit reminder</option>
+          <option value="false"${!st.submitReminder?' selected':''}>Hidden</option>
+        </select>
+      </div>
       <div style="padding:5px 14px 2px;"><span class="ctrl-col-hdr">Specification items</span></div>
       ${st.specs.map((s,i) => `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci ci-grow" type="text" value="${escA(s)}" data-f="spec" data-i="${i}" placeholder="Specification item"><button class="ctrl-btn-x" data-action="rm-spec" data-i="${i}">×</button></div>`).join('')}
       <div style="padding:5px 14px 2px;"><span class="ctrl-col-hdr">Evaluation items</span></div>
@@ -136,6 +175,7 @@ register({
   onInput(st, f, i, el) {
     if (f === 'spec') st.specs[i] = el.value;
     else if (f === 'eval') { if (!st.evaluation) st.evaluation = []; st.evaluation[i] = el.value; }
+    else if (f === 'submitReminder') st.submitReminder = el.value === 'true';
     else st[f] = el.value;
     if (f === 'mandatory') return true;
   },
