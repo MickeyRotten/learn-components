@@ -10,17 +10,14 @@ register({
   },
   gen(st) {
     const cfg = {
-      h1: { barW: '6px', barH: '32px', gap: '14px', margin: '32px 0 16px 0', radius: '3px' },
-      h2: { barW: '5px', barH: '28px', gap: '12px', margin: '32px 0 16px 0', radius: '3px' },
-      h3: { barW: '4px', barH: '22px', gap: '10px', margin: '24px 0 12px 0', radius: '2px' },
-      h4: { barW: '3px', barH: '18px', gap: '8px',  margin: '20px 0 10px 0', radius: '2px' },
-      h5: { barW: '3px', barH: '16px', gap: '8px',  margin: '16px 0 8px 0',  radius: '2px' },
+      h1: { barW: '6px', gap: '14px', margin: '32px 0 16px 0' },
+      h2: { barW: '5px', gap: '12px', margin: '32px 0 16px 0' },
+      h3: { barW: '4px', gap: '10px', margin: '24px 0 12px 0' },
+      h4: { barW: '3px', gap: '8px',  margin: '20px 0 10px 0' },
+      h5: { barW: '3px', gap: '8px',  margin: '16px 0 8px 0'  },
     };
     const c = cfg[st.level] || cfg.h1;
-    return `<div style="display:flex;align-items:center;gap:${c.gap};margin:${c.margin};">
-  <div style="width:${c.barW};height:${c.barH};background-color:#FDB92A;border-radius:${c.radius};flex-shrink:0;"></div>
-  <${st.level} style="margin:0;">${esc(st.text)}</${st.level}>
-</div>`;
+    return `<${st.level} style="margin:${c.margin};border-left:${c.barW} solid #FDB92A;padding-left:${c.gap};">${esc(st.text)}</${st.level}>`;
   },
   ctrl(st) {
     const levels = ['h1', 'h2', 'h3', 'h4', 'h5'];

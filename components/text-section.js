@@ -11,28 +11,45 @@ register({
   },
   gen(st) {
     const cfg = {
-      h1: { barW: '6px', barH: '32px', gap: '14px', margin: '0 0 16px 0', radius: '3px' },
-      h2: { barW: '5px', barH: '28px', gap: '12px', margin: '0 0 16px 0', radius: '3px' },
-      h3: { barW: '4px', barH: '22px', gap: '10px', margin: '0 0 12px 0', radius: '2px' },
-      h4: { barW: '3px', barH: '18px', gap: '8px',  margin: '0 0 10px 0', radius: '2px' },
-      h5: { barW: '3px', barH: '16px', gap: '8px',  margin: '0 0 8px 0',  radius: '2px' },
+      h1: { barW: '6px', gap: '14px', margin: '0 0 16px 0' },
+      h2: { barW: '5px', gap: '12px', margin: '0 0 16px 0' },
+      h3: { barW: '4px', gap: '10px', margin: '0 0 12px 0' },
+      h4: { barW: '3px', gap: '8px',  margin: '0 0 10px 0' },
+      h5: { barW: '3px', gap: '8px',  margin: '0 0 8px 0'  },
     };
-    const cols = st.columns.map(col => {
-      const header = col.headingLevel === 'none' ? '' : (() => {
-        const c = cfg[col.headingLevel] || cfg.h2;
-        return `<div style="display:flex;align-items:center;gap:${c.gap};margin:${c.margin};">
-      <div style="width:${c.barW};height:${c.barH};background-color:#FDB92A;border-radius:${c.radius};flex-shrink:0;"></div>
-      <${col.headingLevel} style="margin:0;">${esc(col.headingText)}</${col.headingLevel}>
-    </div>`;
-      })();
-      return `  <div>
-    ${header}<p style="line-height:1.7;margin:0;">${esc(col.body)}</p>
-  </div>`;
+    const heading = col => {
+      if (col.headingLevel === 'none') return '';
+      const c = cfg[col.headingLevel] || cfg.h2;
+      return `<${col.headingLevel} style="margin:${c.margin};border-left:${c.barW} solid #FDB92A;padding-left:${c.gap};">${esc(col.headingText)}</${col.headingLevel}>`;
+    };
+
+    // Single column needs no layout container at all.
+    if (st.columns.length === 1) {
+      const col = st.columns[0];
+      return `${heading(col)}
+<p style="line-height:1.7;margin:0 0 16px 0;">${fmt(col.body)}</p>`;
+    }
+
+    // Wrap onto a new row every 3 columns, matching the old grid behaviour.
+    const perRow = Math.min(3, st.columns.length);
+    const rows = [];
+    for (let i = 0; i < st.columns.length; i += perRow) rows.push(st.columns.slice(i, i + perRow));
+
+    const body = rows.map((row, r) => {
+      const cells = row.map((col, i) => `      <td style="vertical-align:top;padding:${r > 0 ? '24px' : '0'} ${i === perRow - 1 ? '0' : '24px'} 0 0;">
+        ${heading(col)}<p style="line-height:1.7;margin:0;">${fmt(col.body)}</p>
+      </td>`).join('\n');
+      // Pad short final rows so cells keep an even width.
+      const pad = Array.from({ length: perRow - row.length },
+        () => '      <td style="vertical-align:top;"></td>').join('\n');
+      return `    <tr>\n${cells}${pad ? '\n' + pad : ''}\n    </tr>`;
     }).join('\n');
-    const gridCols = Math.min(3, st.columns.length);
-    return `<div style="display:grid;grid-template-columns:repeat(${gridCols},1fr);gap:24px;margin:16px 0;">
-${cols}
-</div>`;
+
+    return `<table style="width:100%;border-collapse:collapse;table-layout:fixed;margin:16px 0;" border="0">
+  <tbody>
+${body}
+  </tbody>
+</table>`;
   },
   ctrl(st) {
     const colSections = st.columns.map((col, i) => {
@@ -60,7 +77,7 @@ ${cols}
       ${titleRow}
       <div class="ctrl-row" style="align-items:flex-start;">
         <span style="font-size:11px;color:#666;flex-shrink:0;width:44px;padding-top:6px;font-family:var(--ui)">Body</span>
-        <textarea class="ci ci-grow" data-f="body" data-i="${i}" rows="4" style="resize:vertical;">${esc(col.body)}</textarea>
+        <textarea class="ci ci-grow ci-prose" data-f="body" data-i="${i}" rows="1">${esc(col.body)}</textarea>
       </div>
     </div>`;
     }).join('');

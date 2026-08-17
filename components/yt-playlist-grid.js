@@ -10,24 +10,37 @@ register({
     {url:'', title:'Video Title 3', duration:'0:00'}
   ]},
   gen: function(st) {
-    const cards = st.videos.map(v => {
+    const cell = v => {
       const vid = ytVideoId(v.url);
       const href = vid ? `https://www.youtube.com/watch?v=${vid}` : '#';
       const thumb = ytThumb(vid);
-      return `    <a href="${href}" target="_blank" rel="noopener noreferrer" style="flex: 1 1 200px; text-decoration: none; background-color: #FFFFFF; border: 1px solid #E0E0E0; border-radius: 10px; display: block;">
-      <img src="${thumb}" alt="${esc(v.title)}" style="width: 100%; display: block; border-radius: 10px 10px 0 0; height: auto;">
-      <div style="padding: 10px 12px 12px 12px;">
-        <p style="margin: 0 0 4px 0; line-height: 1.4">${esc(v.title)}</p>
-        <p style="margin: 0"><span role="img" aria-label="Duration">⏱</span> ${esc(v.duration)}</p>
-      </div>
-    </a>`;
+      return `      <td style="vertical-align: top; background-color: #FFFFFF; border: 1px solid #E0E0E0; border-radius: 10px; padding: 0;">
+        <a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: block;">
+          <img src="${thumb}" alt="${esc(v.title)}" style="width: 100%; display: block; border-radius: 10px 10px 0 0; height: auto;">
+          <p style="margin: 0 0 4px 0; padding: 10px 12px 0 12px; line-height: 1.4">${esc(v.title)}</p>
+          <p style="margin: 0; padding: 0 12px 12px 12px"><span role="img" aria-label="Duration">⏱</span> ${esc(v.duration)}</p>
+        </a>
+      </td>`;
+    };
+
+    // Three thumbnails per row, matching the old flex-wrap layout.
+    const perRow = Math.min(3, st.videos.length) || 1;
+    const rows = [];
+    for (let i = 0; i < st.videos.length; i += perRow) rows.push(st.videos.slice(i, i + perRow));
+
+    const body = rows.map(row => {
+      const cells = row.map(cell).join('\n');
+      const pad = Array.from({ length: perRow - row.length },
+        () => '      <td style="border: none;"></td>').join('\n');
+      return `    <tr>\n${cells}${pad ? '\n' + pad : ''}\n    </tr>`;
     }).join('\n');
-    return `<div style="margin: 24px 0;">
-  <h3 style="margin: 0 0 16px 0">${esc(st.heading)}</h3>
-  <div style="display: flex; flex-wrap: wrap; gap: 16px;">
-${cards}
-  </div>
-</div>`;
+
+    return `<h3 style="margin: 24px 0 16px 0">${esc(st.heading)}</h3>
+<table style="width: 100%; border-collapse: separate; border-spacing: 8px; table-layout: fixed; margin: 0 0 24px 0;" border="0">
+  <tbody>
+${body}
+  </tbody>
+</table>`;
   },
   ctrl: function(st) {
     return `

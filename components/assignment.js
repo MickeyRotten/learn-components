@@ -41,7 +41,7 @@ register({
     };
 
     const pill = (bg, color, border, text) =>
-      `<span style="background-color:${bg};color:${color};font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;${border ? `border:1px solid ${border};` : ''}">${text}</span>`;
+      `<span style="display:inline-block;background-color:${bg};color:${color};font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;margin:0 6px 6px 0;${border ? `border:1px solid ${border};` : ''}">${text}</span>`;
 
     const mandatoryPill = st.mandatory === 'bonus'
       ? pill('#1A1A1A', '#AAAAAA', '#333333', '⭐ Bonus')
@@ -53,47 +53,54 @@ register({
     const specRows = st.specs.map((s, idx) =>
       `<tr${idx < st.specs.length - 1 ? ' style="border-bottom:1px solid #E0E0E0;"' : ''}>
         <td style="padding:15px;text-align:center;width:10%;"><strong style="font-size:20px;">${idx + 1}</strong></td>
-        <td style="padding:15px;font-size:14px;color:#1A1A1A;line-height:1.7;">${esc(s)}</td>
+        <td style="padding:15px;font-size:14px;color:#1A1A1A;line-height:1.7;">${fmt(s)}</td>
       </tr>`
     ).join('\n');
 
     const evalItems = (st.evaluation || []).map(s =>
-      `<li style="font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:6px;">${esc(s)}</li>`
+      `<li style="font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:6px;">${fmt(s)}</li>`
     ).join('\n');
 
-    return `<div style="margin:24px 0;border:1px solid #E0E0E0;border-radius:12px;overflow:hidden;">
-  <div style="background-color:#FAFAFA;padding:16px 24px 18px;border-bottom:1px solid #E0E0E0;">
-    <h3 style="color:#000000;margin:0 0 14px 0;line-height:1.2;">${esc(st.title)}</h3>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-      ${pill('#FDB92A', '#000000', '', `&#128197; ${esc(fmtDate(st.deadline))}`)}
-      <span style="background-color:#1A1A1A;color:#CCCCCC;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid #333333;white-space:nowrap;">${typeLabel}</span>
-      ${mandatoryPill}
-      ${pill('#1A1A1A', '#CCCCCC', '#333333', gradingLabel)}
-      ${pill('#1A1A1A', '#CCCCCC', '#333333', feedbackLabel)}
-    </div>
-  </div>
-  <div style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;">
-    ${st.body ? `<p style="margin:0 0 16px 0;line-height:1.7;">${esc(st.body)}</p>` : ''}
-    <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px 0;">Specifications</p>
-    <table style="border-collapse:collapse;width:100%;" border="0">
-      <colgroup><col style="width:10%;"><col style="width:90%;"></colgroup>
-      <tbody>${specRows}</tbody>
-    </table>
-    <p style="letter-spacing:1.5px;text-transform:uppercase;margin:20px 0 12px 0;">Evaluation</p>
-    <ul style="margin:0;padding-left:20px;">\n${evalItems}\n    </ul>
-  </div>
-  ${st.submitReminder ? `<div style="padding:10px 24px;background-color:#F5F5F5;border-top:1px solid #E0E0E0;text-align:center;">
-    <p style="margin:0;font-size:13px;color:#555555;">⬆️ Submit your work using the link above</p>
-  </div>` : ''}
-  <div style="padding:14px 24px;background-color:${ai.bg};border-top:3px solid ${ai.dot};display:flex;align-items:center;gap:14px;">
-    <div style="width:18px;height:18px;background-color:${ai.dot};border-radius:50%;flex-shrink:0;"></div>
-    <div>
-      <p style="margin:0 0 3px 0;text-transform:uppercase;letter-spacing:1px;font-weight:600;">${ai.label}</p>
+    return `<table style="width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:12px;margin:24px 0;" border="0">
+  <tbody>
+  <tr>
+    <td style="background-color:#FAFAFA;padding:16px 24px 18px;border-bottom:1px solid #E0E0E0;border-radius:12px 12px 0 0;">
+      <h3 style="color:#000000;margin:0 0 14px 0;line-height:1.2;">${esc(st.title)}</h3>
+      <p style="margin:0 0 -6px 0;">
+        ${pill('#FDB92A', '#000000', '', `&#128197; ${esc(fmtDate(st.deadline))}`)}
+        <span style="display:inline-block;background-color:#1A1A1A;color:#CCCCCC;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid #333333;white-space:nowrap;margin:0 6px 6px 0;">${typeLabel}</span>
+        ${mandatoryPill}
+        ${pill('#1A1A1A', '#CCCCCC', '#333333', gradingLabel)}
+        ${pill('#1A1A1A', '#CCCCCC', '#333333', feedbackLabel)}
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;">
+      ${st.body ? `<p style="margin:0 0 16px 0;line-height:1.7;">${fmt(st.body)}</p>` : ''}
+      <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px 0;">Specifications</p>
+      <table style="border-collapse:collapse;width:100%;" border="0">
+        <colgroup><col style="width:10%;"><col style="width:90%;"></colgroup>
+        <tbody>${specRows}</tbody>
+      </table>
+      <p style="letter-spacing:1.5px;text-transform:uppercase;margin:20px 0 12px 0;">Evaluation</p>
+      <ul style="margin:0;padding-left:20px;">\n${evalItems}\n      </ul>
+    </td>
+  </tr>
+  ${st.submitReminder ? `<tr>
+    <td style="padding:10px 24px;background-color:#F5F5F5;border-top:1px solid #E0E0E0;text-align:center;">
+      <p style="margin:0;font-size:13px;color:#555555;">⬆️ Submit your work using the link above</p>
+    </td>
+  </tr>` : ''}
+  <tr>
+    <td style="padding:14px 24px;background-color:${ai.bg};border-top:3px solid ${ai.dot};border-radius:0 0 12px 12px;">
+      <p style="margin:0 0 3px 0;text-transform:uppercase;letter-spacing:1px;font-weight:600;"><span style="display:inline-block;width:18px;height:18px;background-color:${ai.dot};border-radius:50%;vertical-align:middle;margin-right:10px;"></span>${ai.label}</p>
       <p style="margin:0 0 6px 0;line-height:1.5;">${ai.desc}</p>
       <p style="margin:0;font-size:12px;">Read More: <a href="https://arene.fi/wp-content/uploads/PDF/2024/tekoalysuositukset/ARENE%20AI%20english.pdf?_t=1731419903" target="_blank" style="color:inherit;text-decoration:underline;">ARENE AI Traffic Lights ↗</a></p>
-    </div>
-  </div>
-</div>`;
+    </td>
+  </tr>
+  </tbody>
+</table>`;
   },
   ctrl(st) {
     const aiOpts = [
@@ -139,7 +146,7 @@ register({
       </div>
       <div class="ctrl-row" style="align-items:flex-start;">
         <span style="font-size:11px;color:#666;flex-shrink:0;width:52px;padding-top:6px;font-family:var(--ui)">Body</span>
-        <textarea class="ci ci-grow" data-f="body" data-i="0" rows="2" style="resize:vertical;">${esc(st.body)}</textarea>
+        <textarea class="ci ci-grow ci-prose" data-f="body" data-i="0" rows="1">${esc(st.body)}</textarea>
       </div>
       <div class="ctrl-row">
         <span style="font-size:11px;color:#666;flex-shrink:0;width:52px;font-family:var(--ui)">Deadline</span>
@@ -167,9 +174,9 @@ register({
         </select>
       </div>
       <div style="padding:5px 14px 2px;"><span class="ctrl-col-hdr">Specification items</span></div>
-      ${st.specs.map((s,i) => `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci ci-grow" type="text" value="${escA(s)}" data-f="spec" data-i="${i}" placeholder="Specification item"><button class="ctrl-btn-x" data-action="rm-spec" data-i="${i}">×</button></div>`).join('')}
+      ${st.specs.map((s,i) => `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><textarea class="ci ci-grow ci-prose" rows="1" data-f="spec" data-i="${i}" placeholder="Specification item">${esc(s)}</textarea><button class="ctrl-btn-x" data-action="rm-spec" data-i="${i}">×</button></div>`).join('')}
       <div style="padding:5px 14px 2px;"><span class="ctrl-col-hdr">Evaluation items</span></div>
-      ${(st.evaluation||[]).map((s,i) => `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci ci-grow" type="text" value="${escA(s)}" data-f="eval" data-i="${i}" placeholder="Evaluation criterion"><button class="ctrl-btn-x" data-action="rm-eval" data-i="${i}">×</button></div>`).join('')}
+      ${(st.evaluation||[]).map((s,i) => `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><textarea class="ci ci-grow ci-prose" rows="1" data-f="eval" data-i="${i}" placeholder="Evaluation criterion">${esc(s)}</textarea><button class="ctrl-btn-x" data-action="rm-eval" data-i="${i}">×</button></div>`).join('')}
     </div>`;
   },
   onInput(st, f, i, el) {

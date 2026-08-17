@@ -15,35 +15,30 @@ register({
   },
   gen(st) {
     const cfg = {
-      h1: { barW: '6px', barH: '32px', gap: '14px', margin: '32px 0 16px 0', radius: '3px' },
-      h2: { barW: '5px', barH: '28px', gap: '12px', margin: '32px 0 16px 0', radius: '3px' },
-      h3: { barW: '4px', barH: '22px', gap: '10px', margin: '24px 0 12px 0', radius: '2px' },
-      h4: { barW: '3px', barH: '18px', gap: '8px',  margin: '20px 0 10px 0', radius: '2px' },
-      h5: { barW: '3px', barH: '16px', gap: '8px',  margin: '16px 0 8px 0',  radius: '2px' },
+      h1: { barW: '6px', gap: '14px', margin: '32px 0 16px 0' },
+      h2: { barW: '5px', gap: '12px', margin: '32px 0 16px 0' },
+      h3: { barW: '4px', gap: '10px', margin: '24px 0 12px 0' },
+      h4: { barW: '3px', gap: '8px',  margin: '20px 0 10px 0' },
+      h5: { barW: '3px', gap: '8px',  margin: '16px 0 8px 0'  },
     };
     const icons = { pdf: '📄', link: '🔗', video: '🎥', book: '📚', other: '📎' };
     const tag = st.headingLevel;
     const header = tag === 'none' ? '' : (() => {
       const c = cfg[tag] || cfg.h3;
-      return `<div style="display:flex;align-items:center;gap:${c.gap};margin:${c.margin};">
-  <div style="width:${c.barW};height:${c.barH};background-color:#FDB92A;border-radius:${c.radius};flex-shrink:0;"></div>
-  <${tag} style="margin:0;">${esc(st.title)}</${tag}>
-</div>`;
+      return `<${tag} style="margin:${c.margin};border-left:${c.barW} solid #FDB92A;padding-left:${c.gap};">${esc(st.title)}</${tag}>\n`;
     })();
     const items = st.items.map((item, i) => {
       const last = i === st.items.length - 1;
       const icon = icons[item.type] || icons.other;
-      const note = item.note ? `<p style="margin:4px 0 0 26px;font-size:13px;color:#666;line-height:1.5;">${esc(item.note)}</p>` : '';
+      const note = item.note ? `<p style="margin:4px 0 0 26px;font-size:13px;color:#666;line-height:1.5;">${fmt(item.note)}</p>` : '';
       const link = item.url && item.url !== '#'
         ? `<a href="${esc(item.url)}" style="color:#000;font-weight:600;font-size:14px;text-decoration:underline;">${esc(item.label)}</a>`
         : `<span style="font-weight:600;font-size:14px;">${esc(item.label)}</span>`;
-      return `  <li style="padding:12px 0;${last ? '' : 'border-bottom:1px solid #E0E0E0;'}"><div>${icon} &nbsp;${link}</div>${note}</li>`;
+      return `  <li style="padding:12px 0;${last ? '' : 'border-bottom:1px solid #E0E0E0;'}"><p style="margin:0;">${icon} &nbsp;${link}</p>${note}</li>`;
     }).join('\n');
-    return `<div style="margin:16px 0;">
-  ${header}<ul style="list-style:none;padding:0;margin:0;">
+    return `${header}<ul style="list-style:none;padding:0;margin:16px 0;">
 ${items}
-  </ul>
-</div>`;
+</ul>`;
   },
   ctrl(st) {
     const typeOpts = v => ['pdf','link','video','book','other'].map(t =>
@@ -76,7 +71,7 @@ ${items}
         <select class="ci" style="width:100px;flex-shrink:0;" data-f="type" data-i="${i}">${typeOpts(item.type)}</select>
         <input class="ci" style="flex:3;" type="text" value="${escA(item.label)}" data-f="label" data-i="${i}" placeholder="Label">
         <input class="ci" style="flex:3;" type="text" value="${escA(item.url)}" data-f="url" data-i="${i}" placeholder="https://…">
-        <input class="ci" style="flex:2;" type="text" value="${escA(item.note)}" data-f="note" data-i="${i}" placeholder="e.g. PDF, 12 min">
+        <textarea class="ci ci-prose" style="flex:2;" rows="1" data-f="note" data-i="${i}" placeholder="e.g. PDF, 12 min">${esc(item.note)}</textarea>
         <button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button>
       </div>`).join('')}
     </div>`;

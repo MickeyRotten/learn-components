@@ -19,16 +19,14 @@ register({
     ).join('');
     const trs = st.rows.map((row, i) => {
       const tds = row.map((cell, j) =>
-        `<td style="padding:10px 14px;line-height:1.5;${j < last ? 'border-right:1px solid #E0E0E0;' : ''}">${esc(cell)}</td>`
+        `<td style="padding:10px 14px;line-height:1.5;${j < last ? 'border-right:1px solid #E0E0E0;' : ''}">${fmt(cell)}</td>`
       ).join('');
       return `<tr style="${i < st.rows.length - 1 ? 'border-bottom:1px solid #E0E0E0;' : ''}">${tds}</tr>`;
     }).join('');
-    return `<div style="margin:16px 0;border:1px solid #E0E0E0;border-radius:10px;overflow:hidden;">
-  <table style="width:100%;border-collapse:collapse;">
-    <thead><tr style="background:#000;">${ths}</tr></thead>
-    <tbody>${trs}</tbody>
-  </table>
-</div>`;
+    return `<table style="width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:10px;margin:16px 0;">
+  <thead><tr style="background:#000;">${ths}</tr></thead>
+  <tbody>${trs}</tbody>
+</table>`;
   },
   ctrl(st) {
     const colCount = st.headers.length;
@@ -37,7 +35,7 @@ register({
     ).join('');
     const bodyRows = st.rows.map((row, i) => {
       const cells = row.map((cell, j) =>
-        `<input class="ci ci-grow" type="text" value="${escA(cell)}" data-f="cell" data-i="${i}" data-j="${j}" placeholder="—">`
+        `<textarea class="ci ci-grow ci-prose" rows="1" data-f="cell" data-i="${i}" data-j="${j}" placeholder="—">${esc(cell)}</textarea>`
       ).join('');
       return `<div class="ctrl-row">
         <span class="ctrl-num">${i + 1}</span>

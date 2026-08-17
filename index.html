@@ -105,6 +105,9 @@
     .ci-grow { flex: 1; min-width: 0; }
     .ci-med { flex: 2; min-width: 0; }
     .ci-wide { flex: 3; min-width: 0; }
+    /* Prose fields: single-line tall by default, grown to fit by autoGrow() */
+    .ci-prose { resize: none; overflow: hidden; line-height: 1.45; }
+    .ctrl-row:has(.ci-prose) { align-items: flex-start; }
 
     /* PREVIEW */
     #preview-panel { flex: 1; overflow: hidden; background: #EFEFEF; position: relative; min-height: 0; }
@@ -306,6 +309,13 @@
 // ── Helpers ──
 const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const escA = s => String(s).replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+// Prose fields: escape first (so typed markup stays inert), then turn the
+// **bold** / *italic* / __underline__ markers and newlines into real tags.
+const fmt = s => esc(s)
+  .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+  .replace(/__(.+?)__/g, '<u>$1</u>')
+  .replace(/\*(.+?)\*/g, '<em>$1</em>')
+  .replace(/\n/g, '<br>');
 const clone = o => JSON.parse(JSON.stringify(o));
 let OPEN = '';
 const CLOSE = `<\/body><\/html>`;
@@ -676,6 +686,7 @@ function startEditingItem(uid) {
   cp.style.flexDirection = 'column';
   cp.innerHTML = `<div class="ctrl-header" style="background:#0D0D0D;"><button class="ctrl-btn ctrl-btn-action" onclick="stopEditingItem()" style="font-size:10px;padding:2px 8px;">← Back</button><span class="ctrl-label" style="margin-left:6px;">${esc(comp.name)}</span></div>` + comp.ctrl(item.state);
   attachEmojiTriggers();
+  autoGrowAll();
   const code = comp.gen(item.state);
   const preview = comp.preview ? comp.preview(item.state) : code;
   document.getElementById('code-editor').value = code;
@@ -698,6 +709,7 @@ function regenPageItem() {
   const cp = document.getElementById('controls-panel');
   cp.innerHTML = `<div class="ctrl-header" style="background:#0D0D0D;"><button class="ctrl-btn ctrl-btn-action" onclick="stopEditingItem()" style="font-size:10px;padding:2px 8px;">← Back</button><span class="ctrl-label" style="margin-left:6px;">${esc(comp.name)}</span></div>` + comp.ctrl(item.state);
   attachEmojiTriggers();
+  autoGrowAll();
   const code = comp.gen(item.state);
   const preview = comp.preview ? comp.preview(item.state) : code;
   document.getElementById('code-editor').value = code;
@@ -821,6 +833,7 @@ function load(id) {
     cp.style.display = 'flex'; cp.style.flexDirection = 'column';
     cp.innerHTML = comp.ctrl(getState(id));
     attachEmojiTriggers();
+  autoGrowAll();
     const code = comp.gen(getState(id));
     const preview = comp.preview ? comp.preview(getState(id)) : code;
     setEditor(code, preview);
@@ -846,13 +859,63 @@ function regen() {
   const st = getState(cur);
   document.getElementById('controls-panel').innerHTML = C[cur].ctrl(st);
   attachEmojiTriggers();
+  autoGrowAll();
   const code = C[cur].gen(st);
   const preview = C[cur].preview ? C[cur].preview(st) : code;
   setEditor(code, preview);
 }
 
+// ── Prose fields: auto-grow, and Ctrl+B/I/U markers ──
+
+// Size a .ci-prose textarea to its content, one line tall when empty.
+function autoGrow(el) {
+  if (!el || !el.classList.contains('ci-prose')) return;
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+function autoGrowAll() {
+  document.querySelectorAll('#controls-panel .ci-prose').forEach(autoGrow);
+}
+
+const FMT_KEYS = { b: '**', i: '*', u: '__' };
+
+// Pure: given a value and selection, work out the edit that applies or removes
+// a marker pair. Returns the range to replace, the replacement, and where the
+// selection should land afterwards. Kept side-effect free so it can be tested.
+function applyMarker(v, a, b, mark) {
+  const sel = v.slice(a, b);
+  const n = mark.length;
+  // Markers may sit inside the selection or just outside it; either counts as
+  // "already formatted", so the shortcut toggles rather than double-wrapping.
+  if (sel.startsWith(mark) && sel.endsWith(mark) && sel.length >= n * 2)
+    return { from: a, to: b, text: sel.slice(n, -n), selStart: a, selEnd: b - n * 2 };
+  if (v.slice(a - n, a) === mark && v.slice(b, b + n) === mark)
+    return { from: a - n, to: b + n, text: sel, selStart: a - n, selEnd: b - n };
+  // No selection: park the caret between the markers, ready to type.
+  return { from: a, to: b, text: mark + sel + mark, selStart: a + n, selEnd: b + n };
+}
+
+document.getElementById('controls-panel').addEventListener('keydown', e => {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+  const mark = FMT_KEYS[e.key.toLowerCase()];
+  const el = e.target;
+  if (!mark || !el.dataset || el.dataset.f === undefined) return;
+  if (el.tagName !== 'TEXTAREA' && el.tagName !== 'INPUT') return;
+
+  e.preventDefault();  // Ctrl+U is View Source, Ctrl+B opens bookmarks
+
+  const r = applyMarker(el.value, el.selectionStart, el.selectionEnd, mark);
+  el.setSelectionRange(r.from, r.to);
+  document.execCommand('insertText', false, r.text);  // keeps native Ctrl+Z
+  el.setSelectionRange(r.selStart, r.selEnd);
+
+  autoGrow(el);
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+});
+
 // Controls input
 document.getElementById('controls-panel').addEventListener('input', e => {
+  autoGrow(e.target);
   let _comp, _st, _isPageItem = false;
   if (mode === 'page' && editingItemUid) {
     const item = curPage().items.find(p => p.uid === editingItemUid);
@@ -1058,8 +1121,8 @@ async function loadComponents() {
     try {
       const res = await fetch(`components/${id}.js${cb}`);
       const text = await res.text();
-      new Function('register','esc','escA','ytVideoId','ytPlaylistId','ytThumb','ytIdBadge', text)(
-        register, esc, escA, ytVideoId, ytPlaylistId, ytThumb, ytIdBadge
+      new Function('register','esc','escA','fmt','ytVideoId','ytPlaylistId','ytThumb','ytIdBadge', text)(
+        register, esc, escA, fmt, ytVideoId, ytPlaylistId, ytThumb, ytIdBadge
       );
     } catch(e) {
       console.warn(`Failed to load component: ${id}`, e);

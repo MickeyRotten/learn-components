@@ -15,20 +15,22 @@ register({
   gen(st) {
     const devYear = [st.developer, st.year].filter(Boolean).join(' · ');
     const pill = st.concept.trim()
-      ? `<div style="display:inline-block;background-color:#FDB92A;padding:3px 10px;border-radius:20px;margin-bottom:12px;"><p style="margin:0;">${esc(st.concept)}</p></div><br>`
+      ? `<p style="margin:0 0 12px 0;"><span style="display:inline-block;background-color:#FDB92A;padding:3px 10px;border-radius:20px;">${esc(st.concept)}</span></p>`
       : '';
-    return `<div style="margin:16px 0;border:1px solid #E0E0E0;border-radius:10px;display:flex;overflow:hidden;">
-  <div style="flex-shrink:0;width:200px;align-self:stretch;min-height:180px;">
-    <img src="${escA(st.image)}" alt="${escA(st.title)} cover" style="width:200px;height:100%;object-fit:cover;display:block;">
-  </div>
-  <div style="flex:1;padding:20px;min-width:200px;">
-    <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 6px 0;">Game Example</p>
-    <h5 style="margin:0 0 4px 0;">${esc(st.title)}</h5>
-    <p style="margin:0 0 12px 0;">${esc(devYear)}</p>
-    ${pill}
-    <p style="margin:0;line-height:1.6;">${esc(st.body)}</p>
-  </div>
-</div>`;
+    return `<table style="width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:10px;margin:16px 0;" border="0">
+  <tbody><tr>
+    <td style="width:200px;padding:0;vertical-align:top;">
+      <img src="${escA(st.image)}" alt="${escA(st.title)} cover" style="width:200px;height:100%;min-height:180px;object-fit:cover;display:block;border-radius:10px 0 0 10px;">
+    </td>
+    <td style="padding:20px;vertical-align:top;">
+      <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 6px 0;">Game Example</p>
+      <h5 style="margin:0 0 4px 0;">${esc(st.title)}</h5>
+      <p style="margin:0 0 12px 0;">${esc(devYear)}</p>
+      ${pill}
+      <p style="margin:0;line-height:1.6;">${fmt(st.body)}</p>
+    </td>
+  </tr></tbody>
+</table>`;
   },
   ctrl(st) {
     return `
@@ -54,7 +56,7 @@ register({
       </div>
       <div class="ctrl-row" style="align-items:flex-start;">
         <span style="font-size:11px;color:#666;flex-shrink:0;width:72px;padding-top:6px;font-family:var(--ui)">Body</span>
-        <textarea class="ci ci-grow" data-f="body" data-i="0" rows="3" style="resize:vertical;">${esc(st.body)}</textarea>
+        <textarea class="ci ci-grow ci-prose" data-f="body" data-i="0" rows="1">${esc(st.body)}</textarea>
       </div>
     </div>`;
   },

@@ -11,7 +11,7 @@ register({
     return `<figure style="margin: 24px 0;">
   ${src
     ? `<iframe width="100%" height="450" src="${src}" title="${esc(st.caption)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="display: block; border-radius: 10px; background-color: #000000;"></iframe>`
-    : `<div style="width:100%;height:200px;background:#111;border-radius:10px;display:flex;align-items:center;justify-content:center;"><p>Paste a playlist URL above</p></div>`}
+    : `<p style="margin:0;height:200px;line-height:200px;background:#111;border-radius:10px;text-align:center;color:#8D8D8D;">Paste a playlist URL above</p>`}
   <figcaption style="font-size: 13px; color: #8D8D8D; margin-top: 8px; text-align: center;">${esc(st.caption)}</figcaption>
 </figure>`;
   },

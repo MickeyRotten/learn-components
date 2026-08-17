@@ -26,59 +26,76 @@ register({
   },
   gen(st) {
     const pill = (bg, color, border, text) =>
-      `<span style="background-color:${bg};color:${color};font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;${border ? `border:1px solid ${border};` : ''}">${text}</span>`;
+      `<span style="display:inline-block;background-color:${bg};color:${color};font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;margin:0 6px 6px 0;${border ? `border:1px solid ${border};` : ''}">${text}</span>`;
 
     const goalItems = st.goals.map(g =>
-      `<li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:6px;"><span style="color:#A6CE39;font-weight:700;flex-shrink:0;">✓</span>${esc(g)}</li>`
+      `<li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:6px;"><span style="color:#A6CE39;font-weight:700;flex-shrink:0;">✓</span>${fmt(g)}</li>`
     ).join('');
     const objItems = st.objectives.map(o =>
-      `<li style="font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:5px;">${esc(o)}</li>`
+      `<li style="font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:5px;">${fmt(o)}</li>`
     ).join('');
     const evalItems = st.evaluation.map(e =>
-      `<li style="font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:5px;">${esc(e)}</li>`
+      `<li style="font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:5px;">${fmt(e)}</li>`
     ).join('');
 
-    return `<div style="margin:24px 0;border:1px solid #E0E0E0;border-radius:12px;overflow:hidden;">
-  <div style="background-color:#FAFAFA;padding:16px 24px 18px;border-bottom:1px solid #E0E0E0;">
-    <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FDB92A;margin:0 0 4px 0;">${esc(st.code)}${st.groupId ? ` &nbsp;·&nbsp; ${esc(st.groupId)}` : ''}</p>
-    <h3 style="color:#000000;margin:0 0 14px 0;line-height:1.2;">${esc(st.name)}</h3>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-      ${pill('#FDB92A', '#000000', '', `${esc(String(st.credits))} credits`)}
-      ${pill('#1A1A1A', '#CCCCCC', '#333333', `${esc(String(st.mandatory))} mandatory assignments`)}
-      ${st.optional > 0 ? pill('#1A1A1A', '#CCCCCC', '#333333', `${esc(String(st.optional))} optional assignments`) : ''}
-    </div>
-  </div>
-  <div style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;">
-    <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 14px 0;">Teacher${st.teachers.length > 1 ? 's' : ''}</p>
-    <div style="display:grid;grid-template-columns:repeat(${Math.min(3, st.teachers.length)},1fr);gap:16px;">
-      ${st.teachers.map(t => `<div style="display:flex;gap:14px;align-items:flex-start;">
-        <img src="${esc(t.photo)}" alt="Teacher photo" style="width:64px;height:64px;border-radius:8px;flex-shrink:0;display:block;object-fit:cover;">
-        <div>
+    // Each teacher occupies a photo cell + a details cell in a single row.
+    const teacherCells = st.teachers.map(t => `        <td style="width:78px;vertical-align:top;padding:0;">
+          <img src="${esc(t.photo)}" alt="Teacher photo" style="width:64px;height:64px;border-radius:8px;display:block;object-fit:cover;">
+        </td>
+        <td style="vertical-align:top;padding:0 16px 0 0;">
           <p style="margin:0 0 6px 0;">${esc(t.name)}</p>
           <p style="margin:0 0 4px 0;">📧 &nbsp;<a href="mailto:${esc(t.email)}" style="color:#000000;text-decoration:underline;">${esc(t.email)}</a></p>
-          <p style="margin:0;">🕐 &nbsp;${esc(t.response)}</p>
-        </div>
-      </div>`).join('')}
-    </div>
-  </div>
-  <div style="padding:20px 24px;border-bottom:1px solid #E0E0E0;">
-    <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px 0;">Learning Goals</p>
-    <ul style="list-style:none;margin:0;padding:0;">${goalItems}</ul>
-  </div>
-  <div style="padding:20px 24px;border-bottom:1px solid #E0E0E0;">
-    <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px 0;">Learning Objectives</p>
-    <ul style="margin:0;padding-left:20px;">${objItems}</ul>
-  </div>
-  <div style="padding:20px 24px;">
-    <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px 0;">Evaluation Criteria</p>
-    <p style="margin:0 0 8px 0;font-size:14px;color:#1A1A1A;">Students can...</p>
-    <ul style="margin:0;padding-left:20px;">${evalItems}</ul>
-  </div>
-</div>`;
+          <p style="margin:0;">🕐 &nbsp;${fmt(t.response)}</p>
+        </td>`).join('\n');
+
+    return `<table style="width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:12px;margin:24px 0;" border="0">
+  <tbody>
+  <tr>
+    <td style="background-color:#FAFAFA;padding:16px 24px 18px;border-bottom:1px solid #E0E0E0;border-radius:12px 12px 0 0;">
+      <p style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FDB92A;margin:0 0 4px 0;">${esc(st.code)}${st.groupId ? ` &nbsp;·&nbsp; ${esc(st.groupId)}` : ''}</p>
+      <h3 style="color:#000000;margin:0 0 14px 0;line-height:1.2;">${esc(st.name)}</h3>
+      <p style="margin:0 0 -6px 0;">
+        ${pill('#FDB92A', '#000000', '', `${esc(String(st.credits))} credits`)}
+        ${pill('#1A1A1A', '#CCCCCC', '#333333', `${esc(String(st.mandatory))} mandatory assignments`)}
+        ${st.optional > 0 ? pill('#1A1A1A', '#CCCCCC', '#333333', `${esc(String(st.optional))} optional assignments`) : ''}
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;">
+      <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 14px 0;">Teacher${st.teachers.length > 1 ? 's' : ''}</p>
+      <table style="width:100%;border-collapse:collapse;" border="0">
+        <tbody><tr>
+${teacherCells}
+        </tr></tbody>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:20px 24px;border-bottom:1px solid #E0E0E0;">
+      <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px 0;">Learning Goals</p>
+      <ul style="list-style:none;margin:0;padding:0;">${goalItems}</ul>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:20px 24px;border-bottom:1px solid #E0E0E0;">
+      <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px 0;">Learning Objectives</p>
+      <ul style="margin:0;padding-left:20px;">${objItems}</ul>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:20px 24px;border-radius:0 0 12px 12px;">
+      <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 12px 0;">Evaluation Criteria</p>
+      <p style="margin:0 0 8px 0;font-size:14px;color:#1A1A1A;">Students can...</p>
+      <ul style="margin:0;padding-left:20px;">${evalItems}</ul>
+    </td>
+  </tr>
+  </tbody>
+</table>`;
   },
   ctrl(st) {
     const listRows = (items, f, addAct, rmAct) => items.map((v, i) =>
-      `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci ci-grow" type="text" value="${escA(v)}" data-f="${f}" data-i="${i}" placeholder="—"><button class="ctrl-btn-x" data-action="${rmAct}" data-i="${i}">×</button></div>`
+      `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><textarea class="ci ci-grow ci-prose" rows="1" data-f="${f}" data-i="${i}" placeholder="—">${esc(v)}</textarea><button class="ctrl-btn-x" data-action="${rmAct}" data-i="${i}">×</button></div>`
     ).join('');
 
     return `
@@ -124,7 +141,7 @@ register({
       </div>
       <div class="ctrl-row">
         <span style="font-size:11px;color:#666;flex-shrink:0;width:44px;font-family:var(--ui)">Reply</span>
-        <input class="ci ci-grow" type="text" value="${escA(t.response)}" data-f="tResponse" data-i="${i}" placeholder="Response time">
+        <textarea class="ci ci-grow ci-prose" rows="1" data-f="tResponse" data-i="${i}" placeholder="Response time">${esc(t.response)}</textarea>
       </div>
     </div>`).join('')}
     ${st.teachers.length < 3 ? `
