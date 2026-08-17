@@ -38,15 +38,22 @@ register({
       `<li style="font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:5px;">${fmt(e)}</li>`
     ).join('');
 
-    // Each teacher occupies a photo cell + a details cell in a single row.
-    const teacherCells = st.teachers.map(t => `        <td style="width:78px;vertical-align:top;padding:0;">
-          <img src="${esc(t.photo)}" alt="Teacher photo" style="width:64px;height:64px;border-radius:8px;display:block;object-fit:cover;">
-        </td>
-        <td style="vertical-align:top;padding:0 16px 0 0;">
-          <p style="margin:0 0 6px 0;">${esc(t.name)}</p>
-          <p style="margin:0 0 4px 0;">📧 &nbsp;<a href="mailto:${esc(t.email)}" style="color:#000000;text-decoration:underline;">${esc(t.email)}</a></p>
-          <p style="margin:0;">🕐 &nbsp;${fmt(t.response)}</p>
-        </td>`).join('\n');
+    // One teacher per row: photo alone in a fixed-width first cell, details in the second.
+    // Sizing lives on the width attribute rather than CSS so Learn's image tool preserves it
+    // when a teacher swaps the photo; height is left to follow the image's own aspect ratio.
+    const teacherRows = st.teachers.map((t, i) => {
+      const sep = i > 0 ? 'border-top:1px solid #EEEEEE;padding-top:14px;' : '';
+      return `        <tr>
+          <td style="width:80px;vertical-align:top;padding:0 16px 0 0;${sep}">
+            <img src="${esc(t.photo)}" alt="${esc(t.name)}" width="80" style="display:block;border-radius:8px;">
+          </td>
+          <td style="vertical-align:top;padding:0;${sep}">
+            <p style="margin:0 0 6px 0;">${esc(t.name)}</p>
+            <p style="margin:0 0 4px 0;">📧 &nbsp;<a href="mailto:${esc(t.email)}" style="color:#000000;text-decoration:underline;">${esc(t.email)}</a></p>
+            <p style="margin:0;">🕐 &nbsp;${fmt(t.response)}</p>
+          </td>
+        </tr>`;
+    }).join('\n');
 
     return `<table style="width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:12px;margin:24px 0;" border="0">
   <tbody>
@@ -65,9 +72,9 @@ register({
     <td style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;">
       <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 14px 0;">Teacher${st.teachers.length > 1 ? 's' : ''}</p>
       <table style="width:100%;border-collapse:collapse;" border="0">
-        <tbody><tr>
-${teacherCells}
-        </tr></tbody>
+        <tbody>
+${teacherRows}
+        </tbody>
       </table>
     </td>
   </tr>
