@@ -11,21 +11,17 @@ register({
     {year:'2007',title:'iPhone launched',desc:'Apple launches the iPhone, kickstarting the mobile gaming era and opening gaming to a mass global audience.'}
   ]},
   gen: function(st) {
+    // The rail is the <li> left border; the dot is pulled back over it with a negative margin.
+    const dot = `<span style="display: inline-block; width: 14px; height: 14px; background-color: #FDB92A; border-radius: 50%; margin: 0 14px 0 -22px; vertical-align: middle;"></span>`;
     const items = st.events.map((e,i)=>{
       const last = i===st.events.length-1;
-      return `  <div style="display: flex; gap: 0;">
-    <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 32px;">
-      <div style="width: 14px; height: 14px; background-color: #FDB92A; border-radius: 50%; flex-shrink: 0; margin-top: 4px;"></div>
-      ${last?'':'<div style="width: 2px; flex: 1; background-color: #E0E0E0; min-height: 20px;"></div>'}
-    </div>
-    <div style="padding: 0 0 ${last?'0':'22px'} 14px;">
-      <p style="margin: 0 0 2px 0; letter-spacing: 1px">${esc(e.year)}</p>
-      <p style="margin: 0 0 4px 0">${esc(e.title)}</p>
-      <p style="margin: 0; line-height: 1.6">${esc(e.desc)}</p>
-    </div>
-  </div>`;
+      return `  <li style="border-left: 2px solid ${last?'transparent':'#E0E0E0'}; padding: 0 0 ${last?'0':'22px'} 15px; margin-left: 7px;">
+    <p style="margin: 0 0 2px 0; letter-spacing: 1px">${dot}${esc(e.year)}</p>
+    <p style="margin: 0 0 4px 0; padding-left: 6px">${esc(e.title)}</p>
+    <p style="margin: 0; line-height: 1.6; padding-left: 6px">${fmt(e.desc)}</p>
+  </li>`;
     }).join('\n');
-    return `<div style="margin: 24px 0;">\n${items}\n</div>`;
+    return `<ul style="list-style: none; margin: 24px 0; padding: 0;">\n${items}\n</ul>`;
   },
   ctrl: function(st) {
     return `
@@ -41,7 +37,7 @@ register({
         <span class="ctrl-col-hdr" style="flex:3;margin-left:6px">Description</span>
         <span style="width:24px"></span>
       </div>
-      ${st.events.map((e,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci ci-year" type="text" value="${escA(e.year)}" data-f="year" data-i="${i}" placeholder="Year"><input class="ci" style="flex:2" type="text" value="${escA(e.title)}" data-f="title" data-i="${i}" placeholder="Title"><input class="ci" style="flex:3" type="text" value="${escA(e.desc)}" data-f="desc" data-i="${i}" placeholder="Description"><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
+      ${st.events.map((e,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci ci-year" type="text" value="${escA(e.year)}" data-f="year" data-i="${i}" placeholder="Year"><input class="ci" style="flex:2" type="text" value="${escA(e.title)}" data-f="title" data-i="${i}" placeholder="Title"><textarea class="ci ci-prose" style="flex:3" rows="1" data-f="desc" data-i="${i}" placeholder="Description">${esc(e.desc)}</textarea><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
     </div>`;
   },
   onInput: function(st, f, i, el) {

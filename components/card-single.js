@@ -11,18 +11,32 @@ register({
   },
   gen(st) {
     const cols = Math.min(3, st.cards.length);
-    const items = st.cards.map(c => {
+    const cell = c => {
       const icon = c.emoji.trim()
-        ? `<div style="font-size:28px;margin-bottom:10px;">${esc(c.emoji)}</div>`
+        ? `<p style="font-size:28px;margin:0 0 10px 0;">${esc(c.emoji)}</p>`
         : '';
-      return `  <div style="background-color:#FFFFFF;border:1px solid #E0E0E0;border-top:4px solid #FDB92A;border-radius:0 0 10px 10px;padding:20px 20px 22px;">
-    ${icon}<h5 style="margin:0 0 8px 0;">${esc(c.title)}</h5>
-    <p style="margin:0;line-height:1.6;">${esc(c.body)}</p>
-  </div>`;
+      return `      <td style="vertical-align:top;background-color:#FFFFFF;border:1px solid #E0E0E0;border-top:4px solid #FDB92A;border-radius:0 0 10px 10px;padding:20px 20px 22px;">
+        ${icon}<h5 style="margin:0 0 8px 0;">${esc(c.title)}</h5>
+        <p style="margin:0;line-height:1.6;">${fmt(c.body)}</p>
+      </td>`;
+    };
+
+    // Wrap onto a new row every `cols` cards, matching the old grid behaviour.
+    const rows = [];
+    for (let i = 0; i < st.cards.length; i += cols) rows.push(st.cards.slice(i, i + cols));
+
+    const body = rows.map(row => {
+      const cells = row.map(cell).join('\n');
+      const pad = Array.from({ length: cols - row.length },
+        () => '      <td style="border:none;"></td>').join('\n');
+      return `    <tr>\n${cells}${pad ? '\n' + pad : ''}\n    </tr>`;
     }).join('\n');
-    return `<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:16px;margin:16px 0;">
-${items}
-</div>`;
+
+    return `<table style="width:100%;border-collapse:separate;border-spacing:8px;table-layout:fixed;margin:16px 0;" border="0">
+  <tbody>
+${body}
+  </tbody>
+</table>`;
   },
   ctrl(st) {
     const rows = st.cards.map((c, i) => `
@@ -41,7 +55,7 @@ ${items}
       </div>
       <div class="ctrl-row" style="align-items:flex-start;">
         <span style="font-size:11px;color:#666;flex-shrink:0;width:44px;padding-top:6px;font-family:var(--ui)">Body</span>
-        <textarea class="ci ci-grow" data-f="body" data-i="${i}" rows="2" style="resize:vertical;">${esc(c.body)}</textarea>
+        <textarea class="ci ci-grow ci-prose" data-f="body" data-i="${i}" rows="1">${esc(c.body)}</textarea>
       </div>
     </div>`).join('');
 

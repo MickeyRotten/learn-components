@@ -13,17 +13,19 @@ register({
   },
   gen(st) {
     const pos = Math.max(0, Math.min(100, st.position));
-    return `<div style="margin:24px 0;padding:24px;background-color:#FAFAFA;border:1px solid #E0E0E0;border-radius:10px;">
+    return `<blockquote style="margin:24px 0;padding:24px;background-color:#FAFAFA;border:1px solid #E0E0E0;border-radius:10px;">
   <p style="letter-spacing:1.5px;text-transform:uppercase;margin:0 0 16px 0;">${esc(st.title)}</p>
-  <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
-    <span style="font-size:13px;font-weight:700;color:#000;flex-shrink:0;min-width:70px;">${esc(st.labelLeft)}</span>
-    <div style="flex:1;height:10px;background:linear-gradient(to right,#FDB92A,#1DBED0);border-radius:5px;position:relative;">
-      <div style="width:16px;height:16px;background:#000;border-radius:50%;border:3px solid #FFF;margin-top:-3px;margin-left:calc(${pos}% - 8px);position:absolute;top:0;"></div>
-    </div>
-    <span style="font-size:13px;font-weight:700;color:#000;flex-shrink:0;min-width:70px;text-align:right;">${esc(st.labelRight)}</span>
-  </div>
-  <p style="margin:0;">${esc(st.text)}</p>
-</div>`;
+  <table style="width:100%;border-collapse:collapse;margin:0 0 10px 0;" border="0">
+    <tbody><tr>
+      <td style="width:70px;font-size:13px;font-weight:700;color:#000;padding:0 14px 0 0;white-space:nowrap;">${esc(st.labelLeft)}</td>
+      <td style="padding:0;">
+        <span style="display:block;height:10px;background:linear-gradient(to right,#FDB92A,#1DBED0);border-radius:5px;position:relative;"><span style="display:block;width:16px;height:16px;background:#000;border-radius:50%;border:3px solid #FFF;position:absolute;top:-3px;left:calc(${pos}% - 8px);"></span></span>
+      </td>
+      <td style="width:70px;font-size:13px;font-weight:700;color:#000;padding:0 0 0 14px;text-align:right;white-space:nowrap;">${esc(st.labelRight)}</td>
+    </tr></tbody>
+  </table>
+  <p style="margin:0;">${fmt(st.text)}</p>
+</blockquote>`;
   },
   ctrl(st) {
     return `
@@ -48,7 +50,7 @@ register({
       </div>
       <div class="ctrl-row" style="align-items:flex-start;">
         <span style="font-size:11px;color:#666;flex-shrink:0;width:44px;padding-top:6px;font-family:var(--ui)">Text</span>
-        <textarea class="ci ci-grow" data-f="text" data-i="0" rows="3" style="resize:vertical;">${esc(st.text)}</textarea>
+        <textarea class="ci ci-grow ci-prose" data-f="text" data-i="0" rows="1">${esc(st.text)}</textarea>
       </div>
     </div>`;
   },

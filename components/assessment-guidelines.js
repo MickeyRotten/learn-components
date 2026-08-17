@@ -4,17 +4,19 @@ register({
   desc: 'Xamk grading rubric for grades 1, 3, and 5',
   group: 'Teaching',
   icon: '🎓',
-  code: `<div style="margin:16px 0;border:1px solid #E0E0E0;border-radius:10px;overflow:hidden;">
-  <div style="background-color:#000000;padding:10px 20px;display:flex;align-items:center;gap:12px;">
-    <span style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FDB92A;">Assessment Guidelines</span>
-    <span style="height:1px;flex:1;background-color:#333;"></span>
-  </div>
-  <div style="padding:16px 20px 18px;border-bottom:1px solid #E0E0E0;">
-    <p style="margin:0 0 10px 0;line-height:1.6;">Evaluation is based on Xamk's Assessment Guidelines. The table below describes how the work is being evaluated.</p>
-    <p style="margin:0;line-height:1.6;color:#555;font-size:13px;">Grade 1 describes the minimum requirement to pass the course. Grades 3 and 5 outline higher requirements — grades 2 and 4 are interpretations between these. Students who do not meet the minimum requirement have the right to re-attempt twice within one year of the course ending.</p>
-  </div>
-  <table style="width:100%;border-collapse:collapse;">
+  code: `<table style="width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:10px;margin:16px 0;">
     <thead>
+      <tr>
+        <td colspan="3" style="background-color:#000000;padding:10px 20px;border-radius:10px 10px 0 0;">
+          <p style="margin:0;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#FDB92A;">Assessment Guidelines</p>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="padding:16px 20px 18px;border-bottom:1px solid #E0E0E0;">
+          <p style="margin:0 0 10px 0;line-height:1.6;">Evaluation is based on Xamk's Assessment Guidelines. The table below describes how the work is being evaluated.</p>
+          <p style="margin:0;line-height:1.6;color:#555;font-size:13px;">Grade 1 describes the minimum requirement to pass the course. Grades 3 and 5 outline higher requirements — grades 2 and 4 are interpretations between these. Students who do not meet the minimum requirement have the right to re-attempt twice within one year of the course ending.</p>
+        </td>
+      </tr>
       <tr>
         <th style="background:#000;color:#FDB92A;padding:10px 14px;text-align:left;border-right:1px solid #222;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;width:33.3%;">Grade 1</th>
         <th style="background:#000;color:#FDB92A;padding:10px 14px;text-align:left;border-right:1px solid #222;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;width:33.3%;">Grade 3</th>
@@ -65,10 +67,11 @@ register({
           </ul>
         </td>
       </tr>
+      <tr>
+        <td colspan="3" style="padding:12px 20px;border-top:1px solid #E0E0E0;background:#FAFAFA;border-radius:0 0 10px 10px;">
+          <p style="margin:0;font-size:12px;color:#666;line-height:1.6;">If the student does not complete the required assignments, the course will be marked failed. All assignments are to be handed in before the course ends. In case the student fails the course, the course should be retaken within a year from the start of the course. The evaluation criteria remain the same.</p>
+        </td>
+      </tr>
     </tbody>
-  </table>
-  <div style="padding:12px 20px;border-top:1px solid #E0E0E0;background:#FAFAFA;">
-    <p style="margin:0;font-size:12px;color:#666;line-height:1.6;">If the student does not complete the required assignments, the course will be marked failed. All assignments are to be handed in before the course ends. In case the student fails the course, the course should be retaken within a year from the start of the course. The evaluation criteria remain the same.</p>
-  </div>
-</div>`
+  </table>`
 });

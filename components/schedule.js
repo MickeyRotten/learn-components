@@ -47,16 +47,15 @@ register({
       return `<tr style="${bb}">
         <td style="${tdBase}${br}text-align:center;color:#888;font-size:13px;">${esc(isoWeek(item.date))}</td>
         <td style="${tdBase}${br}white-space:nowrap;">${esc(fmtDate(item.date))}</td>
-        <td style="${tdBase}${br}line-height:1.5;">${esc(item.topic)}</td>
-        <td style="${tdBase}${br}line-height:1.5;font-size:13px;color:#444;">${esc(item.assignments)}</td>
+        <td style="${tdBase}${br}line-height:1.5;">${fmt(item.topic)}</td>
+        <td style="${tdBase}${br}line-height:1.5;font-size:13px;color:#444;">${fmt(item.assignments)}</td>
         <td style="${tdBase}${br}line-height:1.5;font-size:13px;color:#444;">${esc(item.location)}</td>
         <td style="${tdBase}${br}line-height:1.5;font-size:13px;color:#444;">${esc(item.teacher)}</td>
-        <td style="${tdBase}line-height:1.5;font-size:13px;color:#444;">${esc(item.other)}</td>
+        <td style="${tdBase}line-height:1.5;font-size:13px;color:#444;">${fmt(item.other)}</td>
       </tr>`;
     }).join('');
 
-    return `<div style="margin:16px 0;border:1px solid #E0E0E0;border-radius:10px;overflow:hidden;">
-  <table style="width:100%;border-collapse:collapse;">
+    return `<table style="width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:10px;margin:16px 0;">
     <thead>
       <tr style="background:#000;">
         <th style="padding:10px 14px;text-align:center;color:#FDB92A;border-right:1px solid #222;width:52px;">Wk</th>
@@ -69,8 +68,7 @@ register({
       </tr>
     </thead>
     <tbody>${rows}</tbody>
-  </table>
-</div>`;
+  </table>`;
   },
   ctrl(st) {
     let rowNum = 0;
@@ -88,11 +86,11 @@ register({
           <span class="ctrl-drag" draggable="true" data-drag-i="${i}" title="Drag to reorder">⠿</span>
           <span class="ctrl-num">${rowNum}</span>
           <input class="ci" style="width:130px;flex-shrink:0;" type="date" value="${escA(item.date)}" data-f="date" data-i="${i}">
-          <input class="ci" style="flex:3;" type="text" value="${escA(item.topic)}" data-f="topic" data-i="${i}" placeholder="Topic">
-          <input class="ci" style="flex:2;" type="text" value="${escA(item.assignments)}" data-f="assignments" data-i="${i}" placeholder="Assignments">
+          <textarea class="ci ci-prose" style="flex:3;" rows="1" data-f="topic" data-i="${i}" placeholder="Topic">${esc(item.topic)}</textarea>
+          <textarea class="ci ci-prose" style="flex:2;" rows="1" data-f="assignments" data-i="${i}" placeholder="Assignments">${esc(item.assignments)}</textarea>
           <input class="ci" style="flex:2;" type="text" value="${escA(item.location)}" data-f="location" data-i="${i}" placeholder="Location">
           <input class="ci" style="flex:2;" type="text" value="${escA(item.teacher)}" data-f="teacher" data-i="${i}" placeholder="Teacher">
-          <input class="ci" style="flex:1;" type="text" value="${escA(item.other)}" data-f="other" data-i="${i}" placeholder="Other">
+          <textarea class="ci ci-prose" style="flex:1;" rows="1" data-f="other" data-i="${i}" placeholder="Other">${esc(item.other)}</textarea>
           <button class="ctrl-btn-x" data-action="remove" data-i="${i}" title="Remove">✕</button>
         </div>`;
     }).join('');

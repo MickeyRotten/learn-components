@@ -10,14 +10,20 @@ register({
     {title:'Third Step',desc:'Step description here.'}
   ]},
   gen: function(st) {
-    const rows = st.steps.map((s,i) => `  <div style="display: flex; gap: 16px; ${i<st.steps.length-1?'margin-bottom: 16px;':''} align-items: flex-start;">
-    <div style="min-width: 36px; width: 36px; height: 36px; background-color: #FDB92A; border-radius: 50%; font-weight: 700; font-size: 16px; color: #000000; flex-shrink: 0; line-height: 36px; text-align: center;">${i+1}</div>
-    <div style="padding-top: 6px;">
-      <h5 style="margin: 0 0 4px 0">${esc(s.title)}</h5>
-      <p style="margin: 0; line-height: 1.6">${esc(s.desc)}</p>
-    </div>
-  </div>`).join('\n');
-    return `<div style="margin: 16px 0;">\n${rows}\n</div>`;
+    const rows = st.steps.map((s,i) => `    <tr>
+      <td style="width: 36px; vertical-align: top; padding: 0 16px ${i<st.steps.length-1?'16px':'0'} 0;">
+        <span style="display: block; width: 36px; height: 36px; background-color: #FDB92A; border-radius: 50%; font-weight: 700; font-size: 16px; color: #000000; line-height: 36px; text-align: center;">${i+1}</span>
+      </td>
+      <td style="vertical-align: top; padding: 6px 0 ${i<st.steps.length-1?'16px':'0'} 0;">
+        <h5 style="margin: 0 0 4px 0">${esc(s.title)}</h5>
+        <p style="margin: 0; line-height: 1.6">${fmt(s.desc)}</p>
+      </td>
+    </tr>`).join('\n');
+    return `<table style="width: 100%; border-collapse: collapse; margin: 16px 0;" border="0">
+  <tbody>
+${rows}
+  </tbody>
+</table>`;
   },
   ctrl: function(st) {
     return `
@@ -32,7 +38,7 @@ register({
         <span class="ctrl-col-hdr" style="flex:3;margin-left:6px">Description</span>
         <span style="width:24px"></span>
       </div>
-      ${st.steps.map((s,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci" style="flex:2" type="text" value="${escA(s.title)}" data-f="title" data-i="${i}"><input class="ci" style="flex:3" type="text" value="${escA(s.desc)}" data-f="desc" data-i="${i}"><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
+      ${st.steps.map((s,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci" style="flex:2" type="text" value="${escA(s.title)}" data-f="title" data-i="${i}"><textarea class="ci ci-prose" style="flex:3" rows="1" data-f="desc" data-i="${i}">${esc(s.desc)}</textarea><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
     </div>`;
   },
   onInput: function(st, f, i, el) {

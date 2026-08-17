@@ -35,35 +35,45 @@ register({
 
     const paraHTML = st.paras.map(p =>
       p.hi
-        ? `<div style="background-color:#FFFBEC;border-left:3px solid #FDB92A;padding:10px 16px;margin:0 0 12px 0;border-radius:0 4px 4px 0;"><p style="margin:0;font-size:14px;font-weight:700;color:#1A1A1A;line-height:1.7;">${esc(p.text)}</p></div>`
-        : `<p style="margin:0 0 12px 0;font-size:14px;color:#1A1A1A;line-height:1.7;">${esc(p.text)}</p>`
+        ? `<p style="background-color:#FFFBEC;border-left:3px solid #FDB92A;padding:10px 16px;margin:0 0 12px 0;border-radius:0 4px 4px 0;font-size:14px;font-weight:700;color:#1A1A1A;line-height:1.7;">${fmt(p.text)}</p>`
+        : `<p style="margin:0 0 12px 0;font-size:14px;color:#1A1A1A;line-height:1.7;">${fmt(p.text)}</p>`
     ).join('');
 
     const gradeHTML = st.gradeItems.map(item =>
-      `<li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:8px;">${bullet}${esc(item)}</li>`
+      `<li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:8px;">${bullet}${fmt(item)}</li>`
     ).join('');
 
     const etiqHTML = st.etiquetteItems.map(item =>
-      `<li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:10px;">${bullet}${esc(item)}</li>`
+      `<li style="display:flex;gap:10px;align-items:flex-start;font-size:14px;color:#1A1A1A;line-height:1.7;margin-bottom:10px;">${bullet}${fmt(item)}</li>`
     ).join('');
 
-    return `<div style="margin:24px 0;border:1px solid #E0E0E0;border-radius:12px;overflow:hidden;">
-  <div style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;">
-    <p style="letter-spacing:1.5px;text-transform:uppercase;font-size:11px;font-weight:700;color:#000000;margin:0 0 16px 0;">Assignments &amp; Deadlines</p>
-    ${paraHTML}
-  </div>
-  <div style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;">
-    <p style="letter-spacing:1.5px;text-transform:uppercase;font-size:11px;font-weight:700;color:#000000;margin:0 0 12px 0;">Grade Improvement</p>
-    <p style="margin:0 0 12px 0;font-size:14px;color:#1A1A1A;line-height:1.7;">${esc(st.gradeLead)}</p>
-    <ul style="margin:0;padding:0;list-style:none;">${gradeHTML}</ul>
-  </div>
-  <div style="background-color:#000000;padding:8px 24px;">
-    <p style="color:#FDB92A;letter-spacing:2px;text-transform:uppercase;margin:0;font-size:11px;font-weight:700;">🎓 &nbsp;Classroom Etiquette</p>
-  </div>
-  <div style="padding:20px 24px;background-color:#FFFFFF;">
-    <ul style="margin:0;padding:0;list-style:none;">${etiqHTML}</ul>
-  </div>
-</div>`;
+    return `<table style="width:100%;border-collapse:collapse;border:1px solid #E0E0E0;border-radius:12px;margin:24px 0;" border="0">
+  <tbody>
+  <tr>
+    <td style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;border-radius:12px 12px 0 0;">
+      <p style="letter-spacing:1.5px;text-transform:uppercase;font-size:11px;font-weight:700;color:#000000;margin:0 0 16px 0;">Assignments &amp; Deadlines</p>
+      ${paraHTML}
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:20px 24px;border-bottom:1px solid #E0E0E0;background-color:#FFFFFF;">
+      <p style="letter-spacing:1.5px;text-transform:uppercase;font-size:11px;font-weight:700;color:#000000;margin:0 0 12px 0;">Grade Improvement</p>
+      <p style="margin:0 0 12px 0;font-size:14px;color:#1A1A1A;line-height:1.7;">${fmt(st.gradeLead)}</p>
+      <ul style="margin:0;padding:0;list-style:none;">${gradeHTML}</ul>
+    </td>
+  </tr>
+  <tr>
+    <td style="background-color:#000000;padding:8px 24px;">
+      <p style="color:#FDB92A;letter-spacing:2px;text-transform:uppercase;margin:0;font-size:11px;font-weight:700;">🎓 &nbsp;Classroom Etiquette</p>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:20px 24px;background-color:#FFFFFF;border-radius:0 0 12px 12px;">
+      <ul style="margin:0;padding:0;list-style:none;">${etiqHTML}</ul>
+    </td>
+  </tr>
+  </tbody>
+</table>`;
   },
 
   ctrl(st) {
@@ -72,15 +82,15 @@ register({
     ).join('');
 
     const paraRows = st.paras.map((p, i) =>
-      `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><select class="ci" style="width:110px;flex-shrink:0;" data-f="paraHi" data-i="${i}">${hiOpts(p)}</select><input class="ci ci-grow" type="text" value="${escA(p.text)}" data-f="paraText" data-i="${i}" placeholder="Paragraph"><button class="ctrl-btn-x" data-action="rm-para" data-i="${i}">×</button></div>`
+      `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><select class="ci" style="width:110px;flex-shrink:0;" data-f="paraHi" data-i="${i}">${hiOpts(p)}</select><textarea class="ci ci-grow ci-prose" rows="1" data-f="paraText" data-i="${i}" placeholder="Paragraph">${esc(p.text)}</textarea><button class="ctrl-btn-x" data-action="rm-para" data-i="${i}">×</button></div>`
     ).join('');
 
     const gradeRows = st.gradeItems.map((item, i) =>
-      `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci ci-grow" type="text" value="${escA(item)}" data-f="gradeItem" data-i="${i}" placeholder="Step"><button class="ctrl-btn-x" data-action="rm-grade" data-i="${i}">×</button></div>`
+      `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><textarea class="ci ci-grow ci-prose" rows="1" data-f="gradeItem" data-i="${i}" placeholder="Step">${esc(item)}</textarea><button class="ctrl-btn-x" data-action="rm-grade" data-i="${i}">×</button></div>`
     ).join('');
 
     const etiqRows = st.etiquetteItems.map((item, i) =>
-      `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci ci-grow" type="text" value="${escA(item)}" data-f="etiqItem" data-i="${i}" placeholder="Rule"><button class="ctrl-btn-x" data-action="rm-etiq" data-i="${i}">×</button></div>`
+      `<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><textarea class="ci ci-grow ci-prose" rows="1" data-f="etiqItem" data-i="${i}" placeholder="Rule">${esc(item)}</textarea><button class="ctrl-btn-x" data-action="rm-etiq" data-i="${i}">×</button></div>`
     ).join('');
 
     return `
@@ -96,7 +106,7 @@ register({
     <div class="ctrl-rows">
       <div class="ctrl-row">
         <span style="font-size:11px;color:#666;flex-shrink:0;width:32px;font-family:var(--ui)">Lead</span>
-        <input class="ci ci-grow" type="text" value="${escA(st.gradeLead)}" data-f="gradeLead" data-i="0" placeholder="Lead-in paragraph">
+        <textarea class="ci ci-grow ci-prose" rows="1" data-f="gradeLead" data-i="0" placeholder="Lead-in paragraph">${esc(st.gradeLead)}</textarea>
       </div>
       ${gradeRows}
     </div>

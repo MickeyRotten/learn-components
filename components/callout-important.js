@@ -17,10 +17,10 @@ register({
       important: { bg: '#F5F5F5', border: '#000000', emoji: '📌' },
     };
     const t = types[st.type] || types.tip;
-    return `<div style="background-color:${t.bg};border-left:5px solid ${t.border};border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;">
+    return `<blockquote style="background-color:${t.bg};border-left:5px solid ${t.border};border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;">
   <p style="margin:0 0 6px 0;">${t.emoji} &nbsp;${esc(st.title)}</p>
-  <p style="margin:0;line-height:1.7;">${esc(st.body)}</p>
-</div>`;
+  <p style="margin:0;line-height:1.7;">${fmt(st.body)}</p>
+</blockquote>`;
   },
   ctrl(st) {
     const labels = { tip: 'Tip', info: 'Info', warning: 'Warning', important: 'Important' };
@@ -40,7 +40,7 @@ register({
       </div>
       <div class="ctrl-row" style="align-items:flex-start;">
         <span style="font-size:11px;color:#666;flex-shrink:0;width:44px;padding-top:6px;font-family:var(--ui)">Body</span>
-        <textarea class="ci ci-grow" data-f="body" data-i="0" rows="3" style="resize:vertical;">${esc(st.body)}</textarea>
+        <textarea class="ci ci-grow ci-prose" data-f="body" data-i="0" rows="1">${esc(st.body)}</textarea>
       </div>
     </div>`;
   },

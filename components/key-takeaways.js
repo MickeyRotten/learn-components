@@ -17,19 +17,13 @@ register({
       const mb = i < st.items.length - 1 ? 'margin-bottom:14px;' : '';
       return `    <li style="display:flex;gap:12px;align-items:flex-start;${mb}">
       <span style="width:22px;height:22px;background-color:#FDB92A;border-radius:50%;font-size:11px;font-weight:700;color:#000;flex-shrink:0;line-height:22px;text-align:center;">${i + 1}</span>
-      <p style="margin:0;line-height:1.6;padding-top:2px;">${esc(item)}</p>
+      <p style="margin:0;line-height:1.6;padding-top:2px;">${fmt(item)}</p>
     </li>`;
     }).join('\n');
-    return `<div style="margin:24px 0;border:1px solid #E0E0E0;border-radius:12px;overflow:hidden;">
-  <div style="background-color:#000000;padding:8px 24px;">
-    <p style="color:#FDB92A;letter-spacing:2px;text-transform:uppercase;margin:0;font-size:11px;">⭐ &nbsp;${esc(st.title)}</p>
-  </div>
-  <div style="background-color:#FAFAFA;padding:20px 24px;">
-    <ul style="list-style:none;padding:0;margin:0;">
+    return `<p style="background-color:#000000;color:#FDB92A;letter-spacing:2px;text-transform:uppercase;margin:24px 0 0 0;font-size:11px;padding:8px 24px;border-radius:12px 12px 0 0;">⭐ &nbsp;${esc(st.title)}</p>
+<ul style="list-style:none;background-color:#FAFAFA;border:1px solid #E0E0E0;border-top:none;border-radius:0 0 12px 12px;padding:20px 24px;margin:0 0 24px 0;">
 ${items}
-    </ul>
-  </div>
-</div>`;
+</ul>`;
   },
   ctrl(st) {
     return `
@@ -43,7 +37,7 @@ ${items}
         <input class="ci ci-grow" type="text" value="${escA(st.title)}" data-f="title" data-i="0" placeholder="Key Takeaways">
       </div>
       <div style="padding:5px 14px 2px;"><span class="ctrl-col-hdr">Items</span></div>
-      ${st.items.map((item, i) => `<div class="ctrl-row"><span class="ctrl-num">${i + 1}</span><input class="ci ci-grow" type="text" value="${escA(item)}" data-f="item" data-i="${i}" placeholder="Takeaway"><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
+      ${st.items.map((item, i) => `<div class="ctrl-row"><span class="ctrl-num">${i + 1}</span><textarea class="ci ci-grow ci-prose" rows="1" data-f="item" data-i="${i}" placeholder="Takeaway">${esc(item)}</textarea><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
     </div>`;
   },
   onInput(st, f, i, el) {

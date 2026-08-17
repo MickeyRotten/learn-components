@@ -13,21 +13,17 @@ register({
   ]},
   gen: function(st) {
     const total = st.rows.reduce((s,r)=>s+Number(r.weight),0);
+    // Bar track and fill are nested inline-block spans so no <div> is emitted.
+    const bar = (fill, pct) => `<span style="display: inline-block; width: 100px; background-color: #E0E0E0; height: 8px; border-radius: 4px; vertical-align: middle; margin-right: 10px;"><span style="display: block; height: 8px; width: ${pct}%; background-color: ${fill}; border-radius: 4px;"></span></span>`;
     const trs = st.rows.map(r=>{
       const w=Math.max(0,Math.min(100,Number(r.weight)));
       return `      <tr style="border-bottom: 1px solid #E0E0E0;">
         <td style="padding: 14px 18px; font-weight: 600; font-size: 14px; color: #000000;">${esc(r.name)}</td>
-        <td style="padding: 14px 18px; white-space: nowrap;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 100px; background-color: #E0E0E0; height: 8px; border-radius: 4px;"><div style="height: 8px; width: ${w}%; background-color: #FDB92A; border-radius: 4px;"></div></div>
-            <span style="font-weight: 700; font-size: 14px; color: #000000;">${w}%</span>
-          </div>
-        </td>
-        <td style="padding: 14px 18px; font-size: 13px; color: #444444;">${esc(r.notes)}</td>
+        <td style="padding: 14px 18px; white-space: nowrap;">${bar('#FDB92A', w)}<span style="font-weight: 700; font-size: 14px; color: #000000; vertical-align: middle;">${w}%</span></td>
+        <td style="padding: 14px 18px; font-size: 13px; color: #444444;">${fmt(r.notes)}</td>
       </tr>`;
     }).join('\n');
-    return `<div style="margin: 24px 0; border-radius: 12px; border: 1px solid #E0E0E0;">
-  <table style="width: 100%; border-collapse: collapse;">
+    return `<table style="width: 100%; border-collapse: collapse; border-radius: 12px; border: 1px solid #E0E0E0; margin: 24px 0;">
     <thead>
       <tr style="background-color: #000000;">
         <th style="text-align: left; padding: 14px 18px; color: #FDB92A; font-weight: 700; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;">Assignment</th>
@@ -39,17 +35,11 @@ register({
     <tfoot>
       <tr style="background-color: #F5F5F5; border-top: 2px solid #000000;">
         <td style="padding: 12px 18px; font-weight: 700; font-size: 14px; color: #000000;">Total</td>
-        <td style="padding: 12px 18px; white-space: nowrap;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 100px; background-color: #000000; height: 8px; border-radius: 4px;"></div>
-            <span style="font-weight: 700; font-size: 14px; color: #000000;">${total}%</span>
-          </div>
-        </td>
+        <td style="padding: 12px 18px; white-space: nowrap;">${bar('#000000', 100)}<span style="font-weight: 700; font-size: 14px; color: #000000; vertical-align: middle;">${total}%</span></td>
         <td style="padding: 12px 18px;"></td>
       </tr>
     </tfoot>
-  </table>
-</div>`;
+  </table>`;
   },
   ctrl: function(st) {
     const total = st.rows.reduce((s,r)=>s+Number(r.weight),0);
@@ -73,7 +63,7 @@ register({
         <span class="ctrl-col-hdr" style="flex:3;margin-left:6px">Deliverable</span>
         <span style="width:24px"></span>
       </div>
-      ${st.rows.map((r,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci" style="flex:2" type="text" value="${escA(r.name)}" data-f="name" data-i="${i}" placeholder="Assignment name"><input class="ci" style="width:44px;flex-shrink:0;" type="number" value="${r.weight}" data-f="weight" data-i="${i}" min="0" max="100"><span style="font-size:10px;color:#555;flex-shrink:0">%</span><input class="ci" style="flex:3" type="text" value="${escA(r.notes)}" data-f="notes" data-i="${i}" placeholder="Deliverable"><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
+      ${st.rows.map((r,i)=>`<div class="ctrl-row"><span class="ctrl-num">${i+1}</span><input class="ci" style="flex:2" type="text" value="${escA(r.name)}" data-f="name" data-i="${i}" placeholder="Assignment name"><input class="ci" style="width:44px;flex-shrink:0;" type="number" value="${r.weight}" data-f="weight" data-i="${i}" min="0" max="100"><span style="font-size:10px;color:#555;flex-shrink:0">%</span><textarea class="ci ci-prose" style="flex:3" rows="1" data-f="notes" data-i="${i}" placeholder="Deliverable">${esc(r.notes)}</textarea><button class="ctrl-btn-x" data-action="remove" data-i="${i}">×</button></div>`).join('')}
     </div>`;
   },
   onInput: function(st, f, i, el) {
